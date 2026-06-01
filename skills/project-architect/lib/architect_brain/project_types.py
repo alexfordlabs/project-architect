@@ -1,4 +1,4 @@
-"""Canonical project-type registry (v8 adds the agentic_system type).
+"""Canonical project-type registry (v8 adds agentic_system; v8.2 adds web3/scientific/ar_vr).
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
@@ -40,10 +40,11 @@ TOP_LEVEL_TYPES: tuple[str, ...] = (
     "static_site",
     "documentation_only",
     "agentic_system",
-    # Advertised in plugin.json + the SKILL frontmatter and carrying their own
-    # catalog docs (WEB3_SPECIFIC / SCIENTIFIC_COMPUTING / AR_VR_SPECIFIC) plus
-    # interview drill-downs (web3 / scientific in questioning-flow.md), but
-    # previously absent from this registry — so those docs could never fire.
+    # Advertised in the SKILL frontmatter (skills/project-architect/SKILL.md) and
+    # carrying their own catalog docs (WEB3_SPECIFIC / SCIENTIFIC_COMPUTING /
+    # AR_VR_SPECIFIC) plus interview drill-downs (web3 / scientific / ar_vr in
+    # questioning-flow.md), but previously absent from this registry — so those
+    # docs could never fire.
     # Registered here so the catalog<->registry contract holds
     # (tests/test_catalog_typeliterals_valid.py pins it).
     "web3",
