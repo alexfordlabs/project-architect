@@ -75,7 +75,7 @@
     },
     "MOBILE_SPECIFIC": {
       "conditions": [
-        "project.type == 'mobile' OR platforms.mobile == true"
+        "project.type == 'mobile_app' OR platforms.mobile == true"
       ],
       "depends_on": [],
       "produces": [
@@ -142,7 +142,7 @@
     },
     "DESKTOP_SPECIFIC": {
       "conditions": [
-        "project.type == 'desktop'"
+        "project.type == 'desktop_app'"
       ],
       "depends_on": [],
       "produces": [
@@ -206,7 +206,7 @@
     },
     "ML_OPS": {
       "conditions": [
-        "project.type == 'ai_ml' AND ml.training == true"
+        "project.type == 'ml_project' AND ml.training == true"
       ],
       "depends_on": [
         "AI_AND_ML"
@@ -240,7 +240,7 @@
     },
     "EMBEDDED_SPECIFIC": {
       "conditions": [
-        "project.type == 'embedded'"
+        "project.type == 'embedded_system'"
       ],
       "depends_on": [],
       "produces": [
@@ -256,7 +256,7 @@
     },
     "HARDWARE_FIRMWARE": {
       "conditions": [
-        "project.type == 'embedded' AND hardware.combo == true"
+        "project.type == 'embedded_system' AND hardware.combo == true"
       ],
       "depends_on": [
         "EMBEDDED_SPECIFIC"

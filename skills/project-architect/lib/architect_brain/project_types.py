@@ -17,8 +17,10 @@ class ProjectTypeError(Exception):
     """A project.type value is not in the canonical registry."""
 
 
-# Canonical top-level project types. The final entry, ``agentic_system``, is the
-# v8 addition (spec §5.7); the rest carry forward v7's set.
+# Canonical top-level project types. ``agentic_system`` was the v8 addition
+# (spec §5.7); the trailing ``web3``/``scientific``/``ar_vr`` were registered in
+# v8.2 to match the advertised type set + their catalog docs; the rest carry
+# forward v7's set.
 TOP_LEVEL_TYPES: tuple[str, ...] = (
     "web_app",
     "mobile_app",
@@ -38,6 +40,15 @@ TOP_LEVEL_TYPES: tuple[str, ...] = (
     "static_site",
     "documentation_only",
     "agentic_system",
+    # Advertised in plugin.json + the SKILL frontmatter and carrying their own
+    # catalog docs (WEB3_SPECIFIC / SCIENTIFIC_COMPUTING / AR_VR_SPECIFIC) plus
+    # interview drill-downs (web3 / scientific in questioning-flow.md), but
+    # previously absent from this registry — so those docs could never fire.
+    # Registered here so the catalog<->registry contract holds
+    # (tests/test_catalog_typeliterals_valid.py pins it).
+    "web3",
+    "scientific",
+    "ar_vr",
 )
 
 
