@@ -9,7 +9,7 @@ PLUGIN_JSON="$REPO_ROOT/.claude-plugin/plugin.json"
 CHANGELOG="$REPO_ROOT/CHANGELOG.md"
 
 PLUGIN_VERSION=$(jq -r '.version' "$PLUGIN_JSON")
-assert_eq "$PLUGIN_VERSION" "8.1.1" "plugin.json version must be 8.1.1"
+assert_eq "$PLUGIN_VERSION" "8.1.2" "plugin.json version must be 8.1.2"
 
 CHANGELOG_CONTENT=$(cat "$CHANGELOG")
 assert_contains "$CHANGELOG_CONTENT" 'v6.0.0' 'CHANGELOG must have a v6.0.0 entry'
@@ -48,11 +48,15 @@ assert_contains "$CHANGELOG_CONTENT" 'user_provenance' 'CHANGELOG v8.1.0 must de
 assert_contains "$CHANGELOG_CONTENT" 'mechanical' 'CHANGELOG v8.1.0 must describe the mechanical LOCK gate'
 assert_contains "$CHANGELOG_CONTENT" 'stack.versions' 'CHANGELOG v8.1.0 must describe the stack.versions.* namespace'
 
-# v8.1.1 entry (this release)
+# v8.1.1 entry (retained)
 assert_contains "$CHANGELOG_CONTENT" 'v8.1.1' 'CHANGELOG must have a v8.1.1 entry'
 assert_contains "$CHANGELOG_CONTENT" 'detect' 'CHANGELOG v8.1.1 must describe the architect-brain detect command fix'
 assert_contains "$CHANGELOG_CONTENT" 'single-sourced' 'CHANGELOG v8.1.1 must describe the single-sourced plugin version'
 assert_contains "$CHANGELOG_CONTENT" 'Continuous integration' 'CHANGELOG v8.1.1 must describe the new CI'
+
+# v8.1.2 entry (this release)
+assert_contains "$CHANGELOG_CONTENT" 'v8.1.2' 'CHANGELOG must have a v8.1.2 entry'
+assert_contains "$CHANGELOG_CONTENT" 'portable' 'CHANGELOG v8.1.2 must describe the portable-test fix'
 
 # Regression: prior entries retained (CURATED, not trimmed — all versions kept)
 assert_contains "$CHANGELOG_CONTENT" 'v5.0.0' 'CHANGELOG must retain the v5.0.0 entry'

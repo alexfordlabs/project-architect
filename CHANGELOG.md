@@ -10,6 +10,14 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v8.1.2 — 2026-06-01
+
+**CI green.** A one-line follow-up to v8.1.1: the new CI's first run did its job and caught a non-portable test. No plugin behavior change.
+
+### Fixed
+
+- **`test_v7_changelog_curated.sh` is now portable.** It asserted the on-disk presence of the **gitignored** `CHANGELOG.dev.md`, which holds in the author's working tree but not in a fresh clone / CI checkout — so the suite was green locally yet red in CI. The existence check is now conditional (run only when the file is present); the real invariant — that the file is untracked, and the public CHANGELOG is curated — is still pinned, so a clean checkout stays green.
+
 ## v8.1.1 — 2026-06-01
 
 **Correctness + CI.** A focused fix release: the two cross-version commands are runnable again, the plugin version is single-sourced, dispatched subagents can resolve their reference paths, and the repo now runs CI on itself. No change to the 12-phase flow, the event-sourced state model, or the 35-check audit.

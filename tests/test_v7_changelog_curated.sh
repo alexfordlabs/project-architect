@@ -17,9 +17,16 @@ source "$(dirname "$0")/lib/test_helpers.sh"
 PUBLIC="$REPO_ROOT/CHANGELOG.md"
 DEV="$REPO_ROOT/CHANGELOG.dev.md"
 
-# 1. Both files exist on disk.
+# 1. The public CHANGELOG exists (tracked → present in every checkout).
 assert_file_exists "$PUBLIC" "public CHANGELOG.md exists"
-assert_file_exists "$DEV" "full-history CHANGELOG.dev.md exists on disk"
+# CHANGELOG.dev.md is GITIGNORED: present in the author's working tree but absent
+# from any fresh clone / CI checkout (git never tracked it). Its on-disk presence is
+# a local-author convenience, NOT a portable repo invariant — only its UNTRACKED-ness
+# is (asserted at the end, and it holds whether or not the file is on disk). So check
+# existence only when it is present, to stay green in a clean checkout.
+if [[ -f "$DEV" ]]; then
+  assert_file_exists "$DEV" "full-history CHANGELOG.dev.md present in the author's tree"
+fi
 
 PUB="$(cat "$PUBLIC")"
 
