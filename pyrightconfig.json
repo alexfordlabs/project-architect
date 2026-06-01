@@ -1,0 +1,16 @@
+{
+  "include": [
+    "skills/project-architect/lib"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.hypothesis",
+    "**/node_modules",
+    "skills/project-architect/lib/architect_brain/tests/test_replay_invariant.py"
+  ],
+  "extraPaths": [
+    "skills/project-architect/lib"
+  ],
+  "reportMissingImports": "error",
+  "pythonVersion": "3.10"
+}

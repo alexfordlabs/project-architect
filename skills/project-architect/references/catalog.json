@@ -1,0 +1,1890 @@
+{
+  "schema_version": "4.0",
+  "catalog_version": "8.0.0",
+  "documents": {
+    "PROJECT_OVERVIEW": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/PROJECT_OVERVIEW.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PROJECT_OVERVIEW.md",
+      "phase": "doc_generation",
+      "concern": "vision",
+      "tags": [
+        "always",
+        "root"
+      ]
+    },
+    "PROJECT_REQUIREMENTS": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [
+        "PROJECT_OVERVIEW"
+      ],
+      "produces": [
+        "docs/PROJECT_REQUIREMENTS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PROJECT_REQUIREMENTS.md",
+      "phase": "doc_generation",
+      "concern": "vision",
+      "tags": [
+        "always"
+      ]
+    },
+    "TECH_STACK": {
+      "conditions": [
+        "stack.backend.language != null OR stack.frontend.framework != null"
+      ],
+      "depends_on": [
+        "PROJECT_OVERVIEW"
+      ],
+      "produces": [
+        "docs/TECH_STACK.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TECH_STACK.md",
+      "phase": "doc_generation",
+      "concern": "stack",
+      "tags": [
+        "stack",
+        "version-pins"
+      ]
+    },
+    "UI_UX_DESIGN": {
+      "conditions": [
+        "stack.frontend.framework != null"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/UI_UX_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/UI_UX_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "frontend",
+        "type-anchored:web"
+      ]
+    },
+    "MOBILE_SPECIFIC": {
+      "conditions": [
+        "project.type == 'mobile' OR platforms.mobile == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/MOBILE_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/MOBILE_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:mobile"
+      ]
+    },
+    "PLATFORMS": {
+      "conditions": [
+        "platforms.length > 1"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/PLATFORMS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PLATFORMS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:multi-platform"
+      ]
+    },
+    "API_GATEWAY": {
+      "conditions": [
+        "(api.enabled == true OR stack.api.protocol != null)"
+      ],
+      "depends_on": [
+        "AUTHENTICATION_SYSTEM",
+        "DATABASE_DESIGN"
+      ],
+      "produces": [
+        "docs/API_GATEWAY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/API_GATEWAY.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "type-anchored:api"
+      ]
+    },
+    "SDK_DESIGN": {
+      "conditions": [
+        "project.type == 'library' OR exposes_sdk == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SDK_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SDK_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "type-anchored:library"
+      ]
+    },
+    "DESKTOP_SPECIFIC": {
+      "conditions": [
+        "project.type == 'desktop'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DESKTOP_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DESKTOP_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:desktop"
+      ]
+    },
+    "BROWSER_EXTENSION": {
+      "conditions": [
+        "project.type == 'browser_extension'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/BROWSER_EXTENSION.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BROWSER_EXTENSION.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:browser-extension"
+      ]
+    },
+    "GAME_SPECIFIC": {
+      "conditions": [
+        "project.type == 'game'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/GAME_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/GAME_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:game"
+      ]
+    },
+    "AI_AND_ML": {
+      "conditions": [
+        "ai.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/AI_AND_ML.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AI_AND_ML.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "type-anchored:ai-ml"
+      ]
+    },
+    "ML_OPS": {
+      "conditions": [
+        "project.type == 'ai_ml' AND ml.training == true"
+      ],
+      "depends_on": [
+        "AI_AND_ML"
+      ],
+      "produces": [
+        "docs/ML_OPS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ML_OPS.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "type-anchored:ai-ml"
+      ]
+    },
+    "DATA_PIPELINE": {
+      "conditions": [
+        "data_pipeline.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DATA_PIPELINE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DATA_PIPELINE.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:data-pipeline"
+      ]
+    },
+    "EMBEDDED_SPECIFIC": {
+      "conditions": [
+        "project.type == 'embedded'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/EMBEDDED_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/EMBEDDED_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:embedded"
+      ]
+    },
+    "HARDWARE_FIRMWARE": {
+      "conditions": [
+        "project.type == 'embedded' AND hardware.combo == true"
+      ],
+      "depends_on": [
+        "EMBEDDED_SPECIFIC"
+      ],
+      "produces": [
+        "docs/HARDWARE_FIRMWARE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/HARDWARE_FIRMWARE.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:embedded"
+      ]
+    },
+    "DEPLOYMENT": {
+      "conditions": [
+        "stack.hosting.provider != null"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DEPLOYMENT.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DEPLOYMENT.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "type-anchored:infrastructure"
+      ]
+    },
+    "CI_CD": {
+      "conditions": [
+        "devops.cicd != null"
+      ],
+      "depends_on": [
+        "TESTING_STRATEGY",
+        "DEPLOYMENT"
+      ],
+      "produces": [
+        "docs/CI_CD.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CI_CD.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "type-anchored:infrastructure"
+      ]
+    },
+    "PLUGIN_SPECIFIC": {
+      "conditions": [
+        "project.type == 'claude_code_plugin'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/PLUGIN_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PLUGIN_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:plugin"
+      ]
+    },
+    "MCP_SERVER_SPECIFIC": {
+      "conditions": [
+        "project.type == 'mcp_server'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/MCP_SERVER_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/MCP_SERVER_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:mcp-server"
+      ]
+    },
+    "WEB3_SPECIFIC": {
+      "conditions": [
+        "project.type == 'web3'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/WEB3_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/WEB3_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:web3"
+      ]
+    },
+    "SCIENTIFIC_COMPUTING": {
+      "conditions": [
+        "project.type == 'scientific'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SCIENTIFIC_COMPUTING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SCIENTIFIC_COMPUTING.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:scientific"
+      ]
+    },
+    "AR_VR_SPECIFIC": {
+      "conditions": [
+        "project.type == 'ar_vr'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/AR_VR_SPECIFIC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AR_VR_SPECIFIC.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "type-anchored:ar-vr"
+      ]
+    },
+    "AUTHENTICATION_SYSTEM": {
+      "conditions": [
+        "(auth.enabled == true OR stack.auth.provider != null)"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/AUTHENTICATION_SYSTEM.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AUTHENTICATION_SYSTEM.md",
+      "phase": "doc_generation",
+      "concern": "identity",
+      "tags": [
+        "conditional",
+        "security"
+      ]
+    },
+    "DATABASE_DESIGN": {
+      "conditions": [
+        "stack.database.engine != null"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DATABASE_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DATABASE_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "SECURITY_AND_COMPLIANCE": {
+      "conditions": [
+        "(auth.enabled == true OR stack.auth.provider != null) OR constraints.regulated == true"
+      ],
+      "depends_on": [
+        "AUTHENTICATION_SYSTEM",
+        "DATABASE_DESIGN"
+      ],
+      "produces": [
+        "docs/SECURITY_AND_COMPLIANCE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SECURITY_AND_COMPLIANCE.md",
+      "phase": "doc_generation",
+      "concern": "identity",
+      "tags": [
+        "conditional",
+        "security"
+      ]
+    },
+    "THREAT_MODEL": {
+      "conditions": [
+        "constraints.regulated == true OR security.formal_threat_model == true OR project.type == 'web3'"
+      ],
+      "depends_on": [
+        "SECURITY_AND_COMPLIANCE"
+      ],
+      "produces": [
+        "docs/THREAT_MODEL.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/THREAT_MODEL.md",
+      "phase": "doc_generation",
+      "concern": "identity",
+      "tags": [
+        "conditional",
+        "security",
+        "type-anchored:web3"
+      ]
+    },
+    "TESTING_STRATEGY": {
+      "conditions": [
+        "scale != 'hobby' OR project.type != 'library'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/TESTING_STRATEGY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TESTING_STRATEGY.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "THIRD_PARTY_INTEGRATIONS": {
+      "conditions": [
+        "integrations.length > 0"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/THIRD_PARTY_INTEGRATIONS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/THIRD_PARTY_INTEGRATIONS.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "MONITORING_AND_OBSERVABILITY": {
+      "conditions": [
+        "scale != 'hobby' AND production_bound == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/MONITORING_AND_OBSERVABILITY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/MONITORING_AND_OBSERVABILITY.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "BILLING_AND_PAYMENTS": {
+      "conditions": [
+        "monetization.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/BILLING_AND_PAYMENTS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BILLING_AND_PAYMENTS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "EMAIL_AND_NOTIFICATIONS": {
+      "conditions": [
+        "notifications.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/EMAIL_AND_NOTIFICATIONS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/EMAIL_AND_NOTIFICATIONS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "FILE_STORAGE": {
+      "conditions": [
+        "file_handling.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/FILE_STORAGE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/FILE_STORAGE.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "REAL_TIME": {
+      "conditions": [
+        "realtime.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/REAL_TIME.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/REAL_TIME.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "SEARCH": {
+      "conditions": [
+        "search.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SEARCH.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SEARCH.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "CACHING_STRATEGY": {
+      "conditions": [
+        "scale IN ['growth','enterprise'] OR (caching.enabled == true OR stack.cache.engine != null)"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/CACHING_STRATEGY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CACHING_STRATEGY.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "INTERNATIONALIZATION": {
+      "conditions": [
+        "i18n.languages.length > 1"
+      ],
+      "depends_on": [
+        "UI_UX_DESIGN"
+      ],
+      "produces": [
+        "docs/INTERNATIONALIZATION.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/INTERNATIONALIZATION.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "ACCESSIBILITY": {
+      "conditions": [
+        "stack.frontend.framework != null AND a11y.target != null"
+      ],
+      "depends_on": [
+        "UI_UX_DESIGN"
+      ],
+      "produces": [
+        "docs/ACCESSIBILITY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ACCESSIBILITY.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "BACKGROUND_JOBS": {
+      "conditions": [
+        "background_jobs.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/BACKGROUND_JOBS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BACKGROUND_JOBS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "COST_MODEL": {
+      "conditions": [
+        "scale != 'hobby' OR managed_services_in_stack == true"
+      ],
+      "depends_on": [
+        "DEPLOYMENT",
+        "DATABASE_DESIGN"
+      ],
+      "produces": [
+        "docs/COST_MODEL.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/COST_MODEL.md",
+      "phase": "doc_generation",
+      "concern": "cost",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "RUNBOOK": {
+      "conditions": [
+        "production_bound == true AND scale IN ['growth','enterprise']"
+      ],
+      "depends_on": [
+        "DEPLOYMENT",
+        "MONITORING_AND_OBSERVABILITY"
+      ],
+      "produces": [
+        "docs/RUNBOOK.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/RUNBOOK.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional",
+        "ops"
+      ]
+    },
+    "INCIDENT_RESPONSE": {
+      "conditions": [
+        "production_bound == true AND scale IN ['growth','enterprise']"
+      ],
+      "depends_on": [
+        "MONITORING_AND_OBSERVABILITY",
+        "RUNBOOK"
+      ],
+      "produces": [
+        "docs/INCIDENT_RESPONSE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/INCIDENT_RESPONSE.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional",
+        "ops"
+      ]
+    },
+    "DISASTER_RECOVERY": {
+      "conditions": [
+        "production_bound == true AND scale IN ['growth','enterprise']"
+      ],
+      "depends_on": [
+        "BACKUP_AND_DR",
+        "DEPLOYMENT"
+      ],
+      "produces": [
+        "docs/DISASTER_RECOVERY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DISASTER_RECOVERY.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional",
+        "ops"
+      ]
+    },
+    "SLO_AND_ERROR_BUDGETS": {
+      "conditions": [
+        "scale IN ['growth','enterprise']"
+      ],
+      "depends_on": [
+        "MONITORING_AND_OBSERVABILITY"
+      ],
+      "produces": [
+        "docs/SLO_AND_ERROR_BUDGETS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SLO_AND_ERROR_BUDGETS.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional",
+        "ops"
+      ]
+    },
+    "BACKUP_AND_DR": {
+      "conditions": [
+        "stack.database.engine != null AND scale != 'hobby'"
+      ],
+      "depends_on": [
+        "DATABASE_DESIGN"
+      ],
+      "produces": [
+        "docs/BACKUP_AND_DR.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BACKUP_AND_DR.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional",
+        "ops"
+      ]
+    },
+    "PERFORMANCE_BUDGETS": {
+      "conditions": [
+        "stack.frontend.framework != null OR (api.enabled == true OR stack.api.protocol != null)"
+      ],
+      "depends_on": [
+        "UI_UX_DESIGN",
+        "API_GATEWAY"
+      ],
+      "produces": [
+        "docs/PERFORMANCE_BUDGETS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PERFORMANCE_BUDGETS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "ARCHITECTURE_DIAGRAMS": {
+      "conditions": [
+        "scale IN ['growth','enterprise'] OR complexity == 'high'"
+      ],
+      "depends_on": [
+        "PROJECT_OVERVIEW"
+      ],
+      "produces": [
+        "docs/ARCHITECTURE_DIAGRAMS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ARCHITECTURE_DIAGRAMS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "TENANT_AND_ORGANIZATION_MODEL": {
+      "conditions": [
+        "multi_tenancy == true"
+      ],
+      "depends_on": [
+        "AUTHENTICATION_SYSTEM",
+        "DATABASE_DESIGN"
+      ],
+      "produces": [
+        "docs/TENANT_AND_ORGANIZATION_MODEL.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TENANT_AND_ORGANIZATION_MODEL.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional",
+        "multi-tenant"
+      ]
+    },
+    "EXPERIMENTS": {
+      "conditions": [
+        "feature_flags.enabled == true OR ab_testing.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/EXPERIMENTS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/EXPERIMENTS.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "ANALYTICS_AND_TELEMETRY": {
+      "conditions": [
+        "analytics.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/ANALYTICS_AND_TELEMETRY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ANALYTICS_AND_TELEMETRY.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "ONBOARDING": {
+      "conditions": [
+        "team_size != 'solo'"
+      ],
+      "depends_on": [
+        "CLAUDE_MD_ROOT"
+      ],
+      "produces": [
+        "docs/ONBOARDING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ONBOARDING.md",
+      "phase": "doc_generation",
+      "concern": "docs",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "CONTRIBUTING": {
+      "conditions": [
+        "open_source == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/CONTRIBUTING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CONTRIBUTING.md",
+      "phase": "doc_generation",
+      "concern": "docs",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "RELEASE_PROCESS": {
+      "conditions": [
+        "production_bound == true"
+      ],
+      "depends_on": [
+        "CI_CD",
+        "DEPLOYMENT"
+      ],
+      "produces": [
+        "docs/RELEASE_PROCESS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/RELEASE_PROCESS.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "CLI_UX_DESIGN": {
+      "conditions": [
+        "project.sub_type IN ['cli_tool','cli_with_subcommands','tui_app','interactive_cli']"
+      ],
+      "depends_on": [
+        "PROJECT_REQUIREMENTS"
+      ],
+      "produces": [
+        "docs/CLI_UX_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CLI_UX_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "conditional",
+        "cli"
+      ]
+    },
+    "LANGUAGE_GRAMMAR": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "PROJECT_OVERVIEW"
+      ],
+      "produces": [
+        "docs/LANGUAGE_GRAMMAR.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/LANGUAGE_GRAMMAR.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "SEMANTICS": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "LANGUAGE_GRAMMAR"
+      ],
+      "produces": [
+        "docs/SEMANTICS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SEMANTICS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "TYPE_SYSTEM": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "SEMANTICS",
+        "LANGUAGE_GRAMMAR"
+      ],
+      "produces": [
+        "docs/TYPE_SYSTEM.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TYPE_SYSTEM.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "STDLIB": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "SEMANTICS",
+        "TYPE_SYSTEM"
+      ],
+      "produces": [
+        "docs/STDLIB.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/STDLIB.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "TOOLCHAIN": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "SEMANTICS",
+        "LANGUAGE_GRAMMAR"
+      ],
+      "produces": [
+        "docs/TOOLCHAIN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TOOLCHAIN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "BOOTSTRAP_PLAN": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "LANGUAGE_GRAMMAR",
+        "SEMANTICS",
+        "TYPE_SYSTEM"
+      ],
+      "produces": [
+        "docs/BOOTSTRAP_PLAN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BOOTSTRAP_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "STABILITY_AND_RFC": {
+      "conditions": [
+        "project.sub_type IN ['general_purpose_language','domain_specific_language','query_language','configuration_language','educational_language','transpiler_target']"
+      ],
+      "depends_on": [
+        "BOOTSTRAP_PLAN",
+        "TOOLCHAIN"
+      ],
+      "produces": [
+        "docs/STABILITY_AND_RFC.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/STABILITY_AND_RFC.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "language-design"
+      ]
+    },
+    "CLAUDE_MD_PLAN": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [
+        "PROJECT_OVERVIEW"
+      ],
+      "produces": [
+        "docs/CLAUDE_MD_PLAN.md"
+      ],
+      "produced_by": "claude-md-author",
+      "template": "templates/CLAUDE_MD_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "plan",
+        "always"
+      ]
+    },
+    "CLAUDE_MD_ROOT": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [
+        "CLAUDE_MD_PLAN"
+      ],
+      "produces": [
+        "docs/CLAUDE_MD_ROOT.md"
+      ],
+      "produced_by": "claude-md-author",
+      "template": "templates/CLAUDE_MD_ROOT.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "always"
+      ]
+    },
+    "CLAUDE_MD_SUBFOLDER": {
+      "conditions": [
+        "subfolders.required == true"
+      ],
+      "depends_on": [
+        "CLAUDE_MD_ROOT"
+      ],
+      "produces": [
+        "docs/CLAUDE_MD_SUBFOLDER.md"
+      ],
+      "produced_by": "claude-md-author",
+      "template": "templates/CLAUDE_MD_SUBFOLDER.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "conditional"
+      ]
+    },
+    "CLAUDE_TOOLING_PLAN": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [
+        "SECURITY_AND_COMPLIANCE",
+        "RELEASE_PROCESS"
+      ],
+      "produces": [
+        "docs/CLAUDE_TOOLING_PLAN.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/CLAUDE_TOOLING_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "plan",
+        "always"
+      ]
+    },
+    "SCAFFOLD_PLAN": {
+      "conditions": [
+        "project.sub_type != 'documentation_only'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SCAFFOLD_PLAN.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/SCAFFOLD_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "plan"
+      ]
+    },
+    "NEXT_STEP_PLAN": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/NEXT_STEP_PLAN.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/NEXT_STEP_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "handoff",
+      "tags": [
+        "plan",
+        "always"
+      ]
+    },
+    "SLASH_IMPLEMENT": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [
+        "PROJECT_REQUIREMENTS"
+      ],
+      "produces": [
+        ".claude/commands/implement.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/SLASH_IMPLEMENT.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "slash-command",
+        "always"
+      ]
+    },
+    "SLASH_ITERATE_DESIGN": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [],
+      "produces": [
+        ".claude/commands/iterate-design.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/SLASH_ITERATE_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "slash-command",
+        "always"
+      ]
+    },
+    "SLASH_SCAFFOLD": {
+      "conditions": [
+        "project.sub_type != 'documentation_only'"
+      ],
+      "depends_on": [
+        "SCAFFOLD_PLAN"
+      ],
+      "produces": [
+        ".claude/commands/scaffold.md"
+      ],
+      "produced_by": "claude-tooling-author",
+      "template": "templates/SLASH_SCAFFOLD.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "slash-command"
+      ]
+    },
+    "AGENT_DESIGN": {
+      "conditions": [
+        "ai.enabled == true AND (ai.agent == true OR project.type IN ['mcp_server', 'agentic_system'])"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/AGENT_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AGENT_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "agent",
+        "design"
+      ]
+    },
+    "AGENT_EVALUATION": {
+      "conditions": [
+        "ai.enabled == true AND ai.agent == true"
+      ],
+      "depends_on": [
+        "AGENT_DESIGN"
+      ],
+      "produces": [
+        "docs/AGENT_EVALUATION.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AGENT_EVALUATION.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "agent",
+        "evaluation"
+      ]
+    },
+    "CONTEXT_ENGINEERING": {
+      "conditions": [
+        "ai.enabled == true AND (ai.agent == true OR ai.long_running == true)"
+      ],
+      "depends_on": [
+        "AGENT_DESIGN"
+      ],
+      "produces": [
+        "docs/CONTEXT_ENGINEERING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CONTEXT_ENGINEERING.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "context",
+        "caching"
+      ]
+    },
+    "AGENT_MEMORY": {
+      "conditions": [
+        "ai.agent == true AND ai.persistent_memory == true"
+      ],
+      "depends_on": [
+        "AGENT_DESIGN"
+      ],
+      "produces": [
+        "docs/AGENT_MEMORY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AGENT_MEMORY.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "agent",
+        "memory"
+      ]
+    },
+    "TOOL_PALETTE": {
+      "conditions": [
+        "ai.agent == true OR project.type == 'mcp_server'"
+      ],
+      "depends_on": [
+        "AGENT_DESIGN"
+      ],
+      "produces": [
+        "docs/TOOL_PALETTE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/TOOL_PALETTE.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "agent",
+        "tools",
+        "mcp"
+      ]
+    },
+    "HUMAN_IN_THE_LOOP": {
+      "conditions": [
+        "ai.agent == true AND (agent.autonomy != 'high' OR constraints.regulated == true)"
+      ],
+      "depends_on": [
+        "AGENT_DESIGN"
+      ],
+      "produces": [
+        "docs/HUMAN_IN_THE_LOOP.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/HUMAN_IN_THE_LOOP.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "agent",
+        "hitl",
+        "safety"
+      ]
+    },
+    "AI_SAFETY": {
+      "conditions": [
+        "ai.enabled == true AND (scale IN ['growth', 'enterprise'] OR constraints.regulated == true)"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/AI_SAFETY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/AI_SAFETY.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "security",
+        "owasp"
+      ]
+    },
+    "WEBHOOK_DESIGN": {
+      "conditions": [
+        "api.enabled == true AND webhooks.outbound == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/WEBHOOK_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/WEBHOOK_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "api",
+        "webhooks"
+      ]
+    },
+    "WEB_SECURITY_HEADERS": {
+      "conditions": [
+        "stack.frontend.framework != null OR project.type == 'web_app'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/WEB_SECURITY_HEADERS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/WEB_SECURITY_HEADERS.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "security",
+        "web",
+        "headers"
+      ]
+    },
+    "POSTMORTEM_TEMPLATE": {
+      "conditions": [
+        "production_bound == true AND scale IN ['growth', 'enterprise']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/POSTMORTEM_TEMPLATE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/POSTMORTEM_TEMPLATE.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "sre",
+        "incident",
+        "postmortem"
+      ]
+    },
+    "EVENT_TRACKING_PLAN": {
+      "conditions": [
+        "analytics.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/EVENT_TRACKING_PLAN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/EVENT_TRACKING_PLAN.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "analytics",
+        "tracking"
+      ]
+    },
+    "FEATURE_FLAGS": {
+      "conditions": [
+        "feature_flags.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/FEATURE_FLAGS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/FEATURE_FLAGS.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "feature-flags",
+        "openfeature"
+      ]
+    },
+    "IDEMPOTENCY_DESIGN": {
+      "conditions": [
+        "api.enabled == true AND (monetization.enabled == true OR api.idempotency_required == true)"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/IDEMPOTENCY_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/IDEMPOTENCY_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "api",
+        "idempotency"
+      ]
+    },
+    "RATE_LIMITING": {
+      "conditions": [
+        "api.enabled == true AND scale IN ['growth', 'enterprise']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/RATE_LIMITING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/RATE_LIMITING.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "api",
+        "rate-limiting"
+      ]
+    },
+    "API_VERSIONING": {
+      "conditions": [
+        "api.enabled == true AND api.public == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/API_VERSIONING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/API_VERSIONING.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "api",
+        "versioning"
+      ]
+    },
+    "API_ERROR_MODEL": {
+      "conditions": [
+        "api.enabled == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/API_ERROR_MODEL.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/API_ERROR_MODEL.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "api",
+        "errors",
+        "rfc9457"
+      ]
+    },
+    "SUPPLY_CHAIN_SECURITY": {
+      "conditions": [
+        "production_bound == true AND (scale IN ['growth', 'enterprise'] OR constraints.regulated == true)"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SUPPLY_CHAIN_SECURITY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SUPPLY_CHAIN_SECURITY.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "security",
+        "supply-chain",
+        "slsa"
+      ]
+    },
+    "LLM_OBSERVABILITY": {
+      "conditions": [
+        "ai.enabled == true AND scale IN ['growth', 'enterprise']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/LLM_OBSERVABILITY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/LLM_OBSERVABILITY.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "observability",
+        "otel"
+      ]
+    },
+    "ENGINEERING_PRINCIPLES": {
+      "conditions": [
+        "scale IN ['growth', 'enterprise'] OR team_size IN ['small_team', 'medium_team', 'large_team']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/ENGINEERING_PRINCIPLES.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ENGINEERING_PRINCIPLES.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "principles",
+        "quality"
+      ]
+    },
+    "CODE_REVIEW": {
+      "conditions": [
+        "team_size IN ['small_team', 'medium_team', 'large_team'] AND scm.host != null"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/CODE_REVIEW.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CODE_REVIEW.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "code-review",
+        "process"
+      ]
+    },
+    "DATA_CONTRACT": {
+      "conditions": [
+        "data_pipeline.enabled == true AND data.contracts == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DATA_CONTRACT.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DATA_CONTRACT.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "data",
+        "contracts"
+      ]
+    },
+    "KUBERNETES_DEPLOYMENT": {
+      "conditions": [
+        "deployment.orchestrator == 'kubernetes'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/KUBERNETES_DEPLOYMENT.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/KUBERNETES_DEPLOYMENT.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "kubernetes",
+        "deployment"
+      ]
+    },
+    "CONTAINER_IMAGE_POLICY": {
+      "conditions": [
+        "deployment.containers == true OR deployment.orchestrator == 'kubernetes'"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/CONTAINER_IMAGE_POLICY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CONTAINER_IMAGE_POLICY.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "containers",
+        "security"
+      ]
+    },
+    "PRIVACY_REVIEW": {
+      "conditions": [
+        "constraints.gdpr == true OR constraints.ccpa == true OR constraints.hipaa == true OR personal_data == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/PRIVACY_REVIEW.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/PRIVACY_REVIEW.md",
+      "phase": "doc_generation",
+      "concern": "vision",
+      "tags": [
+        "privacy",
+        "gdpr",
+        "dpia"
+      ]
+    },
+    "ON_CALL_GUIDE": {
+      "conditions": [
+        "production_bound == true AND team_size IN ['small_team', 'medium_team', 'large_team'] AND scale IN ['growth', 'enterprise']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/ON_CALL_GUIDE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/ON_CALL_GUIDE.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "sre",
+        "on-call"
+      ]
+    },
+    "WELL_ARCHITECTED_CHECKLIST": {
+      "conditions": [
+        "ALWAYS"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/WELL_ARCHITECTED_CHECKLIST.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/WELL_ARCHITECTED_CHECKLIST.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "always",
+        "audit",
+        "well-architected"
+      ]
+    },
+    "OPEN_SOURCE_GOVERNANCE": {
+      "conditions": [
+        "project.governance == 'foundation' OR (open_source == true AND community_size IN ['medium', 'large'])"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/OPEN_SOURCE_GOVERNANCE.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/OPEN_SOURCE_GOVERNANCE.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "oss",
+        "governance"
+      ]
+    },
+    "CONTRACT_TESTING": {
+      "conditions": [
+        "architecture.style == 'microservices' OR architecture.boundaries.count > 4"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/CONTRACT_TESTING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/CONTRACT_TESTING.md",
+      "phase": "doc_generation",
+      "concern": "api_contract",
+      "tags": [
+        "contract-testing",
+        "pact"
+      ]
+    },
+    "GIT_BRANCHING": {
+      "conditions": [
+        "team_size IN ['small_team', 'medium_team', 'large_team'] AND scm.host != null"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/GIT_BRANCHING.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/GIT_BRANCHING.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "git",
+        "branching"
+      ]
+    },
+    "DEVELOPMENT_WORKFLOW": {
+      "conditions": [
+        "team_size IN ['small_team', 'medium_team', 'large_team']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DEVELOPMENT_WORKFLOW.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DEVELOPMENT_WORKFLOW.md",
+      "phase": "doc_generation",
+      "concern": "workflow",
+      "tags": [
+        "workflow",
+        "process"
+      ]
+    },
+    "GITOPS_DEPLOYMENT": {
+      "conditions": [
+        "deployment.gitops == true OR deployment.controller IN ['argocd', 'flux']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/GITOPS_DEPLOYMENT.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/GITOPS_DEPLOYMENT.md",
+      "phase": "doc_generation",
+      "concern": "tooling",
+      "tags": [
+        "gitops",
+        "deployment"
+      ]
+    },
+    "EDGE_COMPUTE_DESIGN": {
+      "conditions": [
+        "deployment.edge == true OR stack.hosting.provider IN ['cloudflare', 'vercel-edge', 'fastly', 'lambda-edge']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/EDGE_COMPUTE_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/EDGE_COMPUTE_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "edge",
+        "compute"
+      ]
+    },
+    "SERVERLESS_DESIGN": {
+      "conditions": [
+        "deployment.style == 'serverless' OR stack.hosting.provider IN ['lambda', 'cloudflare-workers', 'modal', 'gcp-functions']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/SERVERLESS_DESIGN.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/SERVERLESS_DESIGN.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "serverless",
+        "faas"
+      ]
+    },
+    "THREAT_MODEL_LLM": {
+      "conditions": [
+        "ai.enabled == true AND constraints.regulated == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/THREAT_MODEL_LLM.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/THREAT_MODEL_LLM.md",
+      "phase": "doc_generation",
+      "concern": "ai_agent",
+      "tags": [
+        "ai",
+        "security",
+        "threat-model"
+      ]
+    },
+    "DOCUMENTATION_STRATEGY": {
+      "conditions": [
+        "open_source == true AND community_size IN ['medium', 'large']"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/DOCUMENTATION_STRATEGY.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DOCUMENTATION_STRATEGY.md",
+      "phase": "doc_generation",
+      "concern": "docs",
+      "tags": [
+        "docs",
+        "diataxis"
+      ]
+    },
+    "BOUNDED_CONTEXTS": {
+      "conditions": [
+        "project.ddd == true"
+      ],
+      "depends_on": [],
+      "produces": [
+        "docs/BOUNDED_CONTEXTS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/BOUNDED_CONTEXTS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "ddd",
+        "bounded-context"
+      ]
+    },
+    "DOMAIN_EVENTS": {
+      "conditions": [
+        "project.ddd == true"
+      ],
+      "depends_on": [
+        "BOUNDED_CONTEXTS"
+      ],
+      "produces": [
+        "docs/DOMAIN_EVENTS.md"
+      ],
+      "produced_by": "document-author",
+      "template": "templates/DOMAIN_EVENTS.md",
+      "phase": "doc_generation",
+      "concern": "architecture",
+      "tags": [
+        "ddd",
+        "domain-events"
+      ]
+    }
+  }
+}

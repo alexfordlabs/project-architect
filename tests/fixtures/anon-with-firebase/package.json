@@ -1,0 +1,1 @@
+{ "name": "messenger", "dependencies": { "firebase": "10.0.0", "libsodium-wrappers": "0.7.0" } }

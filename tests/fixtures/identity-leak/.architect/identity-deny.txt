@@ -1,0 +1,3 @@
+# forbidden identity terms (one per line)
+Jane Q. Operator
+operator@real-name.example

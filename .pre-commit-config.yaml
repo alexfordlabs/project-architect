@@ -1,0 +1,26 @@
+# Pre-commit hooks for project-architect (Alex Ford Labs brand repo).
+# Install:  pre-commit install
+# Run:      pre-commit run --all-files
+#
+# Hooks:
+#   gitleaks (v8.30.1)  — secret-scanning + workspace-canonical identity-correlation rules
+#                         (see .gitleaks.toml for the four deny rules)
+#
+# What this catches BEFORE a commit lands:
+#   - AWS keys, GitHub tokens, GCP service-account JSONs, JWTs, PEM blocks, etc.
+#     (default gitleaks ruleset — ~100 patterns)
+#   - Pseudonym->real-identity correlation strings (real-name + legacy-email patterns)
+#   - Cross-brand correlation references (legacy LLC / legacy brand-domain patterns)
+#   The exact regex patterns live in .gitleaks.toml § [[rules]] — see that file for
+#   the four identity-correlation deny rules. (Those patterns are char-class
+#   fragmented in the config so no grep-able real-identity literal is carried.)
+#
+# False-positives are exempted via .gitleaks.toml § [allowlist] (CHANGELOG.md,
+# HANDOFF.md, docs/superpowers/, docs/tests/, tests/fixtures/, _archive/).
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        # Default behaviour: scan staged files only; redact secret values in output.

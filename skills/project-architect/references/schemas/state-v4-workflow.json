@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alexfordlabs.com/schemas/state-v4-workflow.json",
+  "title": "v8 Workflow Concern Projection",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "concern",
+    "decisions",
+    "current_phase",
+    "substep",
+    "locked",
+    "audits"
+  ],
+  "properties": {
+    "schema_version": {"const": "4.0"},
+    "concern": {"const": "workflow"},
+    "decisions": {"type": "object"},
+    "current_phase": {"type": ["string", "null"]},
+    "substep": {"type": ["object", "null"]},
+    "locked": {"type": "boolean"},
+    "audits": {"type": "array"},
+    "locked_at": {"type": "string"}
+  }
+}

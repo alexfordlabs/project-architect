@@ -1,0 +1,8 @@
+{
+  "schema_version": "2.2.0",
+  "decisions": {
+    "project": {
+      "has_subfolders": false
+    }
+  }
+}

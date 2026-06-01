@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Author: Alexander Ford <alex@alexfordlabs.com>
+# License: MIT
+# Project: project-architect (https://github.com/alexfordlabs/project-architect)
+#
+# architect-brain — v8 thin Python entrypoint.
+
+set -euo pipefail
+
+# Preflight interpreter floor: project-architect targets Python >= 3.10. Guard it
+# here so the FIRST architect-brain call (the Preflight banner) fails with a clean
+# message instead of a raw traceback / ModuleNotFoundError on a missing/old python3.
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "architect-brain: python3 not found on PATH (project-architect needs Python >= 3.10)." >&2
+  exit 127
+fi
+if ! python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' 2>/dev/null; then
+  ver="$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:3])))' 2>/dev/null || echo unknown)"
+  echo "architect-brain: Python $ver is too old — project-architect requires Python >= 3.10." >&2
+  exit 1
+fi
+
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+export PYTHONPATH="$PLUGIN_ROOT/skills/project-architect/lib:${PYTHONPATH:-}"
+
+exec python3 -m architect_brain "$@"

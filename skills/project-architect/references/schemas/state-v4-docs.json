@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alexfordlabs.com/schemas/state-v4-docs.json",
+  "title": "v8 Docs Concern Projection",
+  "type": "object",
+  "required": ["schema_version", "concern", "decisions"],
+  "properties": {
+    "schema_version": {"const": "4.0"},
+    "concern": {"const": "docs"},
+    "decisions": {"type": "object"},
+    "completed": {"type": "array"}
+  }
+}

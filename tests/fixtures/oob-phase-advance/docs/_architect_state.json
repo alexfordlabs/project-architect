@@ -1,0 +1,10 @@
+{
+  "schema_version": "3.0", "phase": "phase_4",
+  "phase_progress": {
+    "preflight": { "complete": true, "completed_at": "2026-05-01T09:05:00Z" },
+    "phase_0":   { "complete": true, "completed_at": "2026-05-01T09:10:00Z" },
+    "phase_1":   { "complete": true, "completed_at": "2026-05-01T09:20:00Z" },
+    "phase_2":   { "complete": false },
+    "phase_3":   { "complete": true, "completed_at": "2026-05-01T09:50:00Z" }
+  }
+}

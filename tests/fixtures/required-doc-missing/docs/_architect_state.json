@@ -1,0 +1,38 @@
+{
+  "schema_version": "3.0",
+  "plugin_version": "5.0.0",
+  "started_at": "2026-05-01T09:00:00Z",
+  "last_updated_at": "2026-05-01T10:00:00Z",
+  "locked": false,
+  "version": "v0.1-draft",
+  "phase": "phase_4",
+  "decisions": {
+    "project.name": "halfdoc",
+    "project.type": "cli_tool",
+    "language.primary": "rust"
+  },
+  "decisions_dir": "docs/decisions",
+  "project_layout": {},
+  "last_audit": {},
+  "phase_progress": {
+    "phase_4": {
+      "complete": false,
+      "completed_at": null,
+      "prerequisites_satisfied": true
+    }
+  },
+  "documents_pending": [],
+  "documents_generated": [
+    {
+      "name": "PROJECT_OVERVIEW",
+      "path": "docs/PROJECT_OVERVIEW.md",
+      "version": "0.1",
+      "generated_at": "2026-05-01T09:50:00Z"
+    }
+  ],
+  "adrs_filed": [],
+  "next_adr_id": "0001",
+  "research_findings": [],
+  "recommended_plugins": [],
+  "snapshots": []
+}

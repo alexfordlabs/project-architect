@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alexfordlabs.com/schemas/state-v4-architecture.json",
+  "title": "v8 Architecture Concern Projection",
+  "type": "object",
+  "required": ["schema_version", "concern", "decisions"],
+  "properties": {
+    "schema_version": {"const": "4.0"},
+    "concern": {"const": "architecture"},
+    "decisions": {"type": "object"}
+  }
+}

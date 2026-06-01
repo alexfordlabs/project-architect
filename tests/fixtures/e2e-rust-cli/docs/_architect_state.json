@@ -1,0 +1,140 @@
+{
+  "schema_version": "3.0",
+  "plugin_version": "2.2.0",
+  "started_at": "2026-05-13T10:00:00Z",
+  "last_updated_at": "2026-05-22T18:56:16Z",
+  "locked": false,
+  "version": null,
+  "locked_at": null,
+  "phase": "phase_4",
+  "memory_pointer": null,
+  "phase_progress": {
+    "preflight": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:01:00Z",
+      "complete": true
+    },
+    "phase_0": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:05:00Z",
+      "complete": true
+    },
+    "phase_1": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:20:00Z",
+      "complete": true
+    },
+    "phase_2": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:45:00Z",
+      "complete": true
+    },
+    "phase_2.5": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T11:00:00Z",
+      "complete": true
+    },
+    "phase_3": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T11:30:00Z",
+      "complete": true
+    }
+  },
+  "decisions": {
+    "project": {
+      "name": "rust-cli-fixture",
+      "elevator_pitch": "An e2e fixture for project-architect testing.",
+      "sub_type": "cli_tool",
+      "has_subfolders": false
+    },
+    "cli_experience_model": "one_shot",
+    "tech_stack": {
+      "language": "rust",
+      "language_edition": "2021",
+      "language_alternatives_considered": [
+        "go",
+        "python",
+        "rust"
+      ]
+    },
+    "architecture": {
+      "performance_targets": {
+        "cold_start_seconds_max": 2.0,
+        "baseline": {
+          "cold_start_typical_seconds": 3.0
+        }
+      }
+    }
+  },
+  "adrs_filed": [
+    {
+      "id": "0001",
+      "title": "Choose Rust as primary language",
+      "affected_docs": [
+        "TECH_STACK.md"
+      ]
+    },
+    {
+      "id": "0002",
+      "title": "Rust 2021 edition",
+      "affected_docs": [
+        "TECH_STACK.md"
+      ]
+    },
+    {
+      "id": "0003",
+      "title": "MIT license",
+      "affected_docs": [
+        "LICENSE_NOTICE.md"
+      ]
+    }
+  ],
+  "documents_generated": [
+    {
+      "name": "TECH_STACK",
+      "path": "docs/TECH_STACK.md",
+      "generated_at": "2026-05-13T11:35:00Z"
+    },
+    {
+      "name": "LICENSE_NOTICE",
+      "path": "docs/LICENSE_NOTICE.md",
+      "generated_at": "2026-05-13T11:40:00Z"
+    },
+    {
+      "name": "PROJECT_OVERVIEW",
+      "path": "docs/PROJECT_OVERVIEW.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T18:56:16Z"
+    },
+    {
+      "name": "PROJECT_REQUIREMENTS",
+      "path": "docs/PROJECT_REQUIREMENTS.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T18:56:16Z"
+    },
+    {
+      "name": "CLAUDE_MD_PLAN",
+      "path": "docs/CLAUDE_MD_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T18:56:16Z"
+    },
+    {
+      "name": "CLAUDE_TOOLING_PLAN",
+      "path": "docs/CLAUDE_TOOLING_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T18:56:16Z"
+    },
+    {
+      "name": "NEXT_STEP_PLAN",
+      "path": "docs/NEXT_STEP_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T18:56:16Z"
+    }
+  ],
+  "deferred_docs": [],
+  "decisions_dir": "docs/decisions",
+  "project_layout": {
+    "cli": "src"
+  },
+  "last_audit": null
+}

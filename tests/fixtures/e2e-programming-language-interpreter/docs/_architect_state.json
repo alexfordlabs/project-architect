@@ -1,0 +1,149 @@
+{
+  "schema_version": "3.0",
+  "plugin_version": "2.3.0",
+  "started_at": "2026-05-13T10:00:00Z",
+  "last_updated_at": "2026-05-22T19:02:54Z",
+  "locked": false,
+  "version": null,
+  "locked_at": null,
+  "phase": "phase_4",
+  "memory_pointer": null,
+  "phase_progress": {
+    "preflight": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:01:00Z",
+      "complete": true
+    },
+    "phase_0": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:05:00Z",
+      "complete": true
+    },
+    "phase_1": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:20:00Z",
+      "complete": true
+    },
+    "phase_2": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T10:45:00Z",
+      "complete": true
+    },
+    "phase_2.5": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T11:00:00Z",
+      "complete": true
+    },
+    "phase_3": {
+      "prerequisites_satisfied": true,
+      "completed_at": "2026-05-13T11:30:00Z",
+      "complete": true
+    }
+  },
+  "decisions": {
+    "project": {
+      "name": "lume",
+      "elevator_pitch": "An educational tree-walking interpreter for teaching language design.",
+      "sub_type": "educational_language",
+      "has_subfolders": true
+    },
+    "tech_stack": {
+      "language": "rust",
+      "language_edition": "2024",
+      "language_alternatives_considered": [
+        "rust",
+        "ocaml",
+        "haskell"
+      ]
+    },
+    "impl_strategy": "tree_walking_interpreter",
+    "host_runtime": "rust_host",
+    "paradigm": "multi_paradigm",
+    "type_system": "dynamic"
+  },
+  "adrs_filed": [
+    {
+      "id": "0001",
+      "title": "Choose Rust as host language",
+      "affected_docs": [
+        "TECH_STACK.md",
+        "BOOTSTRAP_PLAN.md"
+      ]
+    },
+    {
+      "id": "0002",
+      "title": "Tree-walking interpreter for v0.1",
+      "affected_docs": [
+        "BOOTSTRAP_PLAN.md"
+      ]
+    },
+    {
+      "id": "0003",
+      "title": "Dynamic type system, multi-paradigm",
+      "affected_docs": [
+        "TYPE_SYSTEM.md",
+        "SEMANTICS.md"
+      ]
+    }
+  ],
+  "documents_generated": [
+    {
+      "name": "TECH_STACK",
+      "path": "docs/TECH_STACK.md",
+      "generated_at": "2026-05-13T11:35:00Z"
+    },
+    {
+      "name": "BOOTSTRAP_PLAN",
+      "path": "docs/BOOTSTRAP_PLAN.md",
+      "generated_at": "2026-05-13T11:40:00Z"
+    },
+    {
+      "name": "TYPE_SYSTEM",
+      "path": "docs/TYPE_SYSTEM.md",
+      "generated_at": "2026-05-13T11:42:00Z"
+    },
+    {
+      "name": "SEMANTICS",
+      "path": "docs/SEMANTICS.md",
+      "generated_at": "2026-05-13T11:45:00Z"
+    },
+    {
+      "name": "PROJECT_OVERVIEW",
+      "path": "docs/PROJECT_OVERVIEW.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T19:02:54Z"
+    },
+    {
+      "name": "PROJECT_REQUIREMENTS",
+      "path": "docs/PROJECT_REQUIREMENTS.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T19:02:54Z"
+    },
+    {
+      "name": "CLAUDE_MD_PLAN",
+      "path": "docs/CLAUDE_MD_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T19:02:54Z"
+    },
+    {
+      "name": "CLAUDE_TOOLING_PLAN",
+      "path": "docs/CLAUDE_TOOLING_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T19:02:54Z"
+    },
+    {
+      "name": "NEXT_STEP_PLAN",
+      "path": "docs/NEXT_STEP_PLAN.md",
+      "version": "1.0",
+      "generated_at": "2026-05-22T19:02:54Z"
+    }
+  ],
+  "deferred_docs": [],
+  "decisions_dir": "docs/decisions",
+  "project_layout": {
+    "lexer": "lexer",
+    "parser": "parser",
+    "eval": "eval"
+  },
+  "last_audit": null
+}

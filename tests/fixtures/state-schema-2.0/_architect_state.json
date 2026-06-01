@@ -1,0 +1,19 @@
+{
+  "schema_version": "2.0",
+  "plugin_version": "4.0.1",
+  "started_at": "2026-05-01T10:00:00Z",
+  "last_updated_at": "2026-05-01T12:00:00Z",
+  "locked": false,
+  "version": null,
+  "locked_at": null,
+  "phase": "phase_3",
+  "decisions": { "project.name": "demo", "language.primary": "rust" },
+  "phase_progress": { "preflight": { "complete": true, "completed_at": "2026-05-01T10:05:00Z" } },
+  "documents_pending": [],
+  "documents_generated": [],
+  "adrs_filed": [],
+  "filed_adr_id_planned": ["0001", "0002"],
+  "next_adr_id": "0001",
+  "research_findings": [],
+  "recommended_plugins": []
+}

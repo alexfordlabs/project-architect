@@ -1,0 +1,6 @@
+{
+  "schema_version": "3.0", "phase": "complete",
+  "locked": true, "locked_at": "2026-05-01T12:00:00Z",
+  "last_audit": { "blocker": 0, "warning": 0, "info": 0, "ran_at": "2026-05-01T12:20:00Z" },
+  "documents_generated": []
+}

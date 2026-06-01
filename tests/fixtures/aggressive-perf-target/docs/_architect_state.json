@@ -1,0 +1,17 @@
+{
+  "schema_version": "2.0",
+  "plugin_version": "2.2.0",
+  "phase": "phase_4",
+  "decisions": {
+    "architecture": {
+      "performance_targets": {
+        "cold_start_seconds_max": 0.5,
+        "warm_start_seconds_max": 0.5,
+        "baseline": {
+          "cold_start_typical_seconds": 3.0,
+          "warm_start_typical_seconds": 0.4
+        }
+      }
+    }
+  }
+}

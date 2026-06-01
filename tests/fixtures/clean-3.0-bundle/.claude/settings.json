@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "deny": ["Bash(curl* | sh)", "Read(./.env)", "Bash(rm:*)"],
+    "allow": ["Read(./src/**)"]
+  }
+}

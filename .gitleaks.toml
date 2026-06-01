@@ -1,0 +1,105 @@
+# gitleaks config for the project-architect repo.
+# Extends the built-in default ruleset (~100 secret-detection rules) with
+# workspace-specific identity-correlation rules.
+#
+# To run manually:
+#   gitleaks dir --no-banner --config .gitleaks.toml .
+#   gitleaks protect --staged --no-banner --config .gitleaks.toml .
+
+title = "project-architect (Alex Ford Labs brand) gitleaks config"
+
+[extend]
+useDefault = true
+
+# === Global allowlist ===
+# Paths exempt from ALL rules (default + custom).
+# Used for files that ARE secret-like in shape but intentionally so (test fixtures, archives).
+[allowlist]
+description = "Globally exempt paths — local notes + frozen archives only"
+paths = [
+    # Local-only files
+    '''(^|/)PRIVATE\.md$''',
+    '''\.PRIVATE\.md$''',
+    '''\.bak\..*''',
+    # Local notes (gitignored anyway, but gitleaks dir scans filesystem)
+    '''(^|/)\.remember/''',
+    # Frozen historical content per CLAUDE.md "don't tweak history in passing"
+    '''(^|/)docs/superpowers/plans/''',
+    '''(^|/)docs/superpowers/specs/''',
+    '''(^|/)docs/superpowers/test-plans/''',
+    '''(^|/)docs/tests/''',
+    '''(^|/)tests/fixtures/''',
+    '''(^|/)_archive/''',
+    '''/_archive/''',
+    # Gitignored full-history dev files (curated public CHANGELOG.md is the tracked one)
+    '''(^|/)CHANGELOG\.dev\.md$''',
+]
+
+# === Identity-correlation rules (workspace-specific) ===
+# This repo is published under the alexfordlabs/* GitHub org and must NOT contain
+# strings that link the brand to the operator's real identity. PRIVATE.md (gitignored)
+# is the proper place for that context; tracked files should never have these.
+#
+# Each identity-correlation rule has its own per-rule allowlist for files that
+# LEGITIMATELY contain the strings (CHANGELOG history, HANDOFF migration record,
+# this .gitleaks.toml self-reference, the rule-documentation in pre-commit and
+# the version-bump test, plus the unreachable workspace-metadata CLAUDE.md).
+# The DEFAULT ruleset (AWS keys, JWTs, etc.) continues to scan all files.
+
+[[rules]]
+id = "identity-correlation-real-name"
+description = "Pseudonym->real-identity leak: the operator's real-identity name/variants in a tracked file (pattern char-class-fragmented so this config carries no grep-able literal)"
+regex = '''(?i)[v]ladimir[-_\s]?[d]ukelic'''
+tags = ["identity-correlation", "alexfordlabs"]
+[[rules.allowlists]]
+paths = [
+    '''(^|/)CHANGELOG\.md$''',
+    '''(^|/)HANDOFF\.md$''',
+    '''(^|/)CLAUDE\.md$''',
+    '''(^|/)\.gitleaks\.toml$''',
+    '''(^|/)\.pre-commit-config\.yaml$''',
+]
+
+[[rules]]
+id = "identity-correlation-real-emails"
+description = "Real-identity-attributable email addresses on legacy personal/brand domains (char-class-fragmented here)"
+regex = '''(?i)[v]ladimir@([d]ukelic|[p]seudo-lang|[s]iliconyouth)\.[a-z]{2,8}'''
+tags = ["identity-correlation", "alexfordlabs"]
+[[rules.allowlists]]
+paths = [
+    '''(^|/)CHANGELOG\.md$''',
+    '''(^|/)HANDOFF\.md$''',
+    '''(^|/)CLAUDE\.md$''',
+    '''(^|/)\.gitleaks\.toml$''',
+]
+
+[[rules]]
+id = "identity-correlation-legacy-org"
+description = "Legacy LLC / org references that must not appear in the alexfordlabs brand repo (char-class-fragmented here)"
+regex = '''(?i)[s]ilicon[-_\s]?youth'''
+tags = ["identity-correlation", "alexfordlabs"]
+[[rules.allowlists]]
+paths = [
+    '''(^|/)CHANGELOG\.md$''',
+    '''(^|/)HANDOFF\.md$''',
+    '''(^|/)CLAUDE\.md$''',
+    '''(^|/)README\.md$''',
+    '''(^|/)\.gitleaks\.toml$''',
+    '''(^|/)\.pre-commit-config\.yaml$''',
+    '''(^|/)\.gitignore$''',
+]
+
+[[rules]]
+id = "identity-correlation-legacy-brand"
+description = "Legacy pre-existing brand domain appearing in the alexfordlabs repo (char-class-fragmented here)"
+regex = '''(?i)[p]seudo[-_]?lang\.(com|io|dev|app)'''
+tags = ["identity-correlation", "alexfordlabs"]
+[[rules.allowlists]]
+paths = [
+    '''(^|/)CHANGELOG\.md$''',
+    '''(^|/)HANDOFF\.md$''',
+    '''(^|/)CLAUDE\.md$''',
+    '''(^|/)README\.md$''',
+    '''(^|/)\.gitleaks\.toml$''',
+    '''(^|/)\.pre-commit-config\.yaml$''',
+]

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
+  <g transform="translate(80.000,767.600) scale(0.720000,-0.720000)">
+    <path d="M16 0 204 710H396L584 0H423L390 134H210L177 0ZM300 507 243 272H357Z" fill="#0A0A0A"/>
+  </g>
+  <g transform="translate(512.000,767.600) scale(0.720000,-0.720000)">
+    <path d="M92 0V710H548V567H253V418H530V278H253V0Z" fill="#0A0A0A"/>
+  </g>
+</svg>

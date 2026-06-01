@@ -1,0 +1,5 @@
+{
+  "schema_version": "3.0",
+  "phase": "complete",
+  "project_layout": { "core": "crates/demo-core", "web": "apps/marketing" }
+}

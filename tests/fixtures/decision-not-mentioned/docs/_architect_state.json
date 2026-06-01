@@ -1,0 +1,12 @@
+{
+  "phase": "phase_4",
+  "decisions": {
+    "tech_stack": {
+      "language": "rust",
+      "adr": "0001"
+    },
+    "project": {
+      "name": "WidgetMaker"
+    }
+  }
+}

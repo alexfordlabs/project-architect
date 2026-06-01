@@ -1,0 +1,8 @@
+{
+  "schema_version": "3.0",
+  "phase": "phase_3",
+  "decisions_dir": "docs/decisions",
+  "adrs_filed": [
+    { "id": "0001", "title": "Use Postgres", "date": "2026-05-01", "status": "accepted", "supersedes": null, "filed_at": "2026-05-01T09:30:00Z", "phase": "phase_2" }
+  ]
+}

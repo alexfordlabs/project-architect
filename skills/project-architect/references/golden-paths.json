@@ -1,0 +1,178 @@
+{
+  "schema_version": "4.0",
+  "paths": [
+    {
+      "id": "modern_saas_2026",
+      "label": "Modern SaaS (2026)",
+      "description": "A multi-tenant SaaS web app on the 2026 default stack: Next.js 15 + Tailwind on Vercel, a TypeScript backend over PostgreSQL with Drizzle, Stripe billing, and NextAuth sessions.",
+      "decisions": {
+        "project.type": "web_app",
+        "stack.frontend.framework": "next.js",
+        "stack.frontend.version": "15",
+        "stack.frontend.styling": "tailwind",
+        "stack.backend.language": "typescript",
+        "stack.backend.runtime": "node",
+        "stack.database.engine": "postgresql",
+        "stack.database.orm": "drizzle",
+        "stack.hosting.provider": "vercel",
+        "stack.payments.provider": "stripe",
+        "stack.auth.provider": "next-auth"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "ai_rag_app",
+      "label": "AI / RAG application",
+      "description": "A retrieval-augmented-generation app: FastAPI backend, a pgvector-backed PostgreSQL store, LangGraph orchestration over the Anthropic API, and a Next.js chat front end on Vercel.",
+      "decisions": {
+        "project.type": "web_app",
+        "ai.enabled": true,
+        "ai.provider": "anthropic",
+        "ai.model": "claude-opus-4-7",
+        "ai.orchestration": "langgraph",
+        "ai.rag.vector_store": "pgvector",
+        "ai.rag.embeddings": "voyage-3",
+        "stack.frontend.framework": "next.js",
+        "stack.backend.language": "python",
+        "stack.backend.framework": "fastapi",
+        "stack.database.engine": "postgresql",
+        "stack.hosting.provider": "vercel"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "mobile_cross_platform",
+      "label": "Cross-platform mobile",
+      "description": "A cross-platform iOS + Android app on Expo-managed React Native with TypeScript, Expo Router navigation, a Supabase (PostgreSQL) backend, and EAS for builds and OTA updates.",
+      "decisions": {
+        "project.type": "mobile_app",
+        "stack.mobile.framework": "react-native",
+        "stack.mobile.toolchain": "expo",
+        "stack.mobile.language": "typescript",
+        "stack.mobile.navigation": "expo-router",
+        "stack.mobile.targets": "ios+android",
+        "stack.backend.provider": "supabase",
+        "stack.database.engine": "postgresql",
+        "stack.auth.provider": "supabase-auth",
+        "stack.build.provider": "eas",
+        "stack.updates.strategy": "eas-update"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "high_perf_api",
+      "label": "High-performance API",
+      "description": "A low-latency HTTP/gRPC service in Go with the chi router, a PostgreSQL store accessed via sqlc, Redis caching, containerised onto Kubernetes, and OpenTelemetry observability.",
+      "decisions": {
+        "project.type": "api_service",
+        "stack.backend.language": "go",
+        "stack.backend.framework": "chi",
+        "stack.api.protocol": "http+grpc",
+        "stack.database.engine": "postgresql",
+        "stack.database.access": "sqlc",
+        "stack.cache.engine": "redis",
+        "stack.containerization": "docker",
+        "stack.orchestration": "kubernetes",
+        "stack.hosting.provider": "aws",
+        "stack.observability": "opentelemetry"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "pl_interpreter",
+      "label": "Programming language: interpreter",
+      "description": "A tree-walking interpreter for a new programming language, implemented in Rust with a hand-written lexer and recursive-descent parser, insta snapshot tests, criterion benchmarks, and an mdBook reference.",
+      "decisions": {
+        "project.type": "programming_language",
+        "pl.kind": "interpreter",
+        "pl.execution": "tree-walking",
+        "stack.backend.language": "rust",
+        "pl.lexer": "hand-written",
+        "pl.parser": "recursive-descent",
+        "pl.testing": "insta-snapshots",
+        "pl.benchmarks": "criterion",
+        "pl.docs": "mdbook",
+        "stack.build.tool": "cargo",
+        "stack.ci.provider": "github-actions"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "cli_rust",
+      "label": "CLI in Rust",
+      "description": "A cross-platform command-line tool in Rust using clap for argument parsing, anyhow/thiserror for errors, insta + assert_cmd for tests, distributed via cargo-dist and a Homebrew tap.",
+      "decisions": {
+        "project.type": "cli",
+        "stack.backend.language": "rust",
+        "cli.arg_parser": "clap",
+        "cli.error_handling": "anyhow+thiserror",
+        "cli.config_format": "toml",
+        "cli.testing": "insta+assert_cmd",
+        "stack.build.tool": "cargo",
+        "cli.distribution": "cargo-dist",
+        "cli.package_manager": "homebrew",
+        "stack.ci.provider": "github-actions",
+        "cli.targets": "linux+macos+windows"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "cc_plugin",
+      "label": "Claude Code plugin / skill",
+      "description": "A Claude Code plugin shipping a skill plus subagents, structured around a plugin.json + marketplace.json manifest, a bash + python test harness, gitleaks pre-commit, and MIT licensing.",
+      "decisions": {
+        "project.type": "claude_code_plugin",
+        "plugin.surface": "skill+agents",
+        "plugin.manifest": "plugin.json+marketplace.json",
+        "plugin.distribution": "marketplace",
+        "plugin.testing": "bash+python-harness",
+        "plugin.lint": "shellcheck",
+        "plugin.precommit": "gitleaks",
+        "plugin.docs": "skill-references",
+        "stack.ci.provider": "github-actions",
+        "stack.license": "mit",
+        "ai.enabled": true
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "mcp_server",
+      "label": "MCP server",
+      "description": "A Model Context Protocol server in TypeScript built on the official MCP SDK, exposing tools over stdio + streamable-HTTP transports, validated with zod, tested with vitest, and published to npm.",
+      "decisions": {
+        "project.type": "mcp_server",
+        "ai.enabled": true,
+        "mcp.sdk": "@modelcontextprotocol/sdk",
+        "mcp.transport": "stdio+http",
+        "mcp.capabilities": "tools+resources",
+        "stack.backend.language": "typescript",
+        "stack.backend.runtime": "node",
+        "mcp.validation": "zod",
+        "mcp.testing": "vitest",
+        "mcp.distribution": "npm",
+        "stack.ci.provider": "github-actions"
+      },
+      "valid_through": "2026-12-31"
+    },
+    {
+      "id": "agentic_system",
+      "label": "Agentic system",
+      "description": "A supervised, background-running autonomous agent built on the Claude Agent SDK, with persistent memory, sandboxed tool execution, and human-in-the-loop approval gates for high-impact actions.",
+      "decisions": {
+        "project.type": "agentic_system",
+        "ai.enabled": true,
+        "ai.agent": true,
+        "ai.provider": "anthropic",
+        "ai.framework": "claude-agent-sdk",
+        "agent.autonomy": "supervised",
+        "agent.execution": "background",
+        "agent.memory": "persistent",
+        "agent.tools.sandbox": true,
+        "agent.hitl": true,
+        "stack.backend.language": "typescript",
+        "stack.backend.runtime": "node"
+      },
+      "valid_through": "2026-12-31"
+    }
+  ]
+}

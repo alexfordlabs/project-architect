@@ -1,0 +1,17 @@
+{
+  "schema_version": "2.0",
+  "plugin_version": "2.1.0",
+  "started_at": "2025-11-01T10:00:00Z",
+  "last_updated_at": "2025-11-01T12:00:00Z",
+  "locked": true,
+  "version": "v1.0",
+  "locked_at": "2025-11-01T12:00:00Z",
+  "phase": "complete",
+  "decisions": { "project.name": "legacy-svc", "language.primary": "python", "database.engine": "PostgreSQL" },
+  "documents_generated": [],
+  "adrs_filed": [
+    { "id": "0001", "title": "Use Postgres", "date": "2025-11-01", "status": "accepted", "supersedes": null }
+  ],
+  "next_adr_id": "0002",
+  "snapshots": ["v1.0"]
+}

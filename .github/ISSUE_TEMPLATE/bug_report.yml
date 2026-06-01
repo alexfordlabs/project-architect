@@ -1,0 +1,43 @@
+name: Bug report
+description: Something isn't working as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      description: |
+        Step-by-step or a paste of the interaction with the architect.
+        Include the project type / sub-type you picked at kickoff.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: e.g. 2.1.0 (run `cat ~/.claude/plugins/cache/alexfordlabs/project-architect/*/.claude-plugin/plugin.json | grep version`)
+    validations:
+      required: true
+  - type: input
+    id: claude-code-version
+    attributes:
+      label: Claude Code version
+      description: Output of `claude --version`
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, shell, Claude Code model in use, anything else relevant.

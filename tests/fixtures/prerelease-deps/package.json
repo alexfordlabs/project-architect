@@ -1,0 +1,1 @@
+{ "name": "demo", "dependencies": { "next": "15.0.0-rc.1", "react": "19.0.0" } }

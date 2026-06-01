@@ -1,0 +1,101 @@
+{
+  "schema_version": "3.0",
+  "plugin_version": "7.2.0",
+  "decisions_schema_version": "1.0",
+  "started_at": "2026-04-10T09:00:00Z",
+  "last_updated_at": "2026-04-12T17:30:00Z",
+  "locked": true,
+  "version": "v1.0",
+  "locked_at": "2026-04-12T17:25:00Z",
+  "phase": "complete",
+  "current_doc_version": "1.0",
+  "snapshots": ["v1.0"],
+  "git": {
+    "repo_init": true,
+    "has_remote": true,
+    "remote_url": "git@github.com:example/rustcli.git",
+    "branch": "main",
+    "push_strategy": "per_phase"
+  },
+  "model_state": {
+    "verified_at_startup": true,
+    "model_id": "claude-opus-4-7[1m]",
+    "effort": "max",
+    "warnings": []
+  },
+  "decisions": {
+    "project": {
+      "name": "rustcli",
+      "type": "cli_tool"
+    },
+    "tech_stack": {
+      "language": "rust",
+      "language_alternatives_considered": ["go", "zig"],
+      "cli_framework": "clap"
+    },
+    "architecture": {
+      "pattern": "command_dispatch",
+      "performance_targets": {
+        "cold_start_seconds_max": 0.05,
+        "binary_size_mb_max": 8
+      }
+    }
+  },
+  "phase_progress": {
+    "preflight": { "complete": true, "completed_at": "2026-04-10T09:05:00Z" },
+    "phase_0a": { "complete": true, "completed_at": "2026-04-10T09:10:00Z" },
+    "phase_0": { "complete": true, "completed_at": "2026-04-10T09:30:00Z" },
+    "phase_1": { "complete": true, "completed_at": "2026-04-10T10:00:00Z" },
+    "phase_2": { "complete": true, "completed_at": "2026-04-10T11:00:00Z" },
+    "phase_2.5": { "complete": true, "completed_at": "2026-04-10T11:30:00Z" },
+    "phase_3": { "complete": true, "completed_at": "2026-04-11T09:00:00Z" },
+    "phase_4": { "complete": true, "completed_at": "2026-04-11T14:00:00Z" },
+    "phase_5": { "complete": true, "completed_at": "2026-04-12T10:00:00Z" },
+    "phase_6": { "complete": true, "completed_at": "2026-04-12T17:25:00Z" }
+  },
+  "documents_pending": [],
+  "documents_generated": [
+    {
+      "name": "PROJECT_OVERVIEW",
+      "path": "docs/PROJECT_OVERVIEW.md",
+      "version": "1.0",
+      "generated_at": "2026-04-11T13:00:00Z"
+    },
+    {
+      "name": "ARCHITECTURE",
+      "path": "docs/ARCHITECTURE.md",
+      "version": "1.0",
+      "generated_at": "2026-04-11T13:30:00Z"
+    }
+  ],
+  "adrs_filed": [
+    {
+      "id": "0001",
+      "title": "Use Rust for the CLI",
+      "date": "2026-04-10",
+      "status": "accepted",
+      "supersedes": null,
+      "filed_at": "2026-04-10T11:00:00Z",
+      "phase": "phase_2"
+    },
+    {
+      "id": "0002",
+      "title": "Command-dispatch architecture",
+      "date": "2026-04-11",
+      "status": "accepted",
+      "supersedes": null,
+      "filed_at": "2026-04-11T09:00:00Z",
+      "phase": "phase_3"
+    }
+  ],
+  "reserved_adrs": ["0003"],
+  "next_adr_id": "0004",
+  "decisions_dir": "docs/decisions",
+  "project_layout": { "core": "src" },
+  "last_audit": {
+    "blocker": 0,
+    "warning": 2,
+    "info": 1,
+    "ran_at": "2026-04-12T17:00:00Z"
+  }
+}

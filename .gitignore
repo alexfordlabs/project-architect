@@ -1,0 +1,48 @@
+# Author: Alex Ford <alex@alexfordlabs.com>
+# Repository: https://github.com/alexfordlabs/project-architect
+# License: MIT
+
+# Inner repo: workspace-side metadata files are gitignored (workspace tracks them,
+# not the published repo). These predate-or-postdate this gitignore rule per file:
+# git rm --cached <file> to untrack ones already in HEAD.
+CLAUDE.md
+PRIVATE.md
+project.yaml
+product.yaml
+software-source-code.yaml
+creative-work.yaml
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+
+# Editor
+.idea/
+.vscode/settings.json
+
+# Ambient — foreign-plugin courtesy
+.remember/
+
+# Local environment
+.env
+.env.local
+
+# Local Claude Code session config (not part of release artifacts)
+.claude/
+
+# Python bytecode (auditor checks are Python)
+__pycache__/
+*.pyc
+
+# hypothesis example database (optional dep used by test_replay_invariant.py)
+.hypothesis/
+
+# Internal dev scaffolding — workspace/dev only, NOT part of the published plugin.
+# (implementation plans, design specs, test-plans, the historical migration runbook,
+#  and the full unabridged development changelog — the published CHANGELOG.md is curated)
+docs/superpowers/
+HANDOFF.md
+CHANGELOG.dev.md
+docs/tests/
+.github/assets/_archive/

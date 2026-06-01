@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alexfordlabs.com/schemas/catalog-v4.json",
+  "title": "v8 Document Catalog",
+  "type": "object",
+  "required": ["schema_version", "catalog_version", "documents"],
+  "properties": {
+    "schema_version": {"const": "4.0"},
+    "catalog_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "documents": {"type": "object"}
+  }
+}

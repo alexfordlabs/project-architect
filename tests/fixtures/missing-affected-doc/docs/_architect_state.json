@@ -1,0 +1,10 @@
+{
+  "phase": "phase_5",
+  "adrs_filed": [
+    { "id": "0001", "title": "Test ADR", "affected_docs": ["PROJECT_OVERVIEW.md", "MISSING.md"] }
+  ],
+  "documents_generated": [
+    { "name": "PROJECT_OVERVIEW", "path": "docs/PROJECT_OVERVIEW.md" }
+  ],
+  "deferred_docs": []
+}

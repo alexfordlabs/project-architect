@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alexfordlabs.com/schemas/golden-paths-v4.json",
+  "title": "v8 Golden Paths",
+  "type": "object",
+  "required": ["schema_version", "paths"],
+  "properties": {
+    "schema_version": {"const": "4.0"},
+    "paths": {"type": "array"}
+  }
+}
