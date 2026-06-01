@@ -27,7 +27,7 @@ State is **event-sourced and multi-file** — the decisions you substitute live 
 **Phase 6 (author the plan):**
 
 - **flat_index_path** (`docs/_architect_state/99-flat-index.json` — your source of decision values)
-- **integration_path** (`skills/project-architect/references/claude-code-integration.md` — the stack→skill recipe library)
+- **integration_path** (ABSOLUTE path to `claude-code-integration.md` — the stack→skill recipe library; read it as given)
 - **project_layout** (the canonical directory/package map, read from the flat decisions' `project_layout` — fall back to `tooling.project_layout`)
 - **stack_summary** (a parsed summary of the `stack.*` decisions — language, frameworks, hosting, deployment, test framework)
 
@@ -35,7 +35,7 @@ State is **event-sourced and multi-file** — the decisions you substitute live 
 
 - **plan_path** (`docs/CLAUDE_TOOLING_PLAN.md` — the plan you authored in Phase 6)
 - **flat_index_path** (`docs/_architect_state/99-flat-index.json`)
-- **template_root_path** (`skills/project-architect/references/templates/` — the canonical `SLASH_*.md` templates that produce the 3 router slash commands)
+- **template_root_path** (ABSOLUTE path to the templates dir — the canonical `SLASH_*.md` templates for the 3 router slash commands; read files under it as given)
 - **project_root** (path to the user's project root, where `.claude/` will be written)
 
 ## Effort directive
@@ -60,10 +60,10 @@ The orchestrator passes the `docs/CLAUDE_TOOLING_PLAN.md` you authored in Phase 
 3. **Write `.claude/settings.json`** per the plan's permissions section. The plan's "Permissions" section contains the final allow/deny lists derived from ADR-driven security policy — write them verbatim into `.claude/settings.json` along with the hooks wiring (`PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`) the plan specifies.
 4. **Write each hook script to `.claude/hooks/<name>.sh`** per the plan's hooks section. Each hook entry in the plan specifies the script name, the matcher (if any), and the bash content. Write each script and `chmod +x` it after writing.
 5. **Write each project-specific slash command to `.claude/commands/<name>.md`** per the plan's commands section. These are stack-tailored commands (e.g. `/feature`, `/run-tests`, `/deploy-preview`) — distinct from the 3 router slash commands in the next step.
-6. **Generate the 3 router slash commands from the canonical `SLASH_*` templates** (in `references/templates/`):
-   - Read `references/templates/SLASH_SCAFFOLD.md` → write resolved content to `.claude/commands/scaffold.md`
-   - Read `references/templates/SLASH_IMPLEMENT.md` → write resolved content to `.claude/commands/implement.md`
-   - Read `references/templates/SLASH_ITERATE_DESIGN.md` → write resolved content to `.claude/commands/iterate-design.md`
+6. **Generate the 3 router slash commands from the canonical `SLASH_*` templates** (under the absolute `template_root_path` you were given):
+   - Read `${template_root_path}/SLASH_SCAFFOLD.md` → write resolved content to `.claude/commands/scaffold.md`
+   - Read `${template_root_path}/SLASH_IMPLEMENT.md` → write resolved content to `.claude/commands/implement.md`
+   - Read `${template_root_path}/SLASH_ITERATE_DESIGN.md` → write resolved content to `.claude/commands/iterate-design.md`
 
    Each `SLASH_*` template has a "Target file content" fenced block — lift the inner content (everything between the ```` ```markdown ```` fences), substitute any `{{...}}` placeholders from the flat decisions, and write to the `target_path` declared in the template's YAML frontmatter.
 7. **Write each custom project agent to `.claude/agents/<name>.md`** per the plan's agents section (if any). Each agent entry specifies name, description, tools, model, and the agent prompt body.

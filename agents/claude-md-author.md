@@ -27,8 +27,8 @@ State is **event-sourced and multi-file** — there is no monolith `_architect_s
 **Phase 6 (author the plan):**
 
 - **flat_index_path** (`docs/_architect_state/99-flat-index.json` — the flat `{decisions:{dotted-key:value}, adrs:[…]}` projection; your source of decision values)
-- **template_root_path** (`skills/project-architect/references/templates/CLAUDE_MD_ROOT.md`)
-- **template_subfolder_path** (`skills/project-architect/references/templates/CLAUDE_MD_SUBFOLDER.md`)
+- **template_root_path** (ABSOLUTE path to `CLAUDE_MD_ROOT.md` — the orchestrator has expanded `${CLAUDE_PLUGIN_ROOT}`; read it as given)
+- **template_subfolder_path** (ABSOLUTE path to `CLAUDE_MD_SUBFOLDER.md` — read it as given)
 - **doc_paths** (the generated doc filenames recorded as `DocGenerated` events — read `docs/_architect_state/docs.json` or the `architect-brain catalog list` selection — for cross-referencing)
 - **project_layout** (the canonical directory/package map, read from the flat decisions' `project_layout`)
 

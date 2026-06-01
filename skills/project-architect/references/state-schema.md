@@ -150,7 +150,7 @@ To re-bootstrap from scratch: do **not** delete the state directory mid-run. A g
 These are **independent**:
 
 - `schema_version` (the probe file's `"4.0"`) describes the **layout of the state directory** — the event taxonomy, the projection shapes, the file set. It bumps only when the state model changes (it went 3.0/3.1 → 4.0 at the v8 monolith→event-sourced cutover).
-- The **plugin version** (`8.0.0`, from `.claude-plugin/plugin.json`) describes which release of `project-architect` is running. Plugin provenance is carried in each event's `by`/`payload` (e.g. the migrator's `Upgraded.from_plugin`) and in ADR/doc frontmatter (`plugin_version`) — **never** in `schema_version`.
+- The **plugin version** (read from `.claude-plugin/plugin.json` — the single source of truth that `architect_brain.__version__` resolves) describes which release of `project-architect` is running. Plugin provenance is carried in each event's `by`/`payload` (e.g. the migrator's `Upgraded.from_plugin`) and in ADR/doc frontmatter (`plugin_version`) — **never** in `schema_version`.
 
 CRITICAL: the `schema_version` file is the literal string `"4.0"` (`init` writes it) — never the plugin version. A future v8.x or v9 plugin can keep writing `schema_version "4.0"` if the state model is unchanged.
 

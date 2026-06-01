@@ -23,8 +23,11 @@ fail() { echo "FAIL: $1"; exit 1; }
 [ ! -e "$PLUGIN_ROOT/agents/quality-gate-auditor.md" ] || fail "v7 quality-gate-auditor.md still present (audit is now the architect-brain CLI)"
 [ ! -d "$PLUGIN_ROOT/agents/quality-gate-auditor" ]    || fail "v7 agents/quality-gate-auditor/ bash tree still present"
 
-# no surviving prose surface INVOKES a deleted v7 binary (negations are fine)
-if grep -rnE '\$\{CLAUDE_PLUGIN_ROOT\}/bin/architect-(ledger|ui)' "$PLUGIN_ROOT/skills" "$PLUGIN_ROOT/agents" 2>/dev/null; then
+# no surviving prose surface INVOKES a deleted v7 binary (negations are fine).
+# Scans skills/ + agents/ + commands/ — the command entry files are a prose
+# surface too, and historically lagged the v8 binary rename (the /upgrade-project
+# and /re-architect commands shipped invoking the deleted architect-ledger).
+if grep -rnE '\$\{CLAUDE_PLUGIN_ROOT\}/bin/architect-(ledger|ui)' "$PLUGIN_ROOT/skills" "$PLUGIN_ROOT/agents" "$PLUGIN_ROOT/commands" 2>/dev/null; then
   fail "a prose surface still invokes a deleted v7 binary (architect-ledger/architect-ui)"
 fi
 

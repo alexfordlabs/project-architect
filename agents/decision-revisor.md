@@ -25,7 +25,7 @@ Handle one decision change. Find every doc affected, rewrite the affected sectio
 - **new_value** (e.g., `SQLite on Turso`)
 - **reason** (user-supplied — goes into the ADR)
 - **docs_dir** (the project's `docs` directory; the event-sourced state lives under `docs/_architect_state/`)
-- **playbook_path** (`skills/project-architect/references/revision-playbook.md`)
+- **playbook_path** (ABSOLUTE path to `revision-playbook.md` — the orchestrator has expanded `${CLAUDE_PLUGIN_ROOT}`; read it as given)
 - **next_adr_id** (the orchestrator passes the next sequential ADR ID, e.g., `0007`)
 
 ## Effort directive
@@ -42,7 +42,7 @@ Run with maximum effort. Apply extended thinking. Make surgical edits — never 
    c. Append a revision log entry to the `## Revision Log` section. Newest entries go at the top. If the log was `(none yet)`, replace that with the first real entry.
    d. Run `git diff <doc>` mentally — confirm only the intended sections changed.
 4. **File the new ADR** at `docs/_architect_state/decisions/<next_adr_id>-<kebab-slug>.md`:
-   - Use the `references/templates/ADR_TEMPLATE.md` structure (MADR 4 + structured-MADR frontmatter).
+   - Follow the canonical MADR-4 + structured-MADR frontmatter structure (the frontmatter fields are enumerated just below; the brain's `record-adr` + `emit_frontmatter` produce the canonical frontmatter ordering — you do not need to read a template file).
    - Fill frontmatter completely (`type: adr`, `schema_version: "4.0"`, `id`, `title`, `status: accepted`, `date`, `decision_makers`, `plugin_version`, `supersedes`, `superseded_by: null`, `affected_docs`, `decision_keys`, `research_refs`) — see `references/schemas/adr-v4-frontmatter.json`. The `schema_version` + `plugin_version` stamps make the ADR forward-migratable (see `references/artifact-migration.md`).
    - If there's a prior ADR for the same decision_key, set `supersedes` to its ID AND update the prior ADR's `superseded_by` field.
    - Write the body: Context, Prior decision (with link), Decision, Alternatives reconsidered, Consequences, Rollback plan, References.

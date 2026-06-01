@@ -12,7 +12,7 @@ Thank you for considering a contribution! This project is open source under the 
 
 1. **Open an issue first** for substantial changes. Quick bugfixes or doc tweaks can go straight to a PR.
 2. **Fork**, branch from `main`, make your change.
-3. **Bump version** per the [versioning policy](README.md#versioning-policy).
+3. **Bump the version** in `.claude-plugin/plugin.json` (semver: patch for fixes, minor for additive features, major for breaking changes).
 4. **Update CHANGELOG.md** with a new `[X.Y.Z]` entry.
 5. **Add author attribution** to any new file (HTML comment block — see existing files for the pattern).
 6. **Run `claude plugin validate`** before opening the PR.
@@ -20,14 +20,16 @@ Thank you for considering a contribution! This project is open source under the 
 
 ## Code style
 
-- Markdown only. No code in this repo.
+- The orchestration surface is **Markdown** (the skill, agents, templates, references); the deterministic engine is a **Python package** (`skills/project-architect/lib/architect_brain/`) with a **bash test harness** (`tests/`).
+- **TDD is required.** Every change to a check, template, agent, or `SKILL.md` ships with a test. Run `bash tests/run_all.sh` (the bash harness + the `architect_brain` Python suite) — it must end with `All tests passed.` and `Test files failed: 0`.
+- `shellcheck` clean on `bin/architect-brain` + `tests/*.sh`; `python3 -m py_compile` clean on the brain package.
 - YAML frontmatter on all skill / agent / template files.
-- Every file ends with a Revision Log section (templates only) and a "Skillfully made with…" footer (templates only).
-- Author attribution at the top of every text file.
+- Templates end with a Revision Log section and a "Skillfully made with…" footer.
+- Author attribution at the top of every source file.
 
 ## Local development
 
-This repo is its own marketplace. To install your in-progress changes locally:
+The plugin is distributed from the shared **`alexfordlabs`** marketplace (the [`alexfordlabs/skills`](https://github.com/alexfordlabs/skills) repo). To install your in-progress changes locally:
 
 ```bash
 claude plugin marketplace update alexfordlabs
@@ -36,7 +38,11 @@ claude plugin install project-architect@alexfordlabs
 /reload-plugins
 ```
 
-To run the manual test plan, see [`docs/superpowers/test-plans/2026-05-12-v2.0-manual-test-plan.md`](docs/superpowers/test-plans/2026-05-12-v2.0-manual-test-plan.md).
+Run the test suite before opening a PR:
+
+```bash
+bash tests/run_all.sh
+```
 
 ## Reporting bugs
 

@@ -52,6 +52,8 @@ It is **design-first and snapshot-safe**: nothing is destroyed, every milestone 
 
 `project-architect` ships from the shared **`alexfordlabs`** Claude Code marketplace — the same one-marketplace, two-plugin setup it shares with its companion [`reverse-engineer`](https://github.com/alexfordlabs/reverse-engineer).
 
+> **Requirements:** **Python 3.10+** available as `python3` — the local `architect-brain` engine runs on every invocation, and Preflight hard-stops with a clear message on a missing/older interpreter — plus `git` for repo init. Check with `python3 --version`. (On macOS, confirm `python3` resolves to 3.10+, not an older system Python.)
+
 ```bash
 # 1. Add the marketplace to your Claude Code installation
 claude plugin marketplace add alexfordlabs/skills
@@ -59,11 +61,15 @@ claude plugin marketplace add alexfordlabs/skills
 # 2. Install the plugin
 claude plugin install project-architect@alexfordlabs
 
-# 3. (Optional) Verify the install
+# 3. Install the one REQUIRED companion. It's declared as a dependency, so Claude
+#    Code usually installs it automatically; if it doesn't, run this explicitly:
+claude plugin install commit-commands@claude-plugins-official
+
+# 4. (Optional) Verify the install
 claude plugin validate
 ```
 
-The plugin **requires** `commit-commands` (from the official Claude plugins marketplace) for its per-batch commit cadence — the bootstrap skill won't start without it, so install it alongside (Claude Code surfaces declared dependencies on install). See [Recommended companion plugins](#recommended-companion-plugins) for the optional rest.
+The plugin **requires** `commit-commands` (from the official Claude plugins marketplace) for its per-batch commit cadence — the bootstrap skill won't start without it. See [Recommended companion plugins](#recommended-companion-plugins) for the optional rest.
 
 ## Commands & workflows
 

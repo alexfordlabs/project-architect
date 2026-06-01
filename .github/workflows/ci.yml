@@ -1,0 +1,91 @@
+name: CI
+
+# The plugin's whole value is enforcement discipline — so it enforces on itself.
+# Every push/PR runs the full suite across the supported Python floor; a tag push
+# additionally runs the release guard (the tag must equal plugin.json's version,
+# and CHANGELOG.md must carry the entry) — the gate that would have caught the
+# __version__ drift and the frozen-broken-command tests.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install host tooling + Python deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq shellcheck
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml python-dateutil
+      - name: Run the full suite (bash harness + architect_brain Python suite)
+        run: bash tests/run_all.sh
+
+  lint:
+    name: lint (shellcheck + gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          # --severity=warning gates on real bugs (warning+error), not the
+          # info-level SC1091 every `source lib/test_helpers.sh` emits.
+          shellcheck --severity=warning bin/architect-brain tests/*.sh tests/lib/*.sh
+      - name: gitleaks (full-tree filesystem scan, honors .gitleaks.toml)
+        run: |
+          # A REAL scan of every file in the tree. Deliberately NOT the
+          # pre-commit hook: that one scans STAGED files only, so on a fresh CI
+          # checkout it scans 0 bytes and passes hollow. `gitleaks dir` scans the
+          # whole working tree and exits non-zero on any finding (the
+          # .gitleaks.toml allowlist still applies). Pinned to the same version
+          # as .pre-commit-config.yaml.
+          GITLEAKS_VERSION=8.30.1
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o /tmp/gitleaks.tar.gz
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks dir . --config .gitleaks.toml --redact --no-banner --exit-code 1
+
+  release-guard:
+    name: release guard (tag == plugin.json)
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, lint]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Assert tag matches plugin.json version + CHANGELOG has the entry
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PLUGIN_VERSION="$(jq -r .version .claude-plugin/plugin.json)"
+          echo "tag=v$TAG  plugin.json=$PLUGIN_VERSION"
+          if [ "$TAG" != "$PLUGIN_VERSION" ]; then
+            echo "::error::tag v$TAG does not match .claude-plugin/plugin.json version $PLUGIN_VERSION"
+            exit 1
+          fi
+          # Heading-anchored fixed-string match (-F), so e.g. v8.1.0 cannot
+          # match inside v8.1.0-rc1 or a prose back-reference.
+          if ! grep -qF "## v$PLUGIN_VERSION " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## v$PLUGIN_VERSION' heading"
+            exit 1
+          fi
+          echo "release guard OK: v$TAG matches plugin.json and CHANGELOG.md has its entry"

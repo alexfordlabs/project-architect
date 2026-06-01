@@ -358,6 +358,7 @@ class TestRestampAdrs(unittest.TestCase):
             self.assertEqual(count2, 0)
 
     def test_restamp_frontmatter_parses_back(self):
+        from architect_brain import __version__
         from architect_brain.adr import parse_frontmatter
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -369,7 +370,10 @@ class TestRestampAdrs(unittest.TestCase):
             self.assertEqual(fm.get("type"), "adr")
             self.assertEqual(fm.get("schema_version"), "4.0")
             self.assertEqual(fm.get("id"), "0001")
-            self.assertEqual(fm.get("plugin_version"), "8.0.0")
+            # The migrator stamps the resolved plugin version (single source of
+            # truth = plugin.json), never a hardcoded literal — see
+            # test_version_single_source.
+            self.assertEqual(fm.get("plugin_version"), __version__)
 
 
 class TestDetectAndFloorCeiling(unittest.TestCase):

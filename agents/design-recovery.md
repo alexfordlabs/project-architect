@@ -21,7 +21,7 @@ You reconstruct a project's CURRENT design from its existing artifacts into one 
 ## Inputs you receive
 - **project_root** (the user's project)
 - **state_dir** (`docs/_architect_state/` — the event-sourced state directory. ADR markdown lives under `docs/_architect_state/decisions/*.md`; the reconciled ADR ledger projection is `docs/_architect_state/decisions/index.json`; the flat decision view is `docs/_architect_state/99-flat-index.json`)
-- **template_path** (`references/templates/RECOVERED_DESIGN.md` — the output structure)
+- **template_path** (ABSOLUTE path to `RECOVERED_DESIGN.md` — the output structure; the orchestrator has expanded `${CLAUDE_PLUGIN_ROOT}`, read it as given)
 - **output_path** (where to write `RECOVERED_DESIGN.md`, default `docs/RECOVERED_DESIGN.md`)
 
 ## Effort directive

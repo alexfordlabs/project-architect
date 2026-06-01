@@ -10,6 +10,8 @@ The orchestrator (`SKILL.md`) keeps the dispatch LOGIC (which agent, when, how t
 
 State is event-sourced and multi-file (NOT a single monolith JSON) — see `references/state-schema.md`. Where a dispatch passes a "state slice" or a "state path", it points at the v8 state under **`docs/_architect_state/`**: the flat decision/ADR view is `docs/_architect_state/99-flat-index.json` (`{decisions: {dotted-key: value}, adrs: [...]}`), the ADR ledger projection is `docs/_architect_state/decisions/index.json`, and the ADR markdown files live in `docs/_architect_state/decisions/`. Subagents READ those projections; they never hand-edit any state file — every mutation flows back through `architect-brain` events (`set-decision`, `record-adr`, `record-doc`, …) that the orchestrator (or the agent, where it owns the write) issues.
 
+**Path resolution in INPUTS (critical).** A dispatched agent runs with `cwd` = the USER's project, **not** the plugin. So any INPUT path that points INTO THE PLUGIN — templates, `catalog.json`, the integration recipes, the revision playbook (anything under `skills/project-architect/…`) — is written here as `${CLAUDE_PLUGIN_ROOT}/skills/project-architect/…`, and **the orchestrator MUST expand `${CLAUDE_PLUGIN_ROOT}` to its real absolute value when filling the dispatch** (the agent is not a shell — a literal `${CLAUDE_PLUGIN_ROOT}` or a bare `skills/…` reaches it unresolved and the `Read` fails silently → fabricated structure). INPUT paths that point at the USER's project (`docs/…` — state projections, research, output paths) stay relative; they ARE relative to the agent's cwd. Per `agent-common.md`, an agent handed a bare, unresolvable plugin-relative path treats it as a BLOCKER and returns the informational error state rather than guessing.
+
 ## Shared dispatch header
 
 Prepend this verbatim to every `Agent({...})` prompt — the model directive, the identity-hygiene HARD RULE, and the post-return scrub all travel together:
@@ -102,7 +104,8 @@ The doc set is the output of `architect-brain catalog list` (declarative selecti
 ```
 [INPUTS]
 template_name: {{template_name}}
-template_path: skills/project-architect/references/templates/{{template_name}}.md
+template_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/templates/{{template_name}}.md
+catalog_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/catalog.json
 state_slice: {{the doc's required_decisions + optional_decisions, as a flat JSON object pulled from docs/_architect_state/99-flat-index.json}}
 project_layout: {{the canonical directory/package map from the decisions (project_layout)}}
 decisions_dir: docs/_architect_state/decisions/
@@ -126,8 +129,8 @@ After each batch the orchestrator records each generated doc via `architect-brai
 ```
 [INPUTS]
 flat_index_path: docs/_architect_state/99-flat-index.json
-template_root_path: skills/project-architect/references/templates/CLAUDE_MD_ROOT.md
-template_subfolder_path: skills/project-architect/references/templates/CLAUDE_MD_SUBFOLDER.md
+template_root_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/templates/CLAUDE_MD_ROOT.md
+template_subfolder_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/templates/CLAUDE_MD_SUBFOLDER.md
 doc_paths: {{the generated doc filenames recorded as DocGenerated events (from docs/_architect_state/docs.json or the catalog selection)}}
 project_layout: {{the canonical directory/package map from the flat decisions (project_layout)}}
 
@@ -145,7 +148,7 @@ docs the catalog selection picked. Return a summary of the plan written + the su
 ```
 [INPUTS]
 flat_index_path: docs/_architect_state/99-flat-index.json
-integration_path: skills/project-architect/references/claude-code-integration.md
+integration_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/claude-code-integration.md
 project_root: {{user project root path}}
 project_layout: {{the canonical directory/package map from the flat decisions (project_layout)}}
 stack_summary: {{parsed summary of the stack.* decisions — language/frontend/backend/database/auth/hosting/testing — from the flat decisions}}
@@ -180,7 +183,7 @@ old_value: {{old_value}}
 new_value: {{new_value}}
 reason: {{user-supplied reason}}
 flat_index_path: docs/_architect_state/99-flat-index.json
-playbook_path: skills/project-architect/references/revision-playbook.md
+playbook_path: ${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/revision-playbook.md
 decisions_dir: docs/_architect_state/decisions/
 
 [TASK]

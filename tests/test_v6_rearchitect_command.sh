@@ -8,6 +8,7 @@ assert_file_exists "$CMD" '/re-architect command exists'
 C="$(cat "$CMD" 2>/dev/null || true)"
 assert_contains "$C" 'description:' 'has frontmatter description'
 assert_contains "$C" 're-architect-flow.md' 'drives the canonical flow'
-assert_contains "$C" 'architect-ledger --state docs/_architect_state.json detect' 'runs the detector first'
+assert_contains "$C" 'architect-brain detect' 'runs the v8 situation detector first'
+assert_not_contains "$C" 'architect-ledger' 'no invocation of the deleted v7 architect-ledger binary'
 assert_contains "$C" 'RECOVERED_DESIGN' 'mentions the recovered-design review'
 test_summary

@@ -10,6 +10,24 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v8.1.1 — 2026-06-01
+
+**Correctness + CI.** A focused fix release: the two cross-version commands are runnable again, the plugin version is single-sourced, dispatched subagents can resolve their reference paths, and the repo now runs CI on itself. No change to the 12-phase flow, the event-sourced state model, or the 35-check audit.
+
+### Fixed
+
+- **`/upgrade-project` and `/re-architect` are runnable again.** Both commands invoked the v7 `architect-ledger` binary (removed at the v8 cutover) with a flag `architect-brain` rejects; they now call `architect-brain detect` and their prose is reconciled to its real `{situation, schema_version, state_layout}` output (the `below_floor` / `newer_than_plugin` / `can_rederive` signals are orchestrator-derived, per the canonical flow docs).
+- **Plugin version is single-sourced from `plugin.json`.** `architect_brain.__version__` (and the `--version` output) had drifted to a hardcoded `8.0.0`; it now resolves from `.claude-plugin/plugin.json`, and the migrator stamps that resolved version into migrated ADR/doc `plugin_version` frontmatter instead of a stale literal — so a release bump propagates everywhere automatically.
+- **Dispatched subagents can resolve their reference paths.** The template / catalog / integration-recipe / playbook paths handed to subagents are now absolute (`${CLAUDE_PLUGIN_ROOT}/…`) — a dispatched agent runs in the user's project, so the previous bare `skills/…` paths were unresolvable (a silent template-read failure → fabricated structure). `document-author` now receives a `catalog_path` INPUT, and `agent-common.md` makes a bare relative reference path a hard BLOCKER.
+
+### Added
+
+- **Continuous integration.** A GitHub Actions workflow runs the full suite (bash harness + the `architect_brain` Python suite) across Python 3.10–3.13 on every push and PR, plus `shellcheck` and a full-tree `gitleaks` secret scan; a release-guard job refuses any tag whose number disagrees with `plugin.json` or that lacks a CHANGELOG entry.
+
+### Changed
+
+- **CONTRIBUTING / README hygiene.** Removed a dead test-plan link and stale "markdown-only" / marketplace claims; surfaced the hard Python 3.10+ prerequisite and the required `commit-commands` install in the README install path.
+
 ## v8.1.0 — 2026-06-01
 
 **Enforcement + coherence.** Hardens the v8 gates that were still advisory prose, closes the version-pin pipeline end-to-end, and removes the raw-traceback / phantom-doc rough edges surfaced by a forensic review of a real bootstrap. The 12-phase flow and event-sourced state model are unchanged — this is additive features + behavioral hardening.

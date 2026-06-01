@@ -28,6 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from architect_brain import __version__
 from architect_brain.adr import emit_frontmatter, parse_frontmatter
 from architect_brain.events import EventEnvelope, append_event
 from architect_brain.projections import projections_to_disk, replay
@@ -419,7 +420,7 @@ def restamp_adrs(decisions_dir) -> int:
 
     For each ``decisions/*.md`` that lacks a ``---`` frontmatter block, prepend
     one (``type: adr``, ``schema_version: "4.0"``, ``id`` from filename,
-    ``status``, ``date``, ``plugin_version: "8.0.0"``). Idempotent: a file that
+    ``status``, ``date``, ``plugin_version`` (resolved from plugin.json)). Idempotent: a file that
     already starts with ``---`` is left untouched. Returns the count restamped.
     """
     decisions_dir = Path(decisions_dir)
@@ -438,7 +439,7 @@ def restamp_adrs(decisions_dir) -> int:
             "id": _id_from_filename(md_path),
             "status": "Accepted",
             "date": today,
-            "plugin_version": "8.0.0",
+            "plugin_version": __version__,
         }
         frontmatter = emit_frontmatter(metadata)
         md_path.write_text(frontmatter + "\n" + text, encoding="utf-8")
@@ -451,7 +452,7 @@ def restamp_docs(docs_dir) -> int:
 
     For each generated design doc under ``docs/`` (top-level + depth-2,
     excluding the state/decisions/research/versions trees) that HAS YAML
-    frontmatter but no ``plugin_version``, add ``plugin_version: "8.0.0"`` +
+    frontmatter but no ``plugin_version``, add ``plugin_version`` (resolved from plugin.json) +
     ``format_version: "4.0"`` to that frontmatter. A doc WITHOUT frontmatter is
     SKIPPED (injecting frontmatter into a plain doc is too invasive). Returns
     the count touched.
@@ -481,7 +482,7 @@ def restamp_docs(docs_dir) -> int:
             continue  # no frontmatter — skip (too invasive to inject)
         if "plugin_version" in fm:
             continue  # already stamped
-        fm["plugin_version"] = "8.0.0"
+        fm["plugin_version"] = __version__
         fm["format_version"] = "4.0"
         # Replace the existing frontmatter block with the re-emitted one.
         new_fm = emit_frontmatter(fm)
