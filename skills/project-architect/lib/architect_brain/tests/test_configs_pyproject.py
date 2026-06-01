@@ -34,6 +34,24 @@ class TestGenPyproject(unittest.TestCase):
         self.assertTrue(out.endswith("\n"))
         self.assertEqual(gen_pyproject(_fi()), gen_pyproject(_fi()))
 
+    # ── version-from-state: requires-python + ruff target track stack.versions.python ──
+    def test_requires_python_uses_recorded_pin(self):
+        out = gen_pyproject(_fi({"stack.versions.python": "3.13"}))
+        self.assertIn('requires-python = ">=3.13"', out)
+
+    def test_ruff_target_version_tracks_recorded_python(self):
+        out = gen_pyproject(_fi({"stack.versions.python": "3.13"}))
+        self.assertIn('target-version = "py313"', out)
+
+    def test_python_version_falls_back_to_floor(self):
+        out = gen_pyproject(_fi())
+        self.assertIn('requires-python = ">=3.11"', out)
+        self.assertIn('target-version = "py311"', out)
+
+    def test_ruff_target_uses_major_minor_only_for_patch_pin(self):
+        out = gen_pyproject(_fi({"stack.versions.python": "3.13.1"}))
+        self.assertIn('target-version = "py313"', out)  # not py3131
+
 
 if __name__ == "__main__":
     unittest.main()

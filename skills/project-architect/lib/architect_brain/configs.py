@@ -113,7 +113,7 @@ def gen_tsconfig(flat_index: dict[str, Any]) -> str:
 def gen_biome_json(flat_index: dict[str, Any]) -> str:
     """Emit biome.json with the recommended ruleset + formatter (deterministic)."""
     return _json({
-        "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+        "$schema": f"https://biomejs.dev/schemas/{_pin(flat_index, 'biome', '1.9.4')}/schema.json",
         "organizeImports": {"enabled": True},
         "linter": {"enabled": True, "rules": {"recommended": True}},
         "formatter": {
@@ -131,16 +131,23 @@ def gen_pyproject(flat_index: dict[str, Any]) -> str:
     Hand-built TOML string (no tomllib dependency — the repo targets 3.10+).
     """
     name = _dec(flat_index, "project.name") or "app"
+    # requires-python floor + ruff target track the researched python pin
+    # (stack.versions.python), so pyproject agrees with the Dockerfile instead of
+    # frozen 3.11. ``py`` is major.minor (e.g. "3.13"); ruff wants "py313".
+    py = _pin(flat_index, "python", "3.11")
+    # ruff target-version is pyMAJORMINOR (no dots, major.minor only) — tolerate a
+    # pin that carries a patch component (e.g. "3.13.1" -> "py313").
+    ruff_target = "py" + "".join(py.split(".")[:2])
     return (
         "[project]\n"
         f'name = "{name}"\n'
         'version = "0.1.0"\n'
-        'requires-python = ">=3.11"\n'
+        f'requires-python = ">={py}"\n'
         "dependencies = []\n"
         "\n"
         "[tool.ruff]\n"
         "line-length = 100\n"
-        'target-version = "py311"\n'
+        f'target-version = "{ruff_target}"\n'
         "\n"
         "[tool.ruff.lint]\n"
         'select = ["E", "F", "I", "UP", "B"]\n'
@@ -209,7 +216,7 @@ def gen_docker_compose(flat_index: dict[str, Any]) -> str:
         depends.append("db")
         extra += [
             "  db:",
-            "    image: postgres:17-alpine",
+            f"    image: postgres:{_pin(flat_index, 'postgres', '17')}-alpine",
             "    environment:",
             "      POSTGRES_PASSWORD: postgres",
             "    ports:",
@@ -219,7 +226,7 @@ def gen_docker_compose(flat_index: dict[str, Any]) -> str:
         depends.append("cache")
         extra += [
             "  cache:",
-            "    image: redis:7-alpine",
+            f"    image: redis:{_pin(flat_index, 'redis', '7')}-alpine",
             "    ports:",
             '      - "6379:6379"',
         ]

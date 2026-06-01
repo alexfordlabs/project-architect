@@ -42,7 +42,7 @@ downstream doc-selection / config-gen if the consumers read the SAME key.
 | `stack.containerization` | `docker` |
 | `stack.mobile.framework` / `stack.mobile.*` | `react-native` … |
 | `stack.license` | `MIT` |
-| `stack.versions.<package>` | `^16.2.6` (next), `^19.2.0` (react), `24` (node), `3.13` (python) |
+| `stack.versions.<package>` | `^16.2.6` (next), `^19.2.0` (react), `24` (node), `3.13` (python), `17` (postgres), `7` (redis), `2.1.0` (biome) |
 
 **Note (value vocabulary):** the engine value is the technology's own canonical
 name — `postgresql`, not `postgres`. Consumers that branch on the value accept
@@ -53,11 +53,14 @@ alike).
 resolves the newest-stable version for each dependency (§ 1a of its mission),
 the orchestrator records each as `stack.versions.<package>` (e.g.
 `stack.versions.next = "^16.2.6"`). The config generators (`gen_package_json`,
-`gen_dockerfile`) read these via `configs._pin` and emit them into the user's
-`package.json` / `Dockerfile`; absent a recorded pin they fall back to a
-conservative plugin floor that goes stale on the plugin's release cadence.
-`<package>` is the dependency's own token (`next`, `react` — drives `react-dom`
-too —, `node`, `python`). This supersedes the older single-value
+`gen_dockerfile`, `gen_pyproject`, `gen_docker_compose`, `gen_biome_json`) read
+these via `configs._pin` and emit them into the user's `package.json` /
+`Dockerfile` / `pyproject.toml` / `docker-compose.yml` / `biome.json`; absent a
+recorded pin they fall back to a conservative plugin floor that goes stale on the
+plugin's release cadence. `<package>` is the dependency's own token (`next`,
+`react` — drives `react-dom` too —, `node`, `python` — drives `requires-python` +
+ruff `target-version` —, plus the Docker-image / tool tokens `postgres`, `redis`,
+`biome`). This supersedes the older single-value
 `stack.frontend.version` hint, which is framework-major-only and unread by the
 generators.
 

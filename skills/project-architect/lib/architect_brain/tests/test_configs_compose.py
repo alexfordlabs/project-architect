@@ -39,6 +39,27 @@ class TestGenDockerCompose(unittest.TestCase):
         self.assertTrue(out.endswith("\n"))
         self.assertEqual(gen_docker_compose(fi), gen_docker_compose(fi))
 
+    # ── service image tags come from researched state, not frozen ──
+    def test_uses_recorded_postgres_tag(self):
+        out = gen_docker_compose(_fi({
+            "stack.database.engine": "postgres", "stack.versions.postgres": "16",
+        }))
+        self.assertIn("postgres:16-alpine", out)
+
+    def test_postgres_falls_back_to_floor(self):
+        out = gen_docker_compose(_fi({"stack.database.engine": "postgres"}))
+        self.assertIn("postgres:17-alpine", out)
+
+    def test_uses_recorded_redis_tag(self):
+        out = gen_docker_compose(_fi({
+            "stack.cache.engine": "redis", "stack.versions.redis": "8",
+        }))
+        self.assertIn("redis:8-alpine", out)
+
+    def test_redis_falls_back_to_floor(self):
+        out = gen_docker_compose(_fi({"stack.cache.engine": "redis"}))
+        self.assertIn("redis:7-alpine", out)
+
 
 if __name__ == "__main__":
     unittest.main()

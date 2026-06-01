@@ -34,6 +34,15 @@ class TestGenBiomeJson(unittest.TestCase):
     def test_deterministic(self):
         self.assertEqual(gen_biome_json(_fi()), gen_biome_json(_fi()))
 
+    # ── schema version comes from researched state, not frozen ──
+    def test_uses_recorded_biome_schema(self):
+        cfg = json.loads(gen_biome_json(_fi({"stack.versions.biome": "2.1.0"})))
+        self.assertIn("/2.1.0/", cfg["$schema"])
+
+    def test_biome_schema_falls_back_to_floor(self):
+        cfg = json.loads(gen_biome_json(_fi()))
+        self.assertIn("/1.9.4/", cfg["$schema"])
+
 
 if __name__ == "__main__":
     unittest.main()
