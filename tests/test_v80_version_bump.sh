@@ -9,7 +9,7 @@ PLUGIN_JSON="$REPO_ROOT/.claude-plugin/plugin.json"
 CHANGELOG="$REPO_ROOT/CHANGELOG.md"
 
 PLUGIN_VERSION=$(jq -r '.version' "$PLUGIN_JSON")
-assert_eq "$PLUGIN_VERSION" "8.1.2" "plugin.json version must be 8.1.2"
+assert_eq "$PLUGIN_VERSION" "8.2.0" "plugin.json version must be 8.2.0"
 
 CHANGELOG_CONTENT=$(cat "$CHANGELOG")
 assert_contains "$CHANGELOG_CONTENT" 'v6.0.0' 'CHANGELOG must have a v6.0.0 entry'
@@ -54,9 +54,14 @@ assert_contains "$CHANGELOG_CONTENT" 'detect' 'CHANGELOG v8.1.1 must describe th
 assert_contains "$CHANGELOG_CONTENT" 'single-sourced' 'CHANGELOG v8.1.1 must describe the single-sourced plugin version'
 assert_contains "$CHANGELOG_CONTENT" 'Continuous integration' 'CHANGELOG v8.1.1 must describe the new CI'
 
-# v8.1.2 entry (this release)
+# v8.1.2 entry (retained)
 assert_contains "$CHANGELOG_CONTENT" 'v8.1.2' 'CHANGELOG must have a v8.1.2 entry'
 assert_contains "$CHANGELOG_CONTENT" 'portable' 'CHANGELOG v8.1.2 must describe the portable-test fix'
+
+# v8.2.0 entry (this release)
+assert_contains "$CHANGELOG_CONTENT" 'v8.2.0' 'CHANGELOG must have a v8.2.0 entry'
+assert_contains "$CHANGELOG_CONTENT" 'web3' 'CHANGELOG v8.2.0 must describe the new web3/scientific/ar_vr types'
+assert_contains "$CHANGELOG_CONTENT" 'biome' 'CHANGELOG v8.2.0 must describe the state-driven config versions'
 
 # Regression: prior entries retained (CURATED, not trimmed — all versions kept)
 assert_contains "$CHANGELOG_CONTENT" 'v5.0.0' 'CHANGELOG must retain the v5.0.0 entry'

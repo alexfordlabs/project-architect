@@ -10,6 +10,20 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v8.2.0 — 2026-06-05
+
+**Catalog & config-generation correctness.** Additive fixes that make advertised project types reachable and make generated scaffolds track researched versions. No change to the 12-phase flow, the event-sourced state model, or the 35-check audit.
+
+### Added
+
+- **Three project types are now first-class: `web3`, `scientific`, `ar_vr`.** They were advertised and already shipped catalog documents and interview drill-downs, but were missing from the canonical type registry — so their signature documents (`WEB3_SPECIFIC`, `SCIENTIFIC_COMPUTING`, `AR_VR_SPECIFIC`) could never be selected. Registered, with a guard test pinning the catalog↔registry contract (scanning both the `==`/`!=` and `IN [...]` condition forms).
+- **More config versions are state-driven.** `pyproject.toml`, `docker-compose.yml`, and `biome.json` now read their pins from the `stack.versions.*` namespace (`postgres`, `redis`, `biome`) — and `research-scout` is instructed to record them — instead of frozen constants, so a researched pin flows into the scaffold.
+
+### Fixed
+
+- **Catalog type-literal typos.** Four catalog conditions referenced `mobile` / `desktop` / `ai_ml` / `embedded`, none of which match the registry's `mobile_app` / `desktop_app` / `ml_project` / `embedded_system`, so those archetypes silently received a smaller document set. Corrected.
+- **`pyproject.toml` now agrees with the Dockerfile on Python.** `requires-python` and the ruff `target-version` track the same researched Python pin the Dockerfile already used, instead of a frozen `3.11`.
+
 ## v8.1.2 — 2026-06-01
 
 **CI green.** A one-line follow-up to v8.1.1: the new CI's first run did its job and caught a non-portable test. No plugin behavior change.
