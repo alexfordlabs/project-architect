@@ -10,6 +10,14 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v8.2.1 — 2026-06-11
+
+**Licensing & provenance.** Documentation-only patch; no behavior change.
+
+### Added
+
+- **`NOTICE` file.** Makes explicit the attribution the MIT license already requires (copyright + permission notice must travel with copies and substantial portions), claims the project's trade names ("project-architect", "Alex Ford Labs"), and records that authorship/provenance are independently archived (Software Heritage; third-party timestamped repositories) from the project's inception in February 2026 onward.
+
 ## v8.2.0 — 2026-06-05
 
 **Catalog & config-generation correctness.** Additive fixes that make advertised project types reachable and make generated scaffolds track researched versions. No change to the 12-phase flow, the event-sourced state model, or the 35-check audit.
