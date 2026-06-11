@@ -24,7 +24,7 @@ revision_triggers:
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Project Requirements: {{project_name}}

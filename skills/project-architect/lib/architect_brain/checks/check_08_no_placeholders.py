@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_08_no_placeholders. A literal ``{{project_name}}``-style marker
 in a generated doc means the template engine never substituted it -- the artifact

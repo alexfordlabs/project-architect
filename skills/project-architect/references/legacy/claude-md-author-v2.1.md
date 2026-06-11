@@ -1,7 +1,7 @@
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 > Archived v2.1 CLAUDE.md authoring workflow — superseded by the plan-driven v2.2 flow. Kept for archaeology / bare-Phase-4 fallback.

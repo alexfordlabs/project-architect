@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 A Claude Code permission rule of the form ``Tool(inner)`` matches via prefix
 glob; a TRAILING ``:*`` (e.g. ``Bash(rm:*)``) is the valid form meaning "any

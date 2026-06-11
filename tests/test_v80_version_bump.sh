@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 
 source "$(dirname "$0")/lib/test_helpers.sh"
@@ -9,7 +9,7 @@ PLUGIN_JSON="$REPO_ROOT/.claude-plugin/plugin.json"
 CHANGELOG="$REPO_ROOT/CHANGELOG.md"
 
 PLUGIN_VERSION=$(jq -r '.version' "$PLUGIN_JSON")
-assert_eq "$PLUGIN_VERSION" "8.2.1" "plugin.json version must be 8.2.1"
+assert_eq "$PLUGIN_VERSION" "9.0.0" "plugin.json version must be 9.0.0"
 
 CHANGELOG_CONTENT=$(cat "$CHANGELOG")
 assert_contains "$CHANGELOG_CONTENT" 'v6.0.0' 'CHANGELOG must have a v6.0.0 entry'
@@ -63,13 +63,22 @@ assert_contains "$CHANGELOG_CONTENT" 'v8.2.0' 'CHANGELOG must have a v8.2.0 entr
 assert_contains "$CHANGELOG_CONTENT" 'web3' 'CHANGELOG v8.2.0 must describe the new web3/scientific/ar_vr types'
 assert_contains "$CHANGELOG_CONTENT" 'biome' 'CHANGELOG v8.2.0 must describe the state-driven config versions'
 
-# v8.2.1 entry (this release)
+# v8.2.1 entry (retained)
 assert_contains "$CHANGELOG_CONTENT" 'v8.2.1' 'CHANGELOG must have a v8.2.1 entry'
 assert_contains "$CHANGELOG_CONTENT" 'NOTICE' 'CHANGELOG v8.2.1 must describe the NOTICE file'
 assert_file_exists "$REPO_ROOT/NOTICE" "NOTICE file exists at repo root"
 NOTICE_CONTENT=$(cat "$REPO_ROOT/NOTICE" 2>/dev/null || true)
 assert_contains "$NOTICE_CONTENT" 'Copyright (c) 2026 Alexander Ford' 'NOTICE must carry the copyright line'
-assert_contains "$NOTICE_CONTENT" 'MIT License' 'NOTICE must reference the MIT License'
+assert_contains "$NOTICE_CONTENT" 'Apache License' 'NOTICE must reference the Apache License'
+
+# v9.0.0 entry (this release — relicense)
+assert_contains "$CHANGELOG_CONTENT" 'v9.0.0' 'CHANGELOG must have a v9.0.0 entry'
+assert_contains "$CHANGELOG_CONTENT" 'Apache License 2.0' 'CHANGELOG v9.0.0 must describe the relicense'
+PLUGIN_LICENSE=$(jq -r '.license' "$PLUGIN_JSON")
+assert_eq "$PLUGIN_LICENSE" "Apache-2.0" "plugin.json license must be Apache-2.0"
+LICENSE_CONTENT=$(cat "$REPO_ROOT/LICENSE")
+assert_contains "$LICENSE_CONTENT" 'Apache License' 'LICENSE must be the Apache License'
+assert_contains "$LICENSE_CONTENT" 'Version 2.0, January 2004' 'LICENSE must be Apache version 2.0' 
 
 # Regression: prior entries retained (CURATED, not trimmed — all versions kept)
 assert_contains "$CHANGELOG_CONTENT" 'v5.0.0' 'CHANGELOG must retain the v5.0.0 entry'

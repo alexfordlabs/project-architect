@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 events.jsonl is the authoritative state-layer ground truth in v8. Per-concern
 projections are materialised by replay (see projections.py — added in Wave 1.5).

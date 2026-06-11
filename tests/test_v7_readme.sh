@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 #
 # v7.0.0 clean-release: the README is the repo's publishable front door. This

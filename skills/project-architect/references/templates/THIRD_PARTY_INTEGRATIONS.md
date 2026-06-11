@@ -10,7 +10,7 @@ revision_triggers: [integrations, webhooks.inbound, background_jobs.queue]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Third-Party Integrations: {{project_name}}

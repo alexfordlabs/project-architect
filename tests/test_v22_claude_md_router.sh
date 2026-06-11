@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 # Test for CLAUDE_MD_ROOT.md router refactor (sketch D, task 41).
 # Verifies the template now describes router content (State / Quick context /

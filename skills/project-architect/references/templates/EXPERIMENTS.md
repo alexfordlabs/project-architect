@@ -10,7 +10,7 @@ revision_triggers: [feature_flags.provider, ab_testing.provider]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Experiments: {{project_name}}

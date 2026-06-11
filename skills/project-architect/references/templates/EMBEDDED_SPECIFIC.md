@@ -10,7 +10,7 @@ revision_triggers: [embedded.mcu_class, embedded.language, embedded.rtos, embedd
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Embedded Specific: {{project_name}}

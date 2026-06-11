@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Adapts v7's check_12_iso8601_timestamps to v8. v7 walked timestamp *fields* in
 the monolithic state.json (started_at / last_updated_at / per-phase / per-doc);

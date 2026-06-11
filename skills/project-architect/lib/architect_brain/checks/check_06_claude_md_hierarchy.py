@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_06_claude_md_hierarchy: when the project opts into a
 subfolder layout, a root CLAUDE.md alone is the "root-only" anti-pattern

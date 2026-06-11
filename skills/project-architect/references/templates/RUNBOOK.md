@@ -10,7 +10,7 @@ revision_triggers: [hosting.*, monitoring.*]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Runbook: {{project_name}}

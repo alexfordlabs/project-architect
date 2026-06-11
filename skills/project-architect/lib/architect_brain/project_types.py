@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The single machine-readable source of valid top-level project types + the
 agentic_system sub-types (spec §5.7). The catalog conditions, golden paths, and

@@ -10,7 +10,7 @@ revision_triggers: [platforms, code_sharing_strategy]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Platforms: {{project_name}}

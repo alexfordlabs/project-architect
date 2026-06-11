@@ -1,6 +1,6 @@
 # Author: Alex Ford <alex@alexfordlabs.com>
 # Repository: https://github.com/alexfordlabs/project-architect
-# License: MIT
+# License: Apache-2.0
 
 # Inner repo: workspace-side metadata files are gitignored (workspace tracks them,
 # not the published repo). These predate-or-postdate this gitignore rule per file:

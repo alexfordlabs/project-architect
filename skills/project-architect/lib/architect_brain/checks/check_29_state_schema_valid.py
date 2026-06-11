@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 FATAL. This is the engine behind the ``check-state`` CLI: it reuses
 ``validator.validate_schema`` to validate each per-concern projection

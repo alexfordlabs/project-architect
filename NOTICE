@@ -4,16 +4,18 @@ Copyright (c) 2026 Alexander Ford <alex@alexfordlabs.com>
 Published under the Alex Ford Labs brand.
 https://github.com/alexfordlabs/project-architect
 
-This software is licensed under the MIT License (see LICENSE). The license
-requires that the copyright notice and the permission notice be included in
-all copies or substantial portions of the Software, including forks and
-derivative works. Removing or omitting that notice from a copy or a
-substantial portion of this software violates the license.
+This software is licensed under the Apache License, Version 2.0 (see
+LICENSE). Under Section 4(d) of the license, redistributions of this work or
+of derivative works must include a readable copy of the attribution notices
+contained in this NOTICE file. Versions up to and including v8.2.1 were
+published under the MIT License; those grants remain in force, irrevocably,
+for those versions.
 
 "project-architect" and "Alex Ford Labs" are trade names of the author's
-brand. Using these names to identify a fork or derived product in a way that
-implies origin from, or endorsement by, the author is not permitted. This is
-a trade-name matter independent of the MIT copyright license.
+brand. Section 6 of the Apache License expressly grants no rights to trade
+names, trademarks, or service marks. Using these names to identify a fork or
+derived product in a way that implies origin from, or endorsement by, the
+author is not permitted.
 
 Authorship and provenance of this work are documented and independently
 archived (Software Heritage; third-party timestamped repositories) from the

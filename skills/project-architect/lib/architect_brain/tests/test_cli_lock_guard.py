@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The v8.0.1 enforcement fix: emitting a LockSet that *locks* the design
 (`payload.locked` True, or absent — a bare LockSet defaults to locked) must

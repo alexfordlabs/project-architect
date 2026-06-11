@@ -1,7 +1,7 @@
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 <p align="center">
@@ -16,7 +16,7 @@ License: MIT
 
 From _"I want to build X"_ to a fully-committed project: design docs, ADRs, root and per-folder `CLAUDE.md`, a stack-aware `.claude/` configuration, and router slash commands — all interviewed, decided, and written for you.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/alexfordlabs/project-architect?include_prereleases&label=release)](https://github.com/alexfordlabs/project-architect/releases)
 [![Stars](https://img.shields.io/github/stars/alexfordlabs/project-architect?style=social)](https://github.com/alexfordlabs/project-architect)
 [![Last commit](https://img.shields.io/github/last-commit/alexfordlabs/project-architect)](https://github.com/alexfordlabs/project-architect/commits/main)
@@ -294,7 +294,7 @@ Host tooling: `bash >= 4`, `jq`, `python3 >= 3.10`, `shellcheck`, `gh`, `git`, `
 
 ## License
 
-[MIT](LICENSE) — © 2026 Alexander Ford / Alex Ford Labs.
+[Apache-2.0](LICENSE) — © 2026 Alexander Ford / Alex Ford Labs. Versions up to and including v8.2.1 were released under MIT and remain so.
 
 ## Attribution
 
@@ -302,9 +302,9 @@ When you use `project-architect`, the generated docs end with:
 
 > *★ Skillfully made with [project-architect](https://github.com/alexfordlabs/project-architect).*
 
-This is a social-norm attribution, not a legal one — please keep it visible in `PROJECT_OVERVIEW.md`, `CLAUDE.md`, and other top-level docs so others can discover the tool. The MIT license doesn't require it, but it's a polite norm and costs you nothing.
+This is a social-norm attribution, not a legal one — please keep it visible in `PROJECT_OVERVIEW.md`, `CLAUDE.md`, and other top-level docs so others can discover the tool. The license doesn't require it, but it's a polite norm and costs you nothing.
 
-If you fork or build on the skill itself, the source-file attribution comments must remain per the MIT terms, and the `LICENSE` file must be included in any redistribution.
+If you fork or build on the skill itself, the source-file attribution comments and the `NOTICE` file contents must remain per the Apache-2.0 terms (§4), and the `LICENSE` file must be included in any redistribution.
 
 > **Publisher.** project-architect is published by **Alex Ford Labs**. The hero image above shows the Alex Ford Labs umbrella mark; the mark, its sizing guide, and all light/dark variants live under [`.github/assets/brand/`](.github/assets/brand/).
 

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_22_cross_link_integrity.sh. It is the deliberate sibling of
 check_01 (v7 ships both): same ``\\]\\(([^)]+)\\)`` link scan, but check_22 adds

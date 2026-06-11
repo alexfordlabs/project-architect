@@ -3,7 +3,7 @@ deanonymizing/centralized backend services.
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Two-stage TRIGGER-then-SCAN. The check only applies when the project is
 privacy/anonymity-sensitive -- either the ``project.privacy_sensitive`` decision

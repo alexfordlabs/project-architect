@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v8-ADAPTATION of v7's check_14_adr_coverage. v7 detected "high-stakes"
 decisions via a ``<leaf>_alternatives_considered`` SIBLING convention inside the

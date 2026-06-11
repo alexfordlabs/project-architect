@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 A Golden Path (spec §5.1) pre-fills 10–14 decisions via a GoldenPathApplied
 event + per-key DecisionMade events. Data lives in references/golden-paths.json;

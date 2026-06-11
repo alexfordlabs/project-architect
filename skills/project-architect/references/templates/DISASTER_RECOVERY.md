@@ -10,7 +10,7 @@ revision_triggers: [hosting.backend, database.host, dr.rto, dr.rpo]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Disaster Recovery: {{project_name}}

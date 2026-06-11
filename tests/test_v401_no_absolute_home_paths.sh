@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 
 # Regression guard (v4.0.1): no PUBLISHED, EXECUTABLE source file may contain an

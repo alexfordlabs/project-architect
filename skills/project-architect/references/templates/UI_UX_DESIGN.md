@@ -10,7 +10,7 @@ revision_triggers: [frontend.framework, frontend.styling, frontend.component_lib
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # UI/UX Design: {{project_name}}

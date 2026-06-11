@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Provides parse_frontmatter(text) which extracts YAML frontmatter (between ---
 delimiters at the top of markdown text) into a dict.

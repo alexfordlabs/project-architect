@@ -10,7 +10,7 @@ revision_triggers: [scientific.compute_backend, scientific.reproducibility, scie
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Scientific Computing: {{project_name}}

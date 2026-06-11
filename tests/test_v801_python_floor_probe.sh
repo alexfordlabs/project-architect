@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 #
 # bin/architect-brain must reject Python < 3.10 with a CLEAN message (not a raw

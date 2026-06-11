@@ -10,7 +10,7 @@ revision_triggers: [ar_vr.device, ar_vr.engine, ar_vr.tracking]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # AR / VR Specific: {{project_name}}

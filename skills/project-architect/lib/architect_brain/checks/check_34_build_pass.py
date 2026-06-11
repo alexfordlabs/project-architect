@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 NEW v8 check (spec §5.4). Guards the Tooling-Execution phase: when the
 orchestrator runs the scaffolded build it records the outcome under the flat

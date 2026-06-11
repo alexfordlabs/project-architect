@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Exercises every function in migration.py plus the `architect-brain migrate`
 CLI. The end-to-end test works on a COPY of the fixture in a tempdir because

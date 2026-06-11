@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Subcommands wired so far: init, detect, append-event, replay, set-decision,
 set-phase, set-substep, record-adr, reserve-adr, record-doc, reconcile-adrs,

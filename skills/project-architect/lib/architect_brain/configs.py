@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Each ``gen_*`` function takes a flat-index projection (``{"decisions": {...}}``)
 and returns a config file's full text. Every generator is DETERMINISTIC: the

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 A ``logic_router`` node (spec §5.2) carries no user question — it branches the
 question tree on a conditions-DSL ``condition`` evaluated against the current

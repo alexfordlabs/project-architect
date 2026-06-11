@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Covers the v8-ADAPTATION: v8 has no ``phase_progress.prerequisites_satisfied``;
 the analog of "no premature/out-of-order phase" is EVENT-CHAIN CONTINUITY over

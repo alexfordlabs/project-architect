@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Vale (https://vale.sh) is an opt-in prose linter. This check is purely advisory:
 it degrades to a clean pass whenever Vale is not installed or there are no design

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Replaces v7's prose ``document-catalog.md``. The catalog (``references/
 catalog.json``) declares, per document: ``conditions`` (a conditions-DSL

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 check_22 is the v7 sibling of check_01 (both port a doc cross-link checker).
 These tests focus on what 22 adds over 01: optional-link-title stripping,

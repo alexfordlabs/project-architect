@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The event log (events.jsonl) is authoritative state in v8. Projections are
 derived data: each concern has its own JSON file in docs/_architect_state/

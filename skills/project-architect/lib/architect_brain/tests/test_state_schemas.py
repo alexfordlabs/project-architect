@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Wave 2.9 of v8.0. Verifies the JSON Schema 2020-12 fragments under
 ``skills/project-architect/references/schemas/state-v4-*.json`` exist, parse,

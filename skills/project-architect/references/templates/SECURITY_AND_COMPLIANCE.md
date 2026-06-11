@@ -10,7 +10,7 @@ revision_triggers: [security.*, regulatory.*, auth.provider, database.engine]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Security and Compliance: {{project_name}}

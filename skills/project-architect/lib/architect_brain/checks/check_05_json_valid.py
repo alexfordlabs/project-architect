@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Adapts v7's check_05_json_valid to v8's multi-file state. A malformed state
 projection or decisions file is a BLOCKING defect (the orchestrator can re-emit

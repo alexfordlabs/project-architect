@@ -1,12 +1,12 @@
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Contributing to project-architect
 
-Thank you for considering a contribution! This project is open source under the [MIT License](LICENSE).
+Thank you for considering a contribution! This project is open source under the [Apache License 2.0](LICENSE).
 
 ## How to contribute
 
@@ -54,7 +54,7 @@ Use the [feature request issue template](.github/ISSUE_TEMPLATE/feature_request.
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
 
 ---
 

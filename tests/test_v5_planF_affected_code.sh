@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Author: Alexander Ford <alex@alexfordlabs.com>
-# License: MIT
+# License: Apache-2.0
 # Project: project-architect (https://github.com/alexfordlabs/project-architect)
 source "$(dirname "$0")/lib/test_helpers.sh"
 if ! command -v jq >/dev/null 2>&1; then echo "SKIP: jq"; test_summary; exit 0; fi

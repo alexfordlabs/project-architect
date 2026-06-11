@@ -10,7 +10,7 @@ revision_triggers: [backend.framework, backend.api_style, backend.versioning, ba
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # API Gateway: {{project_name}}

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_10 (the first Python auditor check). YAML frontmatter is the
 ``---``-bounded block at the top of a markdown file; malformed frontmatter

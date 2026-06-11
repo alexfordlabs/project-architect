@@ -10,7 +10,7 @@ revision_triggers: [plugin.components, plugin.distribution]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Plugin Specific: {{project_name}}

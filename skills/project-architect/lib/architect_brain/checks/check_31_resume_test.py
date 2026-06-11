@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The whole point of v8's event-sourced state is that on-disk projections are
 DERIVED data: replaying events.jsonl from empty must reproduce them exactly. If

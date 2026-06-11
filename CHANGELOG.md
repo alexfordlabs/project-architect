@@ -1,7 +1,7 @@
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Changelog
@@ -9,6 +9,28 @@ License: MIT
 All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## v9.0.0 — 2026-06-11
+
+**Relicense: MIT → Apache License 2.0.** No functional change. Rationale: the
+NOTICE file's attribution becomes a binding redistribution condition (Apache-2.0
+§4(d)); the license itself now states that no trade-name/trademark rights are
+granted (§6); and users gain an explicit patent grant with defensive
+termination (§3). **Every version up to and including v8.2.1 remains MIT** —
+those grants are irrevocable for those versions; this change governs v9.0.0
+onward.
+
+### Changed
+
+- `LICENSE` is now the Apache License, Version 2.0 (was MIT).
+- `NOTICE` rewritten for Apache-2.0 (§4(d) redistribution condition; §6
+  trade-name non-grant; MIT note for ≤ v8.2.1).
+- All 332 source attribution headers flipped `License: MIT` →
+  `License: Apache-2.0`. Templates and defaults that set **the user's
+  generated project license** (e.g. `SCAFFOLD_PLAN`'s MIT block,
+  `stack.license` examples, golden-path descriptions) are intentionally
+  unchanged — they describe the user's project, not this one.
+- `plugin.json` declares `"license": "Apache-2.0"`.
 
 ## v8.2.1 — 2026-06-11
 

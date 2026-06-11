@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The migrator reads a v7 monolithic ``docs/_architect_state.json`` (schema 3.0 /
 3.1), snapshots it, synthesises an append-only event log, replays it into v8

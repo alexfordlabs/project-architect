@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 markdownlint-cli2 need NOT be installed on the test host: detection
 (``shutil.which``) and invocation (``subprocess.run``) are both mocked, so the

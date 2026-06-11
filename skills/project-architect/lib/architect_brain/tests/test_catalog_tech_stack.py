@@ -7,7 +7,7 @@ previously pointed at a doc that existed nowhere). It must be a conditional doc
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 """
 
 import unittest

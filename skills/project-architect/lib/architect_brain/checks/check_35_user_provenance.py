@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 The event log's ``by`` field distinguishes a user-confirmed answer (``"user"``)
 from an orchestrator assumption (``"orchestrator"`` / ``"<agent-name>"``). A

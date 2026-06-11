@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_01_links.sh. For every design markdown file under the
 project's ``docs/`` (via :func:`collect_markdown`, which already prunes vendor /

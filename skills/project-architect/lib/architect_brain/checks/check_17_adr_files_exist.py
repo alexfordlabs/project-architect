@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Catches the T1/T7 failure mode where the ledger records an ADR (id, title,
 status) but no stub was ever written to decisions/ -- the decision exists in

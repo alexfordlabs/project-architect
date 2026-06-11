@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Covers the v8 adaptation: the performance_targets dict is read from a single
 FLAT decision key (``architecture.performance_targets``) in

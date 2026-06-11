@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Runs a set of checks (each an object with ``CHECK_ID: str`` + ``run(state_dir)
 -> CheckResult``), aggregates the results, and decides whether the run blocks

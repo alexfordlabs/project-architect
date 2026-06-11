@@ -10,7 +10,7 @@ revision_triggers: [mobile.platforms, mobile.framework, mobile.distribution]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Mobile Specific: {{project_name}}

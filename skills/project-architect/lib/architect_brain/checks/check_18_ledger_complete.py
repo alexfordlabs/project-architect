@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_18_ledger_complete (WARNING). Catches the T1 drift mode where a
 design doc was written to disk but never recorded in the ledger — the deliverable

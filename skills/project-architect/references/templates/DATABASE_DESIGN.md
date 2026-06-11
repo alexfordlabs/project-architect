@@ -10,7 +10,7 @@ revision_triggers: [database.engine, database.host, database.orm, database.migra
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Database Design: {{project_name}}

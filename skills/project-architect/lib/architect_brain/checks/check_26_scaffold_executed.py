@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v8-ADAPTATION of v7's check_26_scaffold_executed. Guards plan-vs-execution: a
 project may report COMPLETE carrying a layout plan (crates/, apps/) whose

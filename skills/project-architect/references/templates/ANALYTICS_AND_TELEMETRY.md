@@ -10,7 +10,7 @@ revision_triggers: [analytics.product, analytics.event_schema, analytics.consent
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Analytics and Telemetry: {{project_name}}

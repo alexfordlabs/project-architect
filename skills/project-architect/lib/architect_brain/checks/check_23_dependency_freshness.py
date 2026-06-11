@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Port of v7's check_23_dependency_freshness. Scans the common top-level manifests
 under the project root (NOT nested ones) for version specifiers carrying a

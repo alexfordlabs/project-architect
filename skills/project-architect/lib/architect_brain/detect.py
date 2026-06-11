@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 detect_situation(docs_dir) reports what kind of project-architect history
 lives at docs_dir, which drives Preflight's routing:

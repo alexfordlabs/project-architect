@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_07_attribution_footer (INFO; cosmetic, never blocks LOCK).
 Scans every design ``*.md`` under the project's ``docs/`` root and checks that

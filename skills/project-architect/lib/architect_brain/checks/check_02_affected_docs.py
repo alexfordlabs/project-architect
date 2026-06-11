@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Adapts v7's check_02_affected_docs (a BLOCKER guarding against ADR-promised
 docs being silently dropped). v8-ADAPTATION: v8 ADR events carry NO

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Covers the module contract, a passing fixture (every ADR-declared
 ``affected_docs`` entry is generated), a failing fixture (a declared doc is

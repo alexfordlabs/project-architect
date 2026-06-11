@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_03_decisions_in_docs to v8's FLAT decision keyspace. A decision
 that lives in state but is never named (by its value OR its leaf key) in any

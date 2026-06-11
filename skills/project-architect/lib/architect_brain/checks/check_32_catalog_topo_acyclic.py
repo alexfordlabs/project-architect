@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Validates the plugin's own ``references/catalog.json`` document-dependency
 graph: it must load cleanly and contain no dependency cycle. This guards the

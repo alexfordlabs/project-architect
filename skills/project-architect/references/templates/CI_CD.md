@@ -10,7 +10,7 @@ revision_triggers: [cicd.platform, cicd.branch_strategy, testing.unit_framework,
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # CI/CD: {{project_name}}

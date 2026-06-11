@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 A NEW v8 check (spec §5.4). Runs ``markdownlint-cli2`` over the project's design
 ``*.md`` files and surfaces only five high-signal structural rules

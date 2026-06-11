@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v7's check_06/07/08/09 each inlined the same ``find docs -name '*.md'`` with a
 vendor-exclusion list (the helper was deliberately NOT shared in bash because

@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Each check is a module exposing ``CHECK_ID: str`` + ``NAME`` + ``SEVERITY`` +
 ``run(state_dir) -> CheckResult``. ``ALL_CHECKS`` is the ordered registry the

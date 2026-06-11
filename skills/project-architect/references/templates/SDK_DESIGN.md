@@ -10,7 +10,7 @@ revision_triggers: [sdk.target_languages, sdk.versioning_policy]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # SDK Design: {{project_name}}

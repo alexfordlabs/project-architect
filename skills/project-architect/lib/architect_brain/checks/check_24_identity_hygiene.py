@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Port of v7's check_24_identity_hygiene. The forbidden terms come from an
 OPTIONAL project file ``.architect/identity-deny.txt`` (one term per line; blank

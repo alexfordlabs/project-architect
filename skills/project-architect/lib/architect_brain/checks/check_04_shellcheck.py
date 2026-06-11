@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Ports v7's check_04_shellcheck. Runs ``shellcheck -s bash -S warning`` over every
 ``*.sh`` under the project root (vendor/build/fixtures dirs pruned by _findlib),

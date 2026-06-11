@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v8-ADAPTATION of v7's check_15_numerical_consistency. v7 walked the nested
 ``state.decisions.architecture.performance_targets`` object inside the monolithic

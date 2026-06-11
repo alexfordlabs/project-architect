@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v8-ADAPTATION of v7's check_27_required_docs_generated. The rule is unchanged:
 the LIVE plugin template frontmatter is the source of truth -- a template whose

@@ -10,7 +10,7 @@ revision_triggers: [cicd.platform, release.cadence, release.versioning]
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Release Process: {{project_name}}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Author: Alexander Ford <alex@alexfordlabs.com>
 # Repository: https://github.com/alexfordlabs/project-architect
-# License: MIT
+# License: Apache-2.0
 """Render the project-architect explainer PDF in the brand style.
 
 Brand basis: the workspace brand style guide + press-kit brand-kit

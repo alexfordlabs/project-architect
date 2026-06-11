@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 Reads the one-line probe file ``state_dir/schema_version`` (written
 unconditionally by ``projections.projections_to_disk`` as ``"4.0\\n"``) and

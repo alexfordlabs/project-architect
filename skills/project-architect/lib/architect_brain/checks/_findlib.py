@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v7's ``_lib.sh::find_project_files`` walked the project root for files matching
 a pattern while pruning VCS / build / vendor / cache directories AND

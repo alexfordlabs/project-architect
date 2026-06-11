@@ -10,7 +10,7 @@ revision_triggers: [stack.frontend.framework, stack.backend.language, stack.data
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Technology Stack: {{project_name}}

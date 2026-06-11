@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 BLOCKING. Recomputes the decisions index (the ADR ledger) from events.jsonl via
 ``replay`` and compares it to ``decisions/index.json`` on disk, ignoring the

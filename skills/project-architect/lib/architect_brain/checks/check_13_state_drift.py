@@ -2,7 +2,7 @@
 
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 
 v8-ADAPTATION of v7's check_13_state_drift, which compared
 ``state.last_updated_at`` against the HEAD commit timestamp. v8 has no

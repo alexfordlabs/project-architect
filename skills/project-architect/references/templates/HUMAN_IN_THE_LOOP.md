@@ -10,7 +10,7 @@ revision_triggers: [agent.autonomy, agent.hitl, agent.execution, agent.tools.san
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Human-in-the-Loop: {{project_name}}

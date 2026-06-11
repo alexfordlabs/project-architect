@@ -10,7 +10,7 @@ revision_triggers: [webhooks.outbound, api.idempotency_required, stack.api.proto
 <!--
 Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
-License: MIT
+License: Apache-2.0
 -->
 
 # Webhook Design: {{project_name}}
