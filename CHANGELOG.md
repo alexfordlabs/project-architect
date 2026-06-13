@@ -10,6 +10,44 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v9.2.0 — 2026-06-13
+
+**Latest-Fable everywhere + the three remaining tiger-panther run bugs.**
+
+### Changed
+
+- **Every model surface now targets the latest Fable-class Claude model**
+  (operator standing rule). All 7 subagent frontmatters and every SKILL.md
+  dispatch use the auto-tracking `fable` alias; the Preflight model gate
+  targets Fable-class (`claude-fable-5` as of this release; any newer
+  Fable/Mythos id qualifies), with a current Opus + 1M context as the accepted
+  floor; generated-artifact surfaces (claude-tooling-author's `settings.json`
+  quality bar, golden-path `ai.model`, claude-code-integration's generated
+  agent examples) name `claude-fable-5`. `tests/test_v92_model_fable.sh` pins
+  all surfaces so an Opus-pinned dispatch can't silently return.
+- **check_19 `audit_freshness` no longer fails on clean post-lock re-audits** —
+  SKILL Phase 9 (Tooling Execution) runs after lock and prescribes re-audits,
+  so "any post-lock audit = defect" made the skill contradict its own gate
+  (every post-Phase-9 audit went permanently red). New semantics: the lock
+  must be vetted by a CLEAN audit at-or-before `locked_at` (missing or blocked
+  vetting audit still fails), and a post-lock audit only fails when it is
+  itself BLOCKED (state degraded after lock).
+- **check_20 `no_oob_phase_advance` tolerates the `preflight` opener** —
+  pre-v9.2 SKILL.md instructed `set-phase preflight`, so real projects carry a
+  `PhaseAdvanced` to=preflight in their append-only log forever; check_20
+  treated it as an unknown phase and permanently blocked their audits.
+
+### Fixed
+
+- **`reconcile-adrs` TypeError on mixed ADR id types** — YAML parses an
+  unquoted `id: 0001` as the int 1; mixed with quoted-string ids from sibling
+  files, the index sort crashed (`'<' not supported between 'str' and 'int'`).
+  Ids (and `supersedes`/`superseded_by` entries) now normalize to the
+  canonical zero-padded string form.
+- **SKILL.md no longer instructs `set-phase preflight`** — preflight is the
+  banner-only opener and is not on check_20's phase ladder; the run's first
+  phase event is the Phase 0a → Kickoff `set-phase kickoff`.
+
 ## v9.1.0 — 2026-06-13
 
 **Latest-stable everywhere: the version-pin chain is now enforced end-to-end.**
