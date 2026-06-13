@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Author: Alexander Ford <alex@alexfordlabs.com>
+# License: Apache-2.0
+# Project: project-architect (https://github.com/alexfordlabs/project-architect)
+#
+# floor-check — release-time freshness audit for configs.FLOORS.
+#
+# The generators' fallback versions (configs.py FLOORS) are plugin-baked
+# constants: they only stay honest if every release refreshes them. This script
+# queries the LIVE registries (npm for next/react/typescript/biome;
+# endoflife.date for node/python/postgres/redis) and reports each floor's drift
+# against today's newest stable (newest Active-LTS for node). Run it as part of
+# the release workflow; non-zero exit means a floor needs a bump before tagging.
+#
+# Network required (registry.npmjs.org + endoflife.date). Not run in CI.
+
+set -uo pipefail
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'EOF'
+usage: floor-check [--help]
+
+Compares configs.FLOORS (next, react, node, python, postgres, redis, biome,
+typescript) against live registries and reports drift. Exit 0 = all floors
+current; exit 1 = at least one floor is stale (refresh configs.FLOORS, the
+floor assertions in the unit tests, and the "Last refreshed" comment before
+tagging the release); exit 2 = a registry was unreachable.
+EOF
+  exit 0
+fi
+
+for tool in curl jq python3; do
+  command -v "$tool" >/dev/null 2>&1 || { echo "floor-check: $tool not found" >&2; exit 2; }
+done
+
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+export PYTHONPATH="$PLUGIN_ROOT/skills/project-architect/lib:${PYTHONPATH:-}"
+
+floor() { python3 -c "from architect_brain.configs import FLOORS; print(FLOORS['$1'])"; }
+major() { python3 -c "import re,sys; m=re.match(r'(\d+)', sys.argv[1].lstrip('^~><=v ')); print(m.group(1) if m else '')" "$1"; }
+
+drift=0
+unreachable=0
+
+report() { # token floor live verdict
+  printf '%-12s floor=%-10s live=%-10s %s\n' "$1" "$2" "$3" "$4"
+}
+
+check_major_line() { # token floor live_version
+  local token="$1" fl="$2" live="$3"
+  if [[ -z "$live" ]]; then
+    report "$token" "$fl" "?" "UNREACHABLE"
+    unreachable=1
+  elif [[ "$(major "$fl")" == "$(major "$live")" ]]; then
+    report "$token" "$fl" "$live" "ok (same major line)"
+  else
+    report "$token" "$fl" "$live" "STALE — bump the floor"
+    drift=1
+  fi
+}
+
+# ── npm-registry tokens ──
+for entry in "next:next" "react:react" "typescript:typescript" "biome:@biomejs/biome"; do
+  token="${entry%%:*}"; pkg="${entry#*:}"
+  live="$(curl -fsS --max-time 20 "https://registry.npmjs.org/${pkg}/latest" 2>/dev/null | jq -r '.version // empty')"
+  check_major_line "$token" "$(floor "$token")" "$live"
+done
+
+# ── endoflife.date tokens ──
+eol_latest() { # product jq-filter
+  curl -fsS --max-time 20 "https://endoflife.date/api/$1.json" 2>/dev/null | jq -r "$2"
+}
+# node: newest cycle whose LTS date is set and passed (Active/Maintenance LTS line)
+node_live="$(eol_latest nodejs '[.[] | select(.lts != false and .lts != null and (.lts < (now | strftime("%Y-%m-%d"))))] | .[0].cycle // empty')"
+check_major_line "node" "$(floor node)" "$node_live"
+# python: the cycle IS major.minor (3.14) — compare the full cycle, since a
+# major-only compare would call 3.15 "same line" as a 3.14 floor forever.
+py_floor="$(floor python)"
+py_live="$(eol_latest python '.[0].cycle // empty')"
+if [[ -z "$py_live" ]]; then
+  report "python" "$py_floor" "?" "UNREACHABLE"
+  unreachable=1
+elif [[ "$py_floor" == "$py_live" ]]; then
+  report "python" "$py_floor" "$py_live" "ok (current cycle)"
+else
+  report "python" "$py_floor" "$py_live" "STALE — bump the floor"
+  drift=1
+fi
+pg_live="$(eol_latest postgresql '.[0].cycle // empty')"
+check_major_line "postgres" "$(floor postgres)" "$pg_live"
+redis_live="$(eol_latest redis '.[0].cycle // empty')"
+check_major_line "redis" "$(floor redis)" "$redis_live"
+
+if [[ "$unreachable" -eq 1 ]]; then exit 2; fi
+exit "$drift"

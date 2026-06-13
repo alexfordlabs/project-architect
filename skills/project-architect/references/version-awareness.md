@@ -43,7 +43,7 @@ Act on the situation + derived verdict:
 
 ```
 This project's design was produced by an older project-architect (vX; current is v8).
-The v8 hardening (event-sourced state, the 35-check audit gate, ADR provenance,
+The v8 hardening (event-sourced state, the 36-check audit gate, ADR provenance,
 cross-link integrity) does not apply to it yet. What would you like to do?
 
   (1) Upgrade design, then continue        — run the cross-version upgrade, then proceed

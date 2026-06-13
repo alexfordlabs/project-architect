@@ -11,18 +11,38 @@ so re-running scaffolding never churns the tree. Wave 4 builds these out
 (package.json, tsconfig, biome, pyproject, Dockerfile, docker-compose, turbo);
 the ``generate-configs`` CLI (Task 4.8) emits all applicable ones.
 
-Version pins (v8.0.1): dependency/runtime versions are read from
+Version pins (v8.0.1, hardened v9.1): dependency/runtime versions are read from
 ``stack.versions.<package>`` decisions via ``_pin`` when present — so the
 manifests track the versions research-scout resolved as newest-stable — and
-fall back to a conservative plugin-baked floor otherwise. The floor goes stale
-on the plugin's release cadence; recording the researched pin keeps generated
-configs fresh without a plugin release.
+fall back to the plugin-baked ``FLOORS`` otherwise. FLOORS are refreshed to the
+newest stable release at every plugin release (release-workflow step; see
+``bin/floor-check``), and audit check 36 (``version_pins_recorded``) flags any
+generated artifact whose token has no recorded pin, so a floor fallback is
+never silent. Pin-token applicability is computed by the SAME predicates the
+``generate-configs`` CLI uses (``js_stack`` / ``dockerfile_language`` /
+``applicable_pin_tokens``) — obligation and emission cannot diverge.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
+
+# Plugin-baked fallback versions, used ONLY when no ``stack.versions.<token>``
+# decision is recorded. Policy: newest stable (Active-LTS for node) at the
+# plugin's release date — REFRESH AT EVERY RELEASE (run ``bin/floor-check``).
+# Last refreshed: 2026-06-13.
+FLOORS: dict[str, str] = {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "node": "24",
+    "python": "3.14",
+    "postgres": "18",
+    "redis": "8",
+    "biome": "2.5.0",
+    "typescript": "^6.0.0",
+}
 
 
 def _dec(flat_index: dict[str, Any], key: str, default: Any = None) -> Any:
@@ -32,19 +52,96 @@ def _dec(flat_index: dict[str, Any], key: str, default: Any = None) -> Any:
     return flat_index.get("decisions", {}).get(key, default)
 
 
-def _pin(flat_index: dict[str, Any], package: str, floor: str) -> str:
-    """Resolve a dependency/runtime version: a researched state pin, else a floor.
+def _pin(flat_index: dict[str, Any], package: str) -> str:
+    """Resolve a dependency/runtime version: a researched state pin, else FLOORS.
 
     Prefers a ``stack.versions.<package>`` decision recorded in state (what
     research-scout § 1a resolves as newest-stable and the orchestrator records),
     so generated manifests track current versions WITHOUT a plugin release. The
-    ``floor`` is a conservative constant baked into the plugin — it is only a
-    fallback and goes stale on the plugin's own release cadence, so a real run
-    should record the researched pin. Still deterministic: same state in, same
-    text out.
+    ``FLOORS`` constant is only a fallback; check 36 flags artifacts generated
+    from it. Still deterministic: same state in, same text out.
     """
     val = _dec(flat_index, f"stack.versions.{package}")
-    return val if isinstance(val, str) and val else floor
+    return val if isinstance(val, str) and val else FLOORS[package]
+
+
+def _bare_version(pin: str) -> str:
+    """Strip a range operator prefix (``^``/``~``/``>=``/…) off a pin."""
+    return pin.lstrip("^~><=v ")
+
+
+def _major(pin: str) -> str | None:
+    """The leading major-version integer of a pin, or None if unparseable."""
+    m = re.match(r"(\d+)", _bare_version(pin))
+    return m.group(1) if m else None
+
+
+def _stack_languages(flat_index: dict[str, Any]) -> set[Any]:
+    return {
+        _dec(flat_index, "stack.frontend.language"),
+        _dec(flat_index, "stack.backend.language"),
+    }
+
+
+def js_stack(flat_index: dict[str, Any]) -> bool:
+    """Whether the stack gets a JS/TS toolchain (package.json/biome/tsconfig).
+
+    The ONE predicate shared by the ``generate-configs`` emission, the pin
+    obligation (check 36), and the agents' prose — keep them from diverging.
+    """
+    langs = _stack_languages(flat_index)
+    return (
+        _dec(flat_index, "stack.frontend.framework") is not None
+        or "typescript" in langs
+        or "javascript" in langs
+    )
+
+
+def dockerfile_language(flat_index: dict[str, Any]) -> str | None:
+    """Which runtime the generated Dockerfile is based on, or None for none.
+
+    The backend language wins (it is the deploy artifact); a JS/TS front end
+    implies node. Languages we have no honest template for (rust, go, …) and
+    stacks with no language decided yield None — the v9.1 fix for the old
+    behaviour of silently defaulting every project to a node Dockerfile.
+    """
+    backend = _dec(flat_index, "stack.backend.language")
+    if backend == "python":
+        return "python"
+    if backend in ("typescript", "javascript"):
+        return "node"
+    if backend is None and js_stack(flat_index):
+        return "node"
+    return None
+
+
+def applicable_pin_tokens(flat_index: dict[str, Any]) -> dict[str, str]:
+    """Map every ``stack.versions.<token>`` the generators would consume for
+    this stack to the artifact filename that consumes it.
+
+    Mirrors the generators exactly; check 36 uses this to flag artifacts that
+    shipped on a floor fallback.
+    """
+    tokens: dict[str, str] = {}
+    if js_stack(flat_index):
+        tokens["biome"] = "biome.json"
+        tokens["typescript"] = "package.json"
+        tokens["node"] = "package.json"
+        if _dec(flat_index, "stack.frontend.framework") == "next.js":
+            tokens["next"] = "package.json"
+            tokens["react"] = "package.json"
+    lang = dockerfile_language(flat_index)
+    if lang == "python":
+        tokens["python"] = "Dockerfile"
+    elif lang == "node":
+        tokens["node"] = "Dockerfile"
+    if "python" in _stack_languages(flat_index):
+        tokens.setdefault("python", "pyproject.toml")
+    if _dec(flat_index, "stack.database.engine") in ("postgres", "postgresql"):
+        tokens["postgres"] = "docker-compose.yml"
+    if _dec(flat_index, "stack.cache.engine") == "redis":
+        tokens["redis"] = "docker-compose.yml"
+    return tokens
 
 
 def _json(obj: Any) -> str:
@@ -53,7 +150,12 @@ def _json(obj: Any) -> str:
 
 
 def gen_package_json(flat_index: dict[str, Any]) -> str:
-    """Emit package.json for the project's JS/TS stack (deterministic)."""
+    """Emit package.json for the project's JS/TS stack (deterministic).
+
+    Every tool the scripts invoke (tsc, biome) is declared as a pinned
+    devDependency — never assumed global (the v9.1 fix for scripts that
+    referenced an undeclared toolchain).
+    """
     name = _dec(flat_index, "project.name") or "app"
     framework = _dec(flat_index, "stack.frontend.framework")
     pkg: dict[str, Any] = {
@@ -62,6 +164,12 @@ def gen_package_json(flat_index: dict[str, Any]) -> str:
         "private": True,
         "type": "module",
     }
+    node_major = _major(_pin(flat_index, "node")) or FLOORS["node"]
+    dev: dict[str, str] = {
+        "@biomejs/biome": _pin(flat_index, "biome"),  # exact pin (Biome convention)
+        "typescript": _pin(flat_index, "typescript"),
+        "@types/node": f"^{node_major}.0.0",
+    }
     if framework == "next.js":
         pkg["scripts"] = {
             "dev": "next dev",
@@ -69,12 +177,14 @@ def gen_package_json(flat_index: dict[str, Any]) -> str:
             "start": "next start",
             "lint": "biome check .",
         }
-        react = _pin(flat_index, "react", "^19.0.0")  # react + react-dom move in lockstep
+        react = _pin(flat_index, "react")  # react + react-dom move in lockstep
         pkg["dependencies"] = {
-            "next": _pin(flat_index, "next", "^15.0.0"),
+            "next": _pin(flat_index, "next"),
             "react": react,
             "react-dom": react,
         }
+        dev["@types/react"] = react
+        dev["@types/react-dom"] = react
     else:
         pkg["scripts"] = {
             "build": "tsc -p tsconfig.json",
@@ -82,6 +192,7 @@ def gen_package_json(flat_index: dict[str, Any]) -> str:
             "lint": "biome check .",
         }
         pkg["dependencies"] = {}
+    pkg["devDependencies"] = dev
     return _json(pkg)
 
 
@@ -111,18 +222,35 @@ def gen_tsconfig(flat_index: dict[str, Any]) -> str:
 
 
 def gen_biome_json(flat_index: dict[str, Any]) -> str:
-    """Emit biome.json with the recommended ruleset + formatter (deterministic)."""
-    return _json({
-        "$schema": f"https://biomejs.dev/schemas/{_pin(flat_index, 'biome', '1.9.4')}/schema.json",
-        "organizeImports": {"enabled": True},
-        "linter": {"enabled": True, "rules": {"recommended": True}},
+    """Emit biome.json with the recommended ruleset + formatter (deterministic).
+
+    The config SHAPE tracks the pinned major: Biome 2.0 moved import organizing
+    from the top-level ``organizeImports`` key to ``assist.actions.source``
+    (emitting the 1.x shape against a 2.x binary is a hard config error — the
+    v9.1 fix; previously the 1.x shape was emitted unconditionally). The linter
+    block stays on ``rules.recommended: true``, which every 1.x AND 2.x accepts
+    — the newer ``rules.preset`` alias is 2.5-only (live-validated: a 2.4.15
+    binary rejects ``preset`` as an unknown key).
+    """
+    pin = _pin(flat_index, "biome")
+    schema_version = _bare_version(pin)
+    major = _major(pin)
+    legacy_1x = major is not None and int(major) < 2
+    cfg: dict[str, Any] = {
+        "$schema": f"https://biomejs.dev/schemas/{schema_version}/schema.json",
         "formatter": {
             "enabled": True,
             "indentStyle": "space",
             "indentWidth": 2,
             "lineWidth": 100,
         },
-    })
+        "linter": {"enabled": True, "rules": {"recommended": True}},
+    }
+    if legacy_1x:
+        cfg["organizeImports"] = {"enabled": True}
+    else:
+        cfg["assist"] = {"actions": {"source": {"organizeImports": "on"}}}
+    return _json(cfg)
 
 
 def gen_pyproject(flat_index: dict[str, Any]) -> str:
@@ -134,7 +262,7 @@ def gen_pyproject(flat_index: dict[str, Any]) -> str:
     # requires-python floor + ruff target track the researched python pin
     # (stack.versions.python), so pyproject agrees with the Dockerfile instead of
     # frozen 3.11. ``py`` is major.minor (e.g. "3.13"); ruff wants "py313".
-    py = _pin(flat_index, "python", "3.11")
+    py = _pin(flat_index, "python")
     # ruff target-version is pyMAJORMINOR (no dots, major.minor only) — tolerate a
     # pin that carries a patch component (e.g. "3.13.1" -> "py313").
     ruff_target = "py" + "".join(py.split(".")[:2])
@@ -161,15 +289,19 @@ def gen_dockerfile(flat_index: dict[str, Any]) -> str:
     """Emit a multi-stage Dockerfile (deterministic).
 
     Distroless runtime base when ``constraints.supply_chain_security`` is set.
+    Raises ``ValueError`` for stacks ``dockerfile_language`` can't honestly
+    base — the caller (``generate-configs``) skips emission instead of the old
+    silent default to a node image.
     """
-    language = (
-        _dec(flat_index, "stack.backend.language")
-        or _dec(flat_index, "stack.frontend.language")
-        or "node"
-    )
+    language = dockerfile_language(flat_index)
+    if language is None:
+        raise ValueError(
+            "no Dockerfile template for this stack "
+            "(dockerfile_language() returned None)"
+        )
     distroless = bool(_dec(flat_index, "constraints.supply_chain_security"))
     if language == "python":
-        py_tag = _pin(flat_index, "python", "3.11")
+        py_tag = _pin(flat_index, "python")
         runtime = "gcr.io/distroless/python3-debian12" if distroless else f"python:{py_tag}-slim"
         return (
             "# syntax=docker/dockerfile:1\n"
@@ -183,7 +315,7 @@ def gen_dockerfile(flat_index: dict[str, Any]) -> str:
             "COPY --from=build /app /app\n"
             'CMD ["python", "-m", "app"]\n'
         )
-    node_tag = _pin(flat_index, "node", "22")
+    node_tag = _pin(flat_index, "node")
     runtime = f"gcr.io/distroless/nodejs{node_tag}-debian12" if distroless else f"node:{node_tag}-slim"
     return (
         "# syntax=docker/dockerfile:1\n"
@@ -216,7 +348,7 @@ def gen_docker_compose(flat_index: dict[str, Any]) -> str:
         depends.append("db")
         extra += [
             "  db:",
-            f"    image: postgres:{_pin(flat_index, 'postgres', '17')}-alpine",
+            f"    image: postgres:{_pin(flat_index, 'postgres')}-alpine",
             "    environment:",
             "      POSTGRES_PASSWORD: postgres",
             "    ports:",
@@ -226,7 +358,7 @@ def gen_docker_compose(flat_index: dict[str, Any]) -> str:
         depends.append("cache")
         extra += [
             "  cache:",
-            f"    image: redis:{_pin(flat_index, 'redis', '7')}-alpine",
+            f"    image: redis:{_pin(flat_index, 'redis')}-alpine",
             "    ports:",
             '      - "6379:6379"',
         ]

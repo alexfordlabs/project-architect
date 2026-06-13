@@ -47,18 +47,20 @@ class TestGenDockerCompose(unittest.TestCase):
         self.assertIn("postgres:16-alpine", out)
 
     def test_postgres_falls_back_to_floor(self):
+        # Floor = newest stable at plugin-release time (PG 18 as of 2026-06).
         out = gen_docker_compose(_fi({"stack.database.engine": "postgres"}))
-        self.assertIn("postgres:17-alpine", out)
+        self.assertIn("postgres:18-alpine", out)
 
     def test_uses_recorded_redis_tag(self):
         out = gen_docker_compose(_fi({
-            "stack.cache.engine": "redis", "stack.versions.redis": "8",
+            "stack.cache.engine": "redis", "stack.versions.redis": "7.4",
         }))
-        self.assertIn("redis:8-alpine", out)
+        self.assertIn("redis:7.4-alpine", out)
 
     def test_redis_falls_back_to_floor(self):
+        # Floor = newest stable at plugin-release time (Redis 8 as of 2026-06).
         out = gen_docker_compose(_fi({"stack.cache.engine": "redis"}))
-        self.assertIn("redis:7-alpine", out)
+        self.assertIn("redis:8-alpine", out)
 
 
 if __name__ == "__main__":

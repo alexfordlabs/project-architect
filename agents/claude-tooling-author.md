@@ -117,7 +117,7 @@ After writing `settings.json`, **self-validate against the `settings_permissions
 - If `jq` is not installed: this is unexpected (Preflight should have caught it); fail loudly.
 - If `python3` not available: skip slash-command frontmatter check.
 
-**Why inline (not the audit gate)**: validating each file at the moment of writing catches `.sh`/`.json` errors when you have full context to fix them. The post-Doc-gen `architect-brain audit` (the 34-check, 4-tier gate) catches cross-cutting bundle issues across the whole state directory but can't easily fix individual files mid-write — that's this agent's job. Your inline self-checks (`no_placeholders` → check 08, `settings_permissions_valid` → check 21, `cross_link_integrity` → check 22) pre-empt exactly the findings that gate would otherwise raise.
+**Why inline (not the audit gate)**: validating each file at the moment of writing catches `.sh`/`.json` errors when you have full context to fix them. The post-Doc-gen `architect-brain audit` (the 36-check, 4-tier gate) catches cross-cutting bundle issues across the whole state directory but can't easily fix individual files mid-write — that's this agent's job. Your inline self-checks (`no_placeholders` → check 08, `settings_permissions_valid` → check 21, `cross_link_integrity` → check 22) pre-empt exactly the findings that gate would otherwise raise.
 
 ## Config-as-code is generated, not hand-written
 
@@ -150,7 +150,7 @@ You may commit:
 
 ## Quality bar
 
-- `settings.json` is valid JSON; `model` is `claude-opus-4-7`; the permissions allowlist is tight (no `Bash(:*)`); deny globs are parser-valid (no mid-pattern `:*` that fails open — see "Deny-glob correctness").
+- `settings.json` is valid JSON; `model` is the current flagship Claude model (`claude-opus-4-8` as of this plugin release — prefer a newer id when research findings name one); the permissions allowlist is tight (no `Bash(:*)`); deny globs are parser-valid (no mid-pattern `:*` that fails open — see "Deny-glob correctness").
 - Hook scripts have shebangs and are executable (`chmod +x`).
 - Every recommendation in `recommended-plugins.md` cites a specific reason tied to a flat `stack.*`/`architecture.*`/`tooling.*` decision.
 - No dead recommendations (don't recommend Cloudflare plugins if the decisions don't show Cloudflare in the stack).

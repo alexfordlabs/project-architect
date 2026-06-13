@@ -25,7 +25,6 @@ downstream doc-selection / config-gen if the consumers read the SAME key.
 | Key | Example value |
 |---|---|
 | `stack.frontend.framework` | `next.js`, `react`, `svelte` |
-| `stack.frontend.version` | `15` |
 | `stack.frontend.styling` | `tailwind` |
 | `stack.frontend.language` | `typescript` |
 | `stack.backend.language` | `typescript`, `python`, `rust`, `go` |
@@ -42,27 +41,32 @@ downstream doc-selection / config-gen if the consumers read the SAME key.
 | `stack.containerization` | `docker` |
 | `stack.mobile.framework` / `stack.mobile.*` | `react-native` … |
 | `stack.license` | `MIT` |
-| `stack.versions.<package>` | `^16.2.6` (next), `^19.2.0` (react), `24` (node), `3.13` (python), `17` (postgres), `7` (redis), `2.1.0` (biome) |
+| `stack.versions.<package>` | research-resolved pins — `stack.versions.next`, `stack.versions.react`, `stack.versions.node`, `stack.versions.python`, `stack.versions.postgres`, `stack.versions.redis`, `stack.versions.biome`, `stack.versions.typescript` (live values as of the run — e.g. `stack.versions.next = "^16.2.6"` was newest-stable mid-2026; never copy an example verbatim) |
 
 **Note (value vocabulary):** the engine value is the technology's own canonical
 name — `postgresql`, not `postgres`. Consumers that branch on the value accept
 the canonical spelling (e.g. `gen_docker_compose` treats `postgres`/`postgresql`
 alike).
 
-**`stack.versions.*` — resolved version pins (v8.0.1).** After research-scout
-resolves the newest-stable version for each dependency (§ 1a of its mission),
-the orchestrator records each as `stack.versions.<package>` (e.g.
-`stack.versions.next = "^16.2.6"`). The config generators (`gen_package_json`,
-`gen_dockerfile`, `gen_pyproject`, `gen_docker_compose`, `gen_biome_json`) read
-these via `configs._pin` and emit them into the user's `package.json` /
-`Dockerfile` / `pyproject.toml` / `docker-compose.yml` / `biome.json`; absent a
-recorded pin they fall back to a conservative plugin floor that goes stale on the
-plugin's release cadence. `<package>` is the dependency's own token (`next`,
-`react` — drives `react-dom` too —, `node`, `python` — drives `requires-python` +
-ruff `target-version` —, plus the Docker-image / tool tokens `postgres`, `redis`,
-`biome`). This supersedes the older single-value
-`stack.frontend.version` hint, which is framework-major-only and unread by the
-generators.
+**`stack.versions.*` — resolved version pins (v8.0.1, extended v9.1).** After
+research-scout resolves the newest-stable version for each dependency (§ 1a of
+its mission), the orchestrator records each as `stack.versions.<package>`. The
+config generators (`gen_package_json`, `gen_dockerfile`, `gen_pyproject`,
+`gen_docker_compose`, `gen_biome_json`) read these via `configs._pin` and emit
+them into the user's `package.json` / `Dockerfile` / `pyproject.toml` /
+`docker-compose.yml` / `biome.json`; absent a recorded pin they fall back to
+`configs.FLOORS` (refreshed each plugin release), and audit check 36
+(`version_pins_recorded`, WARNING) flags every generated artifact whose token
+was never recorded. `<package>` is the dependency's own token (`next`, `react`
+— drives `react-dom` + `@types/react` too —, `node` — drives the Dockerfile
+base + `@types/node` —, `python` — drives `requires-python` + ruff
+`target-version` + the Dockerfile base —, `typescript` — the tsc toolchain
+devDependency —, plus the Docker-image / tool tokens `postgres`, `redis`,
+`biome` — the biome pin also selects the emitted config SHAPE, 1.x vs 2.x).
+Which tokens a stack owes is computed by `configs.applicable_pin_tokens` — the
+same predicates `generate-configs` emits by. This supersedes the older
+single-value `stack.frontend.version` hint, which is framework-major-only and
+unread by the generators.
 
 ## Other top-level namespaces
 

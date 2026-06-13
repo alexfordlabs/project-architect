@@ -65,62 +65,65 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| language.primary | CLAUDE_MD_ROOT, all per-folder CLAUDE.md in that language, TESTING_STRATEGY, CI_CD |
-| language.runtime | CLAUDE_MD_ROOT, DEPLOYMENT, CI_CD |
-| package_manager | CLAUDE_MD_ROOT, CI_CD |
-| monorepo_tool | CLAUDE_MD_ROOT, CI_CD, per-folder CLAUDE.md |
+| stack.backend.language | CLAUDE_MD_ROOT, all per-folder CLAUDE.md in that language, TESTING_STRATEGY, CI_CD |
+| stack.frontend.language | CLAUDE_MD_ROOT, UI_UX_DESIGN, TESTING_STRATEGY, CI_CD |
+| stack.backend.runtime | CLAUDE_MD_ROOT, DEPLOYMENT, CI_CD |
+| stack.versions.* (any pin) | TECH_STACK, the generated config the token feeds (package.json / Dockerfile / pyproject.toml / docker-compose.yml / biome.json) |
+| stack.package_manager | CLAUDE_MD_ROOT, CI_CD |
+| stack.monorepo | CLAUDE_MD_ROOT, CI_CD, per-folder CLAUDE.md |
 
 ### Frontend
 
 | decision_key | affected docs |
 |---|---|
-| frontend.framework | UI_UX_DESIGN, DEPLOYMENT, CI_CD, CLAUDE_MD_ROOT, apps/web/CLAUDE.md* |
-| frontend.styling | UI_UX_DESIGN, BRAND_AND_DESIGN_TOKENS* |
-| frontend.component_library | UI_UX_DESIGN |
-| frontend.state | UI_UX_DESIGN |
-| frontend.data_fetching | UI_UX_DESIGN, API_GATEWAY* |
-| frontend.rendering | UI_UX_DESIGN, DEPLOYMENT, PERFORMANCE_BUDGETS |
-| frontend.routing | UI_UX_DESIGN |
+| stack.frontend.framework | UI_UX_DESIGN, DEPLOYMENT, CI_CD, CLAUDE_MD_ROOT, apps/web/CLAUDE.md* |
+| stack.frontend.styling | UI_UX_DESIGN, BRAND_AND_DESIGN_TOKENS* |
+| stack.frontend.component_library | UI_UX_DESIGN |
+| stack.frontend.state | UI_UX_DESIGN |
+| stack.frontend.data_fetching | UI_UX_DESIGN, API_GATEWAY* |
+| stack.frontend.rendering | UI_UX_DESIGN, DEPLOYMENT, PERFORMANCE_BUDGETS |
+| stack.frontend.routing | UI_UX_DESIGN |
 
 ### Backend / API
 
 | decision_key | affected docs |
 |---|---|
-| backend.framework | API_GATEWAY, DEPLOYMENT, CI_CD, CLAUDE_MD_ROOT |
-| backend.api_style | API_GATEWAY |
-| backend.versioning | API_GATEWAY, RELEASE_PROCESS* |
-| backend.rate_limiting | API_GATEWAY, SECURITY_AND_COMPLIANCE |
-| backend.realtime_protocol | API_GATEWAY, REAL_TIME |
+| stack.backend.framework | API_GATEWAY, DEPLOYMENT, CI_CD, CLAUDE_MD_ROOT |
+| stack.api.protocol | API_GATEWAY |
+| stack.backend.versioning | API_GATEWAY, RELEASE_PROCESS* |
+| stack.backend.rate_limiting | API_GATEWAY, SECURITY_AND_COMPLIANCE |
+| stack.backend.realtime_protocol | API_GATEWAY, REAL_TIME |
 
 ### Database
 
 | decision_key | affected docs |
 |---|---|
-| database.engine | DATABASE_DESIGN, API_GATEWAY, BACKUP_AND_DR, COST_MODEL, CLAUDE_MD_ROOT |
-| database.host | DATABASE_DESIGN, DEPLOYMENT, COST_MODEL, BACKUP_AND_DR |
-| database.orm | DATABASE_DESIGN, API_GATEWAY, CLAUDE_MD_ROOT |
-| database.migration_strategy | DATABASE_DESIGN, CI_CD, RUNBOOK |
-| database.normalization | DATABASE_DESIGN |
-| database.multi_tenancy_isolation | DATABASE_DESIGN, TENANT_AND_ORGANIZATION_MODEL, SECURITY_AND_COMPLIANCE |
+| stack.database.engine | DATABASE_DESIGN, API_GATEWAY, BACKUP_AND_DR, COST_MODEL, CLAUDE_MD_ROOT |
+| stack.cache.engine | DATABASE_DESIGN, PERFORMANCE_BUDGETS, COST_MODEL, docker-compose.yml |
+| stack.database.host | DATABASE_DESIGN, DEPLOYMENT, COST_MODEL, BACKUP_AND_DR |
+| stack.database.orm | DATABASE_DESIGN, API_GATEWAY, CLAUDE_MD_ROOT |
+| stack.database.migration_strategy | DATABASE_DESIGN, CI_CD, RUNBOOK |
+| stack.database.normalization | DATABASE_DESIGN |
+| stack.database.multi_tenancy_isolation | DATABASE_DESIGN, TENANT_AND_ORGANIZATION_MODEL, SECURITY_AND_COMPLIANCE |
 
 ### Auth
 
 | decision_key | affected docs |
 |---|---|
-| auth.provider | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE, API_GATEWAY*, CLAUDE_MD_ROOT |
-| auth.methods | AUTHENTICATION_SYSTEM, UI_UX_DESIGN* |
-| auth.session_strategy | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE |
-| auth.oauth_providers | AUTHENTICATION_SYSTEM |
-| auth.multi_tenancy | AUTHENTICATION_SYSTEM, TENANT_AND_ORGANIZATION_MODEL, DATABASE_DESIGN |
-| auth.mfa | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE |
+| stack.auth.provider | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE, API_GATEWAY*, CLAUDE_MD_ROOT |
+| stack.auth.methods | AUTHENTICATION_SYSTEM, UI_UX_DESIGN* |
+| stack.auth.session_strategy | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE |
+| stack.auth.oauth_providers | AUTHENTICATION_SYSTEM |
+| stack.auth.multi_tenancy | AUTHENTICATION_SYSTEM, TENANT_AND_ORGANIZATION_MODEL, DATABASE_DESIGN |
+| stack.auth.mfa | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE |
 
 ### Hosting / deployment
 
 | decision_key | affected docs |
 |---|---|
-| hosting.frontend | DEPLOYMENT, CI_CD, COST_MODEL |
-| hosting.backend | DEPLOYMENT, CI_CD, COST_MODEL, MONITORING_AND_OBSERVABILITY |
-| hosting.cdn | DEPLOYMENT, PERFORMANCE_BUDGETS, EDGE_AND_CACHING* |
+| stack.hosting.frontend | DEPLOYMENT, CI_CD, COST_MODEL |
+| stack.hosting.backend | DEPLOYMENT, CI_CD, COST_MODEL, MONITORING_AND_OBSERVABILITY |
+| stack.hosting.cdn | DEPLOYMENT, PERFORMANCE_BUDGETS, EDGE_AND_CACHING* |
 | deployment.environments | DEPLOYMENT, CI_CD |
 | deployment.iac | DEPLOYMENT, CI_CD |
 
@@ -158,8 +161,8 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| payments.provider | BILLING_AND_PAYMENTS, COST_MODEL, SECURITY_AND_COMPLIANCE* |
-| payments.model | BILLING_AND_PAYMENTS |
+| stack.payments.provider | BILLING_AND_PAYMENTS, COST_MODEL, SECURITY_AND_COMPLIANCE* |
+| stack.payments.model | BILLING_AND_PAYMENTS |
 
 ### Notifications
 
@@ -180,10 +183,10 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| ai.llm_provider | AI_AND_ML, COST_MODEL, SECURITY_AND_COMPLIANCE* |
-| ai.sdk | AI_AND_ML |
-| ai.vector_db | AI_AND_ML, DATABASE_DESIGN |
-| ai.embeddings_model | AI_AND_ML, COST_MODEL |
+| ai.provider | AI_AND_ML, COST_MODEL, SECURITY_AND_COMPLIANCE* |
+| ai.framework | AI_AND_ML |
+| ai.rag.vector_store | AI_AND_ML, DATABASE_DESIGN |
+| ai.rag.embeddings | AI_AND_ML, COST_MODEL |
 
 ### Real-time
 
@@ -203,7 +206,7 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| cicd.platform | CI_CD, DEPLOYMENT |
+| ci.provider | CI_CD, DEPLOYMENT |
 | cicd.branch_strategy | CI_CD, CONTRIBUTING* |
 
 ### Misc
@@ -226,10 +229,10 @@ This is a **coarse** mapping: a changed `decision_key` → the top-level compone
 
 | decision_key | coarse affected code area (resolve via state.project_layout) |
 |---|---|
-| language.primary | ALL code components in `project_layout` (a language change invalidates the whole build) |
-| database.engine | the persistence/data component(s) in `project_layout` (e.g. the `core`/`db`/`api` entries) |
-| auth.provider | the auth/gateway component(s) in `project_layout` |
-| framework.web | the web/server component(s) in `project_layout` |
+| stack.backend.language | ALL code components in `project_layout` (a language change invalidates the whole build) |
+| stack.database.engine | the persistence/data component(s) in `project_layout` (e.g. the `core`/`db`/`api` entries) |
+| stack.auth.provider | the auth/gateway component(s) in `project_layout` |
+| stack.backend.framework (web/server) | the web/server component(s) in `project_layout` |
 
 **How the flow uses it:** for each stale-and-revised decision in Step 6, look the key up here, resolve the named component(s) to their paths via `state.project_layout`, and emit an `affected-code-areas` list in the upgrade summary: *"The change to `database.engine` may affect code under `<project_layout.core>`; re-run `/implement` or `/scaffold` there."* If a key is absent from this table, flag the whole project conservatively. Keys not in `project_layout` resolve to "(layout unknown — review manually)".
 

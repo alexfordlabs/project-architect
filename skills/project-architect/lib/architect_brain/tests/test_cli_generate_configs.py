@@ -52,18 +52,42 @@ class TestGenerateConfigsCLI(unittest.TestCase):
 
     def test_prints_written_filenames(self):
         with tempfile.TemporaryDirectory() as tmp:
-            docs_dir, out_dir = _setup(tmp, {})
+            docs_dir, out_dir = _setup(tmp, {"stack.backend.language": "python"})
             buf = io.StringIO()
             with redirect_stdout(buf):
                 main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
             self.assertIn("Dockerfile", buf.getvalue())
+            self.assertIn("pyproject.toml", buf.getvalue())
 
-    def test_minimal_state_writes_only_dockerfile(self):
+    # ── v9.1: a Dockerfile is only emitted for runtimes we can actually base ──
+    def test_empty_state_writes_nothing(self):
+        # No language decided → no artifact can be honest; emit nothing rather
+        # than the old unconditional node Dockerfile.
         with tempfile.TemporaryDirectory() as tmp:
             docs_dir, out_dir = _setup(tmp, {})
             with redirect_stdout(io.StringIO()):
+                code = main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
+            self.assertEqual(code, 0)
+            self.assertEqual(list(out_dir.iterdir()), [])
+
+    def test_rust_stack_gets_no_node_dockerfile(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            docs_dir, out_dir = _setup(tmp, {"stack.backend.language": "rust"})
+            with redirect_stdout(io.StringIO()):
+                code = main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
+            self.assertEqual(code, 0)
+            self.assertFalse((out_dir / "Dockerfile").exists())
+
+    def test_js_stack_always_gets_tsconfig(self):
+        # package.json's build script runs `tsc -p tsconfig.json`; the two must
+        # ship together (same predicate, no divergence).
+        with tempfile.TemporaryDirectory() as tmp:
+            docs_dir, out_dir = _setup(tmp, {"stack.frontend.language": "javascript"})
+            with redirect_stdout(io.StringIO()):
                 main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
-            self.assertEqual([p.name for p in out_dir.iterdir()], ["Dockerfile"])
+            self.assertTrue((out_dir / "package.json").exists())
+            self.assertTrue((out_dir / "tsconfig.json").exists())
+            self.assertTrue((out_dir / "biome.json").exists())
 
 
 if __name__ == "__main__":

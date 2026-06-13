@@ -4,14 +4,17 @@ Author: Alexander Ford <alex@alexfordlabs.com>
 Repository: https://github.com/alexfordlabs/project-architect
 License: Apache-2.0
 
-Port of v7's check_23_dependency_freshness. Scans the common top-level manifests
-under the project root (NOT nested ones) for version specifiers carrying a
-pre-release tag (-rc/-beta/-alpha/-canary/-next/-pre/-preview/-dev/-nightly/
--snapshot). Pinning a pre-release ships a moving target to users; WARNING surfaces
-it for a human/research-scout to resolve a newest-stable version (not mechanically
-auto-fixed). v8-ADAPTATION: there is no schema-version gate anymore -- the check
-reads project manifests directly and PASSES (nothing to verify) when none exist
-or none parse; json_valid (check_05) / state_schema (check_29) own well-formedness.
+Port of v7's check_23_dependency_freshness. Scans the common manifests under
+the WHOLE project tree (v9.1 — previously top-level only, which let a nested
+``web/package.json`` ship pre-release pins unaudited; third-party/build dirs
+like ``node_modules``/``vendor``/``dist`` are pruned) for version specifiers
+carrying a pre-release tag (-rc/-beta/-alpha/-canary/-next/-pre/-preview/-dev/
+-nightly/-snapshot). Pinning a pre-release ships a moving target to users;
+WARNING surfaces it for a human/research-scout to resolve a newest-stable
+version (not mechanically auto-fixed). v8-ADAPTATION: there is no
+schema-version gate anymore -- the check reads project manifests directly and
+PASSES (nothing to verify) when none exist or none parse; json_valid
+(check_05) / state_schema (check_29) own well-formedness.
 
 KNOWN LIMITATION (carried from v7): package.json deps are matched as the joined
 ``name@version`` string, so a package whose NAME carries ``-<token>`` followed by
@@ -27,6 +30,7 @@ pre-release (e.g. 0.1.0-alpha.0) is not flagged. Real dependency pins carry a na
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
@@ -49,12 +53,29 @@ _OWN_VERSION_RE = re.compile(r"^\s*version\s*=")
 _LINE_MANIFESTS = ("requirements.txt", "go.mod", "Gemfile")
 _TOML_MANIFESTS = ("Cargo.toml", "pyproject.toml")
 
+# Directories that hold third-party / generated / historical code — not the
+# user's own dependency declarations. Pruned from the tree walk.
+_PRUNED_DIRS = frozenset({
+    ".git", "node_modules", "vendor", "dist", "build", "target", "out",
+    ".venv", "venv", "__pycache__", ".next", ".turbo", ".cache", "versions",
+})
 
-def _scan_package_json(proj: Path) -> list[Finding]:
+
+def _iter_manifests(proj: Path, name: str):
+    """Yield every first-party ``<name>`` manifest in the tree (pruned walk)."""
+    for root, dirs, files in os.walk(proj):
+        dirs[:] = sorted(d for d in dirs if d not in _PRUNED_DIRS)
+        if name in files:
+            yield Path(root) / name
+
+
+def _label(proj: Path, path: Path) -> str:
+    """Project-root-relative posix label (``package.json``, ``web/package.json``)."""
+    return path.relative_to(proj).as_posix()
+
+
+def _scan_package_json(proj: Path, pkg_path: Path) -> list[Finding]:
     """Join dependencies + devDependencies as ``name@version`` and match each."""
-    pkg_path = proj / "package.json"
-    if not pkg_path.is_file():
-        return []
     data = _state.load_json(pkg_path)
     if not isinstance(data, dict):
         # Malformed JSON defers to check_05 (json_valid); nothing to verify here.
@@ -69,13 +90,16 @@ def _scan_package_json(proj: Path) -> list[Finding]:
         dep = f"{name}@{version}"
         if _PRERELEASE_RE.search(dep):
             findings.append(
-                Finding(message=f"package.json: {dep}", location=str(pkg_path))
+                Finding(
+                    message=f"{_label(proj, pkg_path)}: {dep}",
+                    location=str(pkg_path),
+                )
             )
     return findings
 
 
 def _scan_line_manifest(
-    path: Path, manifest: str, *, drop_own_version: bool
+    proj: Path, path: Path, *, drop_own_version: bool
 ) -> list[Finding]:
     """Match the manifest's lines, optionally dropping the own-version line."""
     try:
@@ -88,31 +112,29 @@ def _scan_line_manifest(
             continue
         if _PRERELEASE_RE.search(raw_line):
             findings.append(
-                Finding(message=f"{manifest}: {raw_line.strip()}", location=str(path))
+                Finding(
+                    message=f"{_label(proj, path)}: {raw_line.strip()}",
+                    location=str(path),
+                )
             )
     return findings
 
 
 def run(state_dir) -> CheckResult:
-    """Flag any pre-release / unstable dependency pin in a top-level manifest."""
+    """Flag any pre-release / unstable dependency pin in a project manifest."""
     proj = _state.project_root(state_dir)
     findings: list[Finding] = []
 
-    findings.extend(_scan_package_json(proj))
+    for pkg_path in _iter_manifests(proj, "package.json"):
+        findings.extend(_scan_package_json(proj, pkg_path))
 
     for manifest in _LINE_MANIFESTS:
-        path = proj / manifest
-        if path.is_file():
-            findings.extend(
-                _scan_line_manifest(path, manifest, drop_own_version=False)
-            )
+        for path in _iter_manifests(proj, manifest):
+            findings.extend(_scan_line_manifest(proj, path, drop_own_version=False))
 
     for manifest in _TOML_MANIFESTS:
-        path = proj / manifest
-        if path.is_file():
-            findings.extend(
-                _scan_line_manifest(path, manifest, drop_own_version=True)
-            )
+        for path in _iter_manifests(proj, manifest):
+            findings.extend(_scan_line_manifest(proj, path, drop_own_version=True))
 
     passed = not findings
     summary = (

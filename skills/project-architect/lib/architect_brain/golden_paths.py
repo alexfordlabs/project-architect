@@ -12,6 +12,7 @@ this module loads + validates it and exposes the per-path decision bundle. The
 
 from __future__ import annotations
 
+import datetime
 import json
 from pathlib import Path
 from typing import Any
@@ -77,12 +78,36 @@ def load_golden_paths(path: Path) -> dict[str, Any]:
     return data
 
 
-def list_paths(golden_paths: dict[str, Any]) -> list[dict[str, str]]:
-    """Return [{id, label, description}, ...] for menu rendering (catalog order)."""
-    return [
-        {"id": p["id"], "label": p["label"], "description": p["description"]}
-        for p in golden_paths.get("paths", [])
-    ]
+def list_paths(
+    golden_paths: dict[str, Any], today: datetime.date | None = None
+) -> list[dict[str, Any]]:
+    """Return [{id, label, description, valid_through, expired}, ...] in catalog order.
+
+    v9.1: ``valid_through`` is honored, not dead metadata — a path whose
+    declared shelf life has passed is marked ``expired`` so the menu warns that
+    its pre-filled stack reflects a stale snapshot and versions must be
+    re-resolved (research-scout § 1a), not trusted. A path with no
+    ``valid_through`` never expires.
+    """
+    if today is None:
+        today = datetime.date.today()
+    rows: list[dict[str, Any]] = []
+    for p in golden_paths.get("paths", []):
+        valid_through = p.get("valid_through")
+        expired = False
+        if isinstance(valid_through, str) and valid_through:
+            try:
+                expired = datetime.date.fromisoformat(valid_through) < today
+            except ValueError:
+                expired = False  # malformed date: schema validation's verdict
+        rows.append({
+            "id": p["id"],
+            "label": p["label"],
+            "description": p["description"],
+            "valid_through": valid_through,
+            "expired": expired,
+        })
+    return rows
 
 
 def decisions_for(path_id: str, golden_paths: dict[str, Any]) -> dict[str, Any]:

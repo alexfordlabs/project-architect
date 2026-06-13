@@ -167,7 +167,7 @@ from this plan. Return a summary of the plan written.
 
 In v8 the quality gate is **`architect-brain audit`** — 34 in-process Python checks (4-tier severity: FATAL / BLOCKING / WARNING / INFO), run **directly by the orchestrator** as a Bash call, not via a dispatched `Agent({...})`. There is therefore **no auditor dispatch prompt**: the v7 `quality-gate-auditor` subagent (and its `run_all.sh` over `check_*.{sh,py}`) is removed.
 
-- The **Doc-gen → Iteration** gate is `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit --verbose` (all 35 checks; records an `AuditCompleted` event; exits 1 if any failure blocks LOCK).
+- The **Doc-gen → Iteration** gate is `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit --verbose` (all 36 checks; records an `AuditCompleted` event; exits 1 if any failure blocks LOCK).
 - The **pre-lock** gate (Phase 8) is the same call — `audit_freshness` (19) reads the recorded `AuditCompleted` event to refuse a stale/post-lock audit.
 - Spot-runs at phase boundaries use `--only NN` (e.g. `--only 20` for `no_oob_phase_advance`, `--only 17` for `adr_files_exist`, `--only 24` for `identity_hygiene`, `--only 27` for `required_docs_generated`).
 - A BLOCKING finding may be downgraded only with an explicit, recorded `--ack=<reason>`; the three FATAL checks (`state_schema_valid` 29, `resume_test` 31, `catalog_topo_acyclic` 32) can never be acked.

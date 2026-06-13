@@ -27,7 +27,7 @@ class TestGenPyproject(unittest.TestCase):
         self.assertIn("[tool.pytest.ini_options]", out)
 
     def test_requires_python(self):
-        self.assertIn('requires-python = ">=3.11"', gen_pyproject(_fi()))
+        self.assertIn('requires-python = ">=3.14"', gen_pyproject(_fi()))
 
     def test_trailing_newline_and_deterministic(self):
         out = gen_pyproject(_fi())
@@ -44,9 +44,10 @@ class TestGenPyproject(unittest.TestCase):
         self.assertIn('target-version = "py313"', out)
 
     def test_python_version_falls_back_to_floor(self):
+        # Floor = newest stable at plugin-release time (3.14 as of 2026-06).
         out = gen_pyproject(_fi())
-        self.assertIn('requires-python = ">=3.11"', out)
-        self.assertIn('target-version = "py311"', out)
+        self.assertIn('requires-python = ">=3.14"', out)
+        self.assertIn('target-version = "py314"', out)
 
     def test_ruff_target_uses_major_minor_only_for_patch_pin(self):
         out = gen_pyproject(_fi({"stack.versions.python": "3.13.1"}))

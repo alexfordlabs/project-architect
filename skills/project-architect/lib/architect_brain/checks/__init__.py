@@ -52,6 +52,7 @@ from architect_brain.checks import (
     check_33_vale_optional,
     check_34_build_pass,
     check_35_user_provenance,
+    check_36_version_pins_recorded,
 )
 
 ALL_CHECKS = [
@@ -90,4 +91,5 @@ ALL_CHECKS = [
     check_33_vale_optional,
     check_34_build_pass,
     check_35_user_provenance,
+    check_36_version_pins_recorded,
 ]

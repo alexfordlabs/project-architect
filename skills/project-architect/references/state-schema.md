@@ -317,7 +317,7 @@ A project carrying a v7 **monolith** `docs/_architect_state.json` (schema < 4.0)
 10. **Atomic flip** — `os.replace` the temp dir into `docs/_architect_state/`.
 11. **Migrate ADR files** — copy v7 `docs/decisions/*.md` into `_architect_state/decisions/` (where check 17 / reconcile look), then `restamp_adrs` (prepend structured-MADR frontmatter to any free-form ADR markdown). `restamp_docs` adds `plugin_version`/`format_version` to generated-doc frontmatter (best-effort; docs without frontmatter are skipped).
 12. **Keep the monolith as a `.migrated` sidecar** (`_architect_state.json.migrated`) — the backup tarball is kept regardless.
-13. **Post-migration audit** (default) — run the full 35-check `architect-brain audit`; a non-zero (FATAL/BLOCKING) exit is surfaced for a rollback decision. The migrator does **not** auto-delete the new state; rollback is via the kept backup tarball.
+13. **Post-migration audit** (default) — run the full 36-check `architect-brain audit`; a non-zero (FATAL/BLOCKING) exit is surfaced for a rollback decision. The migrator does **not** auto-delete the new state; rollback is via the kept backup tarball.
 
 `migrate` is **reversible** (restore from the backup tarball) and **fails safe** (drift aborts before the flip, so the monolith is never lost). The phase map only reorders the head (the v8 Architecture-before-Stack swap); the tail (`docs`/`iteration`/`lock`/`tooling`/`handoff`) is unchanged from v7.
 

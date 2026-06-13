@@ -63,21 +63,64 @@ class TestCheck23Degraded(unittest.TestCase):
             result = run(state)
             self.assertTrue(result.passed)
 
-    def test_nested_manifest_is_ignored(self):
-        # Only top-level proj/<manifest> is scanned, not nested ones.
+    def test_vendored_manifest_is_pruned(self):
+        # Third-party trees (vendor/, node_modules/, …) are NOT ours to audit.
         with tempfile.TemporaryDirectory() as tmp:
             state = _make_state(tmp)
             proj = state.parent.parent
-            nested = proj / "vendor" / "subpkg"
-            nested.mkdir(parents=True)
-            # The pin carries a real prerelease tag the regex DOES match
-            # (leading hyphen + rc). If the scan ever recurses into nested
-            # dirs, this finding would surface and the assertion below fails.
-            (nested / "requirements.txt").write_text(
-                "django==5.0.0-rc.1\n", encoding="utf-8"
-            )
+            for pruned in ("vendor/subpkg", "node_modules/leftpad", ".venv/lib"):
+                nested = proj / pruned
+                nested.mkdir(parents=True)
+                (nested / "requirements.txt").write_text(
+                    "django==5.0.0-rc.1\n", encoding="utf-8"
+                )
             result = run(state)
             self.assertTrue(result.passed)
+
+    def test_nested_first_party_manifest_is_scanned(self):
+        # v9.1: the scan walks the whole tree (minus pruned dirs) — a stale or
+        # pre-release pin in web/package.json must not hide from the audit
+        # (the tiger-panther-game blind spot: repo root had no manifests at
+        # all, so nothing was ever scanned).
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            proj = state.parent.parent
+            web = proj / "web"
+            web.mkdir()
+            (web / "package.json").write_text(
+                '{"dependencies": {"next": "16.0.0-canary.3"}}', encoding="utf-8"
+            )
+            result = run(state)
+            self.assertFalse(result.passed)
+            self.assertEqual(len(result.findings), 1)
+            self.assertEqual(
+                result.findings[0].message,
+                "web/package.json: next@16.0.0-canary.3",
+            )
+            self.assertEqual(result.findings[0].location, str(web / "package.json"))
+
+    def test_deeply_nested_toml_scanned_with_own_version_still_dropped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            proj = state.parent.parent
+            crate = proj / "crates" / "core"
+            crate.mkdir(parents=True)
+            (crate / "Cargo.toml").write_text(
+                "[package]\n"
+                'name = "core"\n'
+                'version = "0.1.0-alpha.0"\n'   # own version: never flagged
+                "\n"
+                "[dependencies]\n"
+                'tokio = "1.0.0-rc.1"\n',       # real dep: flagged
+                encoding="utf-8",
+            )
+            result = run(state)
+            self.assertFalse(result.passed)
+            self.assertEqual(len(result.findings), 1)
+            self.assertEqual(
+                result.findings[0].message,
+                'crates/core/Cargo.toml: tokio = "1.0.0-rc.1"',
+            )
 
 
 class TestCheck23Pass(unittest.TestCase):

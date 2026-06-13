@@ -22,6 +22,41 @@ class TestGoldenPathListCLI(unittest.TestCase):
         self.assertIn("Modern SaaS", out)
         self.assertIn("agentic_system", out)
 
+    def test_list_marks_expired_paths(self):
+        # v9.1: valid_through is enforced at the menu — an expired path is
+        # annotated so its pre-filled versions get re-verified, not trusted.
+        gp = {
+            "schema_version": "4.0",
+            "paths": [
+                {
+                    "id": "old_path",
+                    "label": "Old Path",
+                    "description": "expired bundle",
+                    "decisions": {"project.type": "web_app"},
+                    "valid_through": "2020-01-01",
+                },
+                {
+                    "id": "fresh_path",
+                    "label": "Fresh Path",
+                    "description": "current bundle",
+                    "decisions": {"project.type": "web_app"},
+                    "valid_through": "2999-12-31",
+                },
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            gp_path = Path(tmp) / "golden-paths.json"
+            gp_path.write_text(json.dumps(gp), encoding="utf-8")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                code = main(["golden-path", "list", "--golden-paths", str(gp_path)])
+            self.assertEqual(code, 0)
+            out = buf.getvalue()
+            old_line = next(l for l in out.splitlines() if l.startswith("old_path"))
+            fresh_line = next(l for l in out.splitlines() if l.startswith("fresh_path"))
+            self.assertIn("EXPIRED 2020-01-01", old_line)
+            self.assertNotIn("EXPIRED", fresh_line)
+
 
 class TestGoldenPathApplyCLI(unittest.TestCase):
 

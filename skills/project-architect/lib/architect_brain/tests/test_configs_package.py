@@ -55,15 +55,59 @@ class TestGenPackageJson(unittest.TestCase):
         self.assertEqual(pkg["dependencies"]["react-dom"], "^19.2.0")
 
     def test_falls_back_to_floor_when_no_recorded_version(self):
-        # No stack.versions.* recorded => conservative plugin floor (deterministic).
+        # No stack.versions.* recorded => floor = newest stable at plugin-release
+        # time (next 16 / react 19 as of 2026-06), still deterministic.
         pkg = json.loads(gen_package_json(_fi({"stack.frontend.framework": "next.js"})))
-        self.assertEqual(pkg["dependencies"]["next"], "^15.0.0")
+        self.assertEqual(pkg["dependencies"]["next"], "^16.0.0")
         self.assertEqual(pkg["dependencies"]["react"], "^19.0.0")
         self.assertEqual(pkg["dependencies"]["react-dom"], "^19.0.0")
 
     def test_recorded_pin_still_deterministic(self):
         fi = _fi({"stack.frontend.framework": "next.js", "stack.versions.next": "^16.2.6"})
         self.assertEqual(gen_package_json(fi), gen_package_json(fi))
+
+    # ── devDependencies: every tool the scripts invoke is declared + pinned ──
+    def test_nextjs_devdeps_declare_biome_and_typescript(self):
+        pkg = json.loads(gen_package_json(_fi({"stack.frontend.framework": "next.js"})))
+        dev = pkg["devDependencies"]
+        self.assertEqual(dev["@biomejs/biome"], "2.5.0")  # exact pin (Biome convention)
+        self.assertEqual(dev["typescript"], "^6.0.0")
+        self.assertEqual(dev["@types/node"], "^24.0.0")
+
+    def test_nextjs_devdeps_include_react_types_tracking_react_pin(self):
+        pkg = json.loads(gen_package_json(_fi({
+            "stack.frontend.framework": "next.js",
+            "stack.versions.react": "^19.2.0",
+        })))
+        dev = pkg["devDependencies"]
+        self.assertEqual(dev["@types/react"], "^19.2.0")
+        self.assertEqual(dev["@types/react-dom"], "^19.2.0")
+
+    def test_plain_ts_devdeps_declare_toolchain(self):
+        # The non-framework branch's scripts run tsc + biome + node --test:
+        # all three need declared, pinned devDependencies.
+        pkg = json.loads(gen_package_json(_fi({})))
+        dev = pkg["devDependencies"]
+        self.assertEqual(dev["@biomejs/biome"], "2.5.0")
+        self.assertEqual(dev["typescript"], "^6.0.0")
+        self.assertEqual(dev["@types/node"], "^24.0.0")
+
+    def test_devdeps_track_recorded_pins(self):
+        pkg = json.loads(gen_package_json(_fi({
+            "stack.versions.biome": "2.6.1",
+            "stack.versions.typescript": "^6.1.0",
+            "stack.versions.node": "26",
+        })))
+        dev = pkg["devDependencies"]
+        self.assertEqual(dev["@biomejs/biome"], "2.6.1")
+        self.assertEqual(dev["typescript"], "^6.1.0")
+        self.assertEqual(dev["@types/node"], "^26.0.0")
+
+    def test_types_node_derived_from_node_major_only(self):
+        # A node pin with minor/patch (or a docker-ish tag) still yields a
+        # major-line @types/node range.
+        pkg = json.loads(gen_package_json(_fi({"stack.versions.node": "24.16.0"})))
+        self.assertEqual(pkg["devDependencies"]["@types/node"], "^24.0.0")
 
 
 if __name__ == "__main__":

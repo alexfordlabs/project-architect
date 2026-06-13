@@ -516,13 +516,23 @@ def _cmd_catalog_cycle(args: argparse.Namespace) -> int:
 
 
 def _cmd_golden_path_list(args: argparse.Namespace) -> int:
-    """List the available Golden Paths (one `<id>\\t<label>` per line)."""
+    """List the available Golden Paths (one `<id>\\t<label>` per line).
+
+    An expired path (its ``valid_through`` has passed) is annotated so the
+    orchestrator's menu warns the user the pre-filled stack snapshot is stale
+    and version pins must be re-resolved, not trusted.
+    """
     from architect_brain.golden_paths import list_paths, load_golden_paths
 
     gp_path = Path(args.golden_paths) if args.golden_paths else _default_golden_paths_path()
     gp = load_golden_paths(gp_path)
     for row in list_paths(gp):
-        print(f"{row['id']}\t{row['label']}")
+        suffix = (
+            f"\t[EXPIRED {row['valid_through']} — re-verify stack + versions]"
+            if row["expired"]
+            else ""
+        )
+        print(f"{row['id']}\t{row['label']}{suffix}")
     return 0
 
 
@@ -567,6 +577,7 @@ def _cmd_golden_path_apply(args: argparse.Namespace) -> int:
 def _cmd_generate_configs(args: argparse.Namespace) -> int:
     """Emit every config-as-code file applicable to the current state."""
     from architect_brain.configs import (
+        dockerfile_language,
         gen_biome_json,
         gen_docker_compose,
         gen_dockerfile,
@@ -574,6 +585,7 @@ def _cmd_generate_configs(args: argparse.Namespace) -> int:
         gen_pyproject,
         gen_tsconfig,
         gen_turbo_json,
+        js_stack,
     )
 
     docs_dir = Path(args.docs_dir).resolve()
@@ -590,20 +602,20 @@ def _cmd_generate_configs(args: argparse.Namespace) -> int:
         (out_dir / fname).write_text(content, encoding="utf-8")
         written.append(fname)
 
-    langs = {dec.get("stack.frontend.language"), dec.get("stack.backend.language")}
-    has_js = (
-        dec.get("stack.frontend.framework") is not None
-        or "typescript" in langs
-        or "javascript" in langs
-    )
-    if has_js:
+    # Emission conditions are the SHARED predicates in configs.py (also used by
+    # audit check 36), so what we emit and what pins are owed cannot diverge.
+    if js_stack(flat_index):
+        # package.json's build script runs tsc; tsconfig ships with it always.
         emit("package.json", gen_package_json(flat_index))
         emit("biome.json", gen_biome_json(flat_index))
-        if "typescript" in langs or dec.get("stack.frontend.framework"):
-            emit("tsconfig.json", gen_tsconfig(flat_index))
+        emit("tsconfig.json", gen_tsconfig(flat_index))
+    langs = {dec.get("stack.frontend.language"), dec.get("stack.backend.language")}
     if "python" in langs:
         emit("pyproject.toml", gen_pyproject(flat_index))
-    emit("Dockerfile", gen_dockerfile(flat_index))
+    if dockerfile_language(flat_index) is not None:
+        # Only for runtimes we have an honest base image for — a rust/go stack
+        # no longer receives a silent node Dockerfile.
+        emit("Dockerfile", gen_dockerfile(flat_index))
     if dec.get("stack.database.engine") or dec.get("stack.cache.engine"):
         emit("docker-compose.yml", gen_docker_compose(flat_index))
     if dec.get("tooling.monorepo"):
@@ -910,7 +922,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_gendiag.add_argument("--docs-dir", default="docs")
     p_gendiag.set_defaults(func=_cmd_generate_diagram)
 
-    p_audit = sub.add_parser("audit", help="run the 35-check auditor + record an AuditCompleted event")
+    p_audit = sub.add_parser("audit", help="run the 36-check auditor + record an AuditCompleted event")
     p_audit.add_argument("--docs-dir", default="docs")
     p_audit.add_argument("--only", default=None, help="run only the check with this CHECK_ID (e.g. 31)")
     p_audit.add_argument("--ack", default=None,

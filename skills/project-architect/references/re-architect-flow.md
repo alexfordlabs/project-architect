@@ -10,7 +10,7 @@ License: Apache-2.0
 
 The canonical procedure for **revisiting a docs-rich project's design from first principles**: recover the existing design into a reviewable artifact, let the user triage every decision (keep / revise / drop / add), research the deltas AND challenge the keeps with current sources, re-decide into the flat keyspace, then re-derive every generated artifact from the new decisions. Invoked by the `/re-architect` command and by version-awareness **option 3** ("Start fresh, revisiting decisions").
 
-This is the opposite end of the spectrum from `/upgrade-project` **preserve mode**: preserve mode *freezes* the design and modernizes state around it; re-architect *re-decides* the design. Both ride the **same plumbing** — the one binary `bin/architect-brain` (`detect` / `migrate` / `reconcile-adrs` + the `set-decision` / `set-phase` / `record-adr` / `record-doc` / `append-event` event writers + the 35-check `audit` + the declarative `catalog`), `research-scout`, the `document-author` / `claude-md-author` / `claude-tooling-author` generators, and the `revision-playbook` affected-code map. The **only new logic** is the `design-recovery` agent (Step 2) and the bespoke triage surface (Step 3). It adds **no new transformer**: re-derived artifacts are authored fresh from the re-decided decisions, never patched in place.
+This is the opposite end of the spectrum from `/upgrade-project` **preserve mode**: preserve mode *freezes* the design and modernizes state around it; re-architect *re-decides* the design. Both ride the **same plumbing** — the one binary `bin/architect-brain` (`detect` / `migrate` / `reconcile-adrs` + the `set-decision` / `set-phase` / `record-adr` / `record-doc` / `append-event` event writers + the 36-check `audit` + the declarative `catalog`), `research-scout`, the `document-author` / `claude-md-author` / `claude-tooling-author` generators, and the `revision-playbook` affected-code map. The **only new logic** is the `design-recovery` agent (Step 2) and the bespoke triage surface (Step 3). It adds **no new transformer**: re-derived artifacts are authored fresh from the re-decided decisions, never patched in place.
 
 > Report progress per `references/output-style.md` (capture mechanical output; one ✓ line per step; render the advancing bar by RUNNING `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain ui phase-bar …` / `ui progress …` — never by transcribing its art).
 >
@@ -192,7 +192,7 @@ ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision scaffold.deferred true
 
 (If the user chose option 2 "upgrade then rebuild", the subsequent `/scaffold` clears the deferral.)
 
-Run the full **35-check audit** (must be green):
+Run the full **36-check audit** (must be green):
 
 ```
 ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit --verbose
@@ -228,7 +228,7 @@ The project is now a flat-keyspace, gate-green, fully decision-anchored v8 proje
 | Declarative doc selection | `architect-brain catalog list` over `references/catalog.json` — reused |
 | Re-derive docs / ADRs / `CLAUDE.md` / tooling | `document-author` / `claude-md-author` / `claude-tooling-author` (+ `record-adr` / `record-doc`) — reused |
 | Affected-code-areas map | `revision-playbook.md` — reused |
-| Quality gate | the 35-check `architect-brain audit` (4-tier severity) — reused |
+| Quality gate | the 36-check `architect-brain audit` (4-tier severity) — reused |
 
 ---
 

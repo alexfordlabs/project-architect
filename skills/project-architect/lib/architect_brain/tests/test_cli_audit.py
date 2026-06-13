@@ -94,7 +94,7 @@ class TestCLIAudit(unittest.TestCase):
         audit = workflow["audits"][0]
         self.assertEqual(audit["result"], "blocked")  # fresh init blocks on check_27
         self.assertEqual(audit["checks_failed"], 1)
-        self.assertEqual(audit["checks_passed"], 34)  # 35 checks; check_27 fails, rest pass
+        self.assertEqual(audit["checks_passed"], 35)  # 36 checks; check_27 fails, rest pass
         self.assertIn("ts", audit)
 
     def test_only_run_does_not_record_event(self):

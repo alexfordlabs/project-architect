@@ -4,11 +4,10 @@
     {
       "id": "modern_saas_2026",
       "label": "Modern SaaS (2026)",
-      "description": "A multi-tenant SaaS web app on the 2026 default stack: Next.js 15 + Tailwind on Vercel, a TypeScript backend over PostgreSQL with Drizzle, Stripe billing, and NextAuth sessions.",
+      "description": "A multi-tenant SaaS web app on the 2026 default stack: Next.js + Tailwind on Vercel, a TypeScript backend over PostgreSQL with Drizzle, Stripe billing, and NextAuth sessions.",
       "decisions": {
         "project.type": "web_app",
         "stack.frontend.framework": "next.js",
-        "stack.frontend.version": "15",
         "stack.frontend.styling": "tailwind",
         "stack.backend.language": "typescript",
         "stack.backend.runtime": "node",
@@ -28,7 +27,7 @@
         "project.type": "web_app",
         "ai.enabled": true,
         "ai.provider": "anthropic",
-        "ai.model": "claude-opus-4-7",
+        "ai.model": "claude-opus-4-8",
         "ai.orchestration": "langgraph",
         "ai.rag.vector_store": "pgvector",
         "ai.rag.embeddings": "voyage-3",

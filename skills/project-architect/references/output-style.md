@@ -6,7 +6,7 @@ License: Apache-2.0
 
 # Output style — fast, quiet, beautiful
 
-How the orchestrator narrates a run. Every flow — the bootstrap `SKILL.md`, `/upgrade-project`, `/re-architect`, `/iterate-design` — follows this. The plugin runs a lot of mechanical machinery (`architect-brain` event writes, the 35-check `architect-brain audit`, `find`/`grep`/`jq` reads). Left unattended that machinery dumps raw chatter into the user's transcript: event ULIDs echoed by `set-decision`/`record-*`, the audit's per-check lines, directory listings. **This convention turns that plumbing into clean, advancing, informational progress.** The user should see *what the orchestrator is doing*, not *how the tools say it*.
+How the orchestrator narrates a run. Every flow — the bootstrap `SKILL.md`, `/upgrade-project`, `/re-architect`, `/iterate-design` — follows this. The plugin runs a lot of mechanical machinery (`architect-brain` event writes, the 36-check `architect-brain audit`, `find`/`grep`/`jq` reads). Left unattended that machinery dumps raw chatter into the user's transcript: event ULIDs echoed by `set-decision`/`record-*`, the audit's per-check lines, directory listings. **This convention turns that plumbing into clean, advancing, informational progress.** The user should see *what the orchestrator is doing*, not *how the tools say it*.
 
 Three rules, in priority order: **capture don't dump** (§1) · **be fast** (§2) · **render it beautifully via `architect-brain ui`** (§3).
 
@@ -21,7 +21,7 @@ The orchestrator runs mechanical machinery; the user reads a curated narrative. 
   - `✓ Filed ADR 0007 (database engine)`
   - `✓ Quality gate: green (0 blockers, 2 warnings)`
   - `✓ Snapshotted current design → docs/versions/1.4.0/`
-- **Never paste raw command stdout, the audit's findings, or `find`/`grep` output into the user-facing narration.** `architect-brain set-decision`/`record-adr`/`record-doc` echo the ULID of the event they appended; `architect-brain audit` returns one line per check plus a verdict (and, under `--verbose`, the findings detail); `find`/`grep`/`jq` emit lists. All of that is **for the orchestrator to parse**, not for the user to read. Capture it, act on it, then surface a one-line summary. The audit's verdict (the blockers / warnings / info tallies across the 35 checks) becomes one `✓`/`✗` line — not a pasted blob.
+- **Never paste raw command stdout, the audit's findings, or `find`/`grep` output into the user-facing narration.** `architect-brain set-decision`/`record-adr`/`record-doc` echo the ULID of the event they appended; `architect-brain audit` returns one line per check plus a verdict (and, under `--verbose`, the findings detail); `find`/`grep`/`jq` emit lists. All of that is **for the orchestrator to parse**, not for the user to read. Capture it, act on it, then surface a one-line summary. The audit's verdict (the blockers / warnings / info tallies across the 36 checks) becomes one `✓`/`✗` line — not a pasted blob.
 - **Surface progress, not plumbing.** A phase or step boundary gets a short headline + a `✓` on completion:
   - `→ Phase 6: generating 8 design docs…` then, on completion, `✓ Phase 6: 8 design docs generated`.
   - The dozens of underlying tool calls (each `Read`, each `architect-brain` event write, each `Agent` dispatch's internal steps) are **NOT narrated individually**. They roll up into the boundary line.

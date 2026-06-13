@@ -92,6 +92,28 @@ class TestLoadGoldenPaths(unittest.TestCase):
         self.assertIn("label", rows[0])
         self.assertIn("description", rows[0])
 
+    # ── v9.1: valid_through is honored, not dead metadata ──
+    def test_list_paths_marks_expired(self):
+        import datetime
+
+        dated = json.loads(json.dumps(_VALID))
+        dated["paths"][0]["valid_through"] = "2026-12-31"
+        dated["paths"][1]["valid_through"] = "2025-06-30"
+        rows = list_paths(dated, today=datetime.date(2026, 6, 13))
+        self.assertFalse(rows[0]["expired"])
+        self.assertTrue(rows[1]["expired"])
+        self.assertEqual(rows[1]["valid_through"], "2025-06-30")
+
+    def test_list_paths_no_valid_through_never_expires(self):
+        rows = list_paths(_VALID)
+        self.assertFalse(rows[0]["expired"])
+
+    def test_list_paths_defaults_to_today(self):
+        # A long-past valid_through must read expired with no `today` injected.
+        dated = json.loads(json.dumps(_VALID))
+        dated["paths"][0]["valid_through"] = "2020-01-01"
+        self.assertTrue(list_paths(dated)[0]["expired"])
+
 
 if __name__ == "__main__":
     unittest.main()

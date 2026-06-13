@@ -20,7 +20,7 @@ Per-agent budget catalog and the orchestrator's observer-wrapper logic.
 | decision-revisor | 5 | 12 | Surgical patch; touches ≤4 docs |
 | design-recovery | 6 | 15 | Reconstructs an existing project's design (re-architect) |
 
-> The quality gate is **not** a subagent in v8 — it is the in-process `architect-brain audit` (35 checks), run by the orchestrator as a direct Bash call, so it has no dispatch budget.
+> The quality gate is **not** a subagent in v8 — it is the in-process `architect-brain audit` (36 checks), run by the orchestrator as a direct Bash call, so it has no dispatch budget.
 
 ## Observer wrapper
 

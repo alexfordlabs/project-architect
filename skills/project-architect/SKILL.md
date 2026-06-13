@@ -92,11 +92,11 @@ Every phase transition is a **mechanically-gated operation**, not a prose sugges
                    every boundary thereafter via step 1.
 ```
 
-The orchestrator still *invokes* the audit at each transition (one mechanical step), but the gate logic is in-process Python code with fixtures and tests (the 35-check `architect_brain.checks` library) — not prose the model can rationalize past. The rationalization table below is belt-and-suspenders, never the sole control.
+The orchestrator still *invokes* the audit at each transition (one mechanical step), but the gate logic is in-process Python code with fixtures and tests (the 36-check `architect_brain.checks` library) — not prose the model can rationalize past. The rationalization table below is belt-and-suspenders, never the sole control.
 
 ### Which check runs at which transition
 
-The 35 checks live in `architect_brain.checks` (4-tier severity: FATAL / BLOCKING / WARNING / INFO). A full `architect-brain audit` runs them all; `--only NN` spot-runs one at the boundaries below.
+The 36 checks live in `architect_brain.checks` (4-tier severity: FATAL / BLOCKING / WARNING / INFO). A full `architect-brain audit` runs them all; `--only NN` spot-runs one at the boundaries below.
 
 | Check (ID, severity) | Runs at | On fail |
 |---|---|---|
@@ -464,7 +464,7 @@ This is the bug-#9 mitigation (decision-revisor 6× cost overrun). With observat
 
 ### Audit robustness
 
-The audit is **in-process Python**, not a dispatched subagent — `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit` runs all 35 checks locally and never depends on the model backend (no 529-Overloaded failure surface). The auditor **never crashes on one bad check**: each check's `run()` is wrapped, so a single malfunctioning check degrades to a recorded failure rather than aborting the whole gate.
+The audit is **in-process Python**, not a dispatched subagent — `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit` runs all 36 checks locally and never depends on the model backend (no 529-Overloaded failure surface). The auditor **never crashes on one bad check**: each check's `run()` is wrapped, so a single malfunctioning check degrades to a recorded failure rather than aborting the whole gate.
 
 **HARD RULE — the orchestrator MUST NOT invent, estimate, or hand-wave findings, and MUST NOT skip the audit.** The gate is `architect-brain audit` — real in-process checks against the real `docs/_architect_state/` bundle. Never improvise an opinion about quality in place of running it. If `architect-brain` itself cannot run (e.g. `python3` unexpectedly missing — Preflight should have caught this), **STOP and tell the user the gate cannot be evaluated**; do not proceed past the gate on a guess. See the **Phase transition contract** "Red flags — STOP" table.
 
@@ -573,13 +573,18 @@ Loop:
 
 At end of phase:
 1. Dispatch `research-scout` with the Stack prompt (stack combination gotchas — and stack-vs-architecture fit). research-scout § 1a resolves the **newest-stable version** of each P0 dependency.
-2. **Record the resolved version pins** so the scaffold ships current versions (not the generators' stale floor). For each pin research-scout returned, emit a `DecisionMade` under the `stack.versions.*` namespace:
+2. **Record the resolved version pins** so the scaffold ships current versions (not the generators' stale floor). You MUST record one `stack.versions.<token>` per token the chosen stack makes applicable — the full token set is `next`, `react`, `node`, `python`, `postgres`, `redis`, `biome`, `typescript` (any JS/TS stack owes `biome` + `typescript` + `node`, because `generate-configs` emits `biome.json` and toolchain devDependencies for every JS/TS stack). For each pin research-scout returned, emit a `DecisionMade` under the `stack.versions.*` namespace, substituting the values research-scout resolved TODAY (the versions below are illustrative, not current):
    ```bash
-   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.next '^16.2.6'
-   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.react '^19.2.0'   # drives react-dom too
-   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.node '24'          # Dockerfile base image
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.next '<resolved-pin>'        # e.g. ^16.2.6
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.react '<resolved-pin>'       # drives react-dom + @types/react too
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.node '<resolved-pin>'        # Dockerfile base image + @types/node
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.python '<resolved-pin>'      # pyproject requires-python + Dockerfile base
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.postgres '<resolved-pin>'    # docker-compose image tag
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.redis '<resolved-pin>'       # docker-compose image tag
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.biome '<resolved-pin>'       # biome.json $schema + config shape + devDependency
+   ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-decision stack.versions.typescript '<resolved-pin>'  # devDependency for the tsc toolchain
    ```
-   `gen_package_json` / `gen_dockerfile` read these via `configs._pin` in Doc-gen (Phase 6 §5b). Canonical keys: `references/decision-keys.md` § `stack.versions.*`.
+   All five generators — `gen_package_json`, `gen_dockerfile`, `gen_pyproject`, `gen_docker_compose`, `gen_biome_json` — read these via `configs._pin` in Doc-gen (Phase 6 §5b); audit check 36 (`version_pins_recorded`, WARNING) flags any generated artifact whose token was never recorded. Canonical keys: `references/decision-keys.md` § `stack.versions.*`.
 3. Commit findings.
 4. Transition per the **Phase transition contract**: run `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-phase cost && ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain ui phase-bar cost`, then run the gate (`architect-brain audit --only 20` + `--only 18`).
 5. **Memory persistence:** Edit the pointed-to file per `references/memory-persistence.md` with a Stack entry (chosen `stack.*` decisions + resolved `stack.versions.*` pins + ADR ids).
@@ -703,11 +708,11 @@ ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain catalog list --phase docs   # filtered
     ```
     On a failure (BLOCKING): **auto-remediate** — re-dispatch `document-author` for each missing doc named in the findings (read the catalog row + the template, write `docs/<NAME>.md`, record it via `architect-brain record-doc`), then re-run check 27. This is the silently-skipped-doc fix: an always-applicable doc like `PROJECT_REQUIREMENTS.md` gets skipped and only a dangling cross-link surfaces it post-hoc. If a doc genuinely cannot be generated, STOP — do NOT proceed to the full audit / Iteration with the doc set incomplete. (Check 27 also runs inside the full audit below, so a still-missing doc hard-blocks the Doc-gen→Iteration advance regardless.)
 
-11. **Run the full audit** — the 35-check gate:
+11. **Run the full audit** — the 36-check gate:
     ```bash
     ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain audit --verbose
     ```
-    This runs all 35 checks against `docs/_architect_state/` + the generated bundle, prints one line per check + a verdict, records an `AuditCompleted` event (which is exactly what `audit_freshness` (19) reads to refuse a stale/post-lock audit), and exits 1 if any failure blocks LOCK (FATAL always; BLOCKING unless `--ack=<reason>`). Capture the per-check output and the verdict.
+    This runs all 36 checks against `docs/_architect_state/` + the generated bundle, prints one line per check + a verdict, records an `AuditCompleted` event (which is exactly what `audit_freshness` (19) reads to refuse a stale/post-lock audit), and exits 1 if any failure blocks LOCK (FATAL always; BLOCKING unless `--ack=<reason>`). Capture the per-check output and the verdict.
 
 12. Read the verdict. If the exit code is non-zero (a BLOCKING or FATAL failure): do NOT auto-advance to Iteration. Surface the failing checks + their findings (the `--verbose` lines) and ask the user how to proceed (revise via `decision-revisor` / `--ack` a BLOCKING finding with a recorded reason / abort). Only after the gate is clean (or the user explicitly acks a BLOCKING finding) run the gated advance: `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-phase iteration && ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain ui phase-bar iteration`. (FATAL — `state_schema_valid` 29, `resume_test` 31, `catalog_topo_acyclic` 32 — can never be acked; it always hard-stops.) The audit's recorded `AuditCompleted` event seeds the Iteration menu.
 
