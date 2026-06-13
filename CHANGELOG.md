@@ -10,6 +10,90 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v9.1.0 — 2026-06-13
+
+**Latest-stable everywhere: the version-pin chain is now enforced end-to-end.**
+A live forensic audit of a scaffolded project found a generated `biome.json`
+shipping a full major behind newest-stable because the pin chain had three
+silent gaps: a stale generator floor, a research-obligation that didn't match
+the emission condition, and an audit blind spot. All three classes are fixed,
+plus every sibling defect a repo-wide scan surfaced.
+
+### Added
+
+- **New audit check 36 `version_pins_recorded` (WARNING)** — for every pin
+  token the chosen stack makes applicable, if the generated artifact exists on
+  disk and `stack.versions.<token>` was never recorded, the audit flags it with
+  the exact `set-decision` remediation. A floor fallback can no longer ship
+  silently. Applicability comes from `configs.applicable_pin_tokens` — the SAME
+  predicates `generate-configs` emits by, so obligation and emission cannot
+  diverge. The auditor is now **36 checks**.
+- **`bin/floor-check`** — release-time freshness audit for `configs.FLOORS`:
+  queries npm + endoflife.date and reports any floor that has drifted off the
+  newest stable line. Non-zero exit = bump the floors before tagging.
+- **Pinned `devDependencies` in generated `package.json`** — every tool the
+  generated scripts invoke is now declared: `@biomejs/biome` (exact pin),
+  `typescript`, `@types/node` (tracks the node major), and on Next.js stacks
+  `@types/react`/`@types/react-dom` (track the react pin). Previously the
+  scripts referenced an undeclared global toolchain.
+- **`stack.versions.typescript`** joins the canonical pin-token set
+  (`next`, `react`, `node`, `python`, `postgres`, `redis`, `biome`,
+  `typescript`) across `decision-keys.md`, SKILL Phase 4, research-scout § 1a,
+  research-prompts, and the TECH_STACK template.
+- **Golden-path expiry is honored** — `golden-path list` now annotates any path
+  whose `valid_through` has passed (`[EXPIRED <date> — re-verify stack +
+  versions]`); previously the field was dead metadata and an expired bundle
+  would be offered as current forever.
+
+### Changed
+
+- **`configs.FLOORS` refreshed to newest stable as of 2026-06-13** and
+  consolidated into one registry: next `^16.0.0` (was `^15.0.0`), node `24`
+  (was `22`), python `3.14` (was `3.11`), postgres `18` (was `17`), redis `8`
+  (was `7`), biome `2.5.0` (was `1.9.4`), typescript `^6.0.0` (new). Floors
+  are a fallback only — research-resolved `stack.versions.*` pins always win.
+- **`gen_biome_json` is version-aware** — a 2.x pin (and the 2.x floor) emits
+  the Biome 2 shape (`assist.actions.source.organizeImports`); a 1.x pin emits
+  the legacy top-level `organizeImports`. Previously the 1.x-only shape was
+  emitted unconditionally — a hard config error under any 2.x binary. The
+  linter block stays on `rules.recommended: true`, valid across 1.x and all
+  2.x (the `rules.preset` alias is 2.5-only; live-validated against 2.4.15).
+- **`generate-configs` no longer emits a silent node `Dockerfile` for every
+  stack** — emission rides the new shared `dockerfile_language` predicate:
+  python and JS/TS stacks get their runtime's Dockerfile; rust/go/undecided
+  stacks get none (the old behavior based a rust project on a node image).
+  `tsconfig.json` now ships whenever `package.json` does (its build script
+  runs `tsc`).
+- **Check 23 `dependency_freshness` scans the whole tree** — nested manifests
+  (`web/package.json`, `crates/core/Cargo.toml`, …) are now audited;
+  third-party/build dirs (`node_modules`, `vendor`, `dist`, `target`, …) are
+  pruned. Previously only root-level manifests were scanned, and a repo with
+  no root manifest was never scanned at all.
+- **`revision-playbook.md` migrated to the canonical `stack.*` namespace** —
+  its tables still used pre-v8 keys (`database.engine`, `frontend.framework`),
+  so `decision-revisor` lookups for canonical keys (`stack.database.engine`)
+  missed every stack row; `ai.*` rows renamed to their canonical equivalents
+  and rows added for `stack.frontend.language`, `stack.cache.engine`, and
+  `stack.versions.*`.
+- **Stale literals swept from decision surfaces**: the `modern_saas_2026`
+  golden path no longer hardcodes "Next.js 15" in its description nor seeds
+  the superseded `stack.frontend.version` key (removed from `decision-keys.md`
+  too); `ai.model` examples bumped `claude-opus-4-7` → `claude-opus-4-8`;
+  document-author's version-family example unstuck from "15.x"; the
+  STABILITY_AND_RFC template no longer asserts Go 1.22 as "the latest at time
+  of writing"; SKILL Phase 4 records pins via `<resolved-pin>` placeholders
+  instead of copy-able stale literals, and now enumerates all 8 tokens + all
+  5 consuming generators.
+- CI matrix extended to Python 3.14.
+
+### Fixed
+
+- The tiger-panther-game defect chain (stale `biome.json` 1.9.4, invalid-shape
+  config for a 2.x pin, undeclared toolchain, unaudited nested manifest) is
+  fixed at every link; `tests/test_v91_pin_coverage.sh` pins the four
+  obligation surfaces (research-scout, SKILL, decision-keys, configs.FLOORS)
+  to the same token set so they cannot drift apart again.
+
 ## v9.0.0 — 2026-06-11
 
 **Relicense: MIT → Apache License 2.0.** No functional change. Rationale: the
