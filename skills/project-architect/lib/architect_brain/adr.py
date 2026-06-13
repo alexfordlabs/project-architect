@@ -287,8 +287,13 @@ def _emit_field(key: str, value: Any) -> list[str]:
         return out
     if isinstance(value, dict):
         # Nested mapping — emit inline JSON-style for v8 audit field
-        # (pyyaml-enhanced path will parse it back; stdlib path silently drops)
-        return [f"{key}: {json.dumps(value)}"]
+        # (pyyaml-enhanced path will parse it back; stdlib path silently drops).
+        # default=str: pyyaml coerces an unquoted nested date/datetime scalar
+        # (e.g. `required_review_at: 2026-12-01`) to a datetime object, which
+        # json.dumps cannot serialize — that crash aborted migrate/restamp_docs
+        # mid-flip and left a half-migrated project (tiger-panther). Coerce any
+        # such scalar to its ISO text instead (mirrors the reconcile-adrs guard).
+        return [f"{key}: {json.dumps(value, default=str)}"]
     # Default: string as a double-quoted scalar. json.dumps produces a valid
     # YAML 1.2 flow scalar with proper escaping (embedded " → \", backslashes,
     # newlines, etc.) — JSON string syntax is a subset of YAML 1.2's

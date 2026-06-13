@@ -376,6 +376,46 @@ class TestRestampAdrs(unittest.TestCase):
             self.assertEqual(fm.get("plugin_version"), __version__)
 
 
+class TestRestampDocs(unittest.TestCase):
+
+    def test_restamp_preserves_existing_doc_format_version(self):
+        # restamp_docs stamps plugin_version onto un-stamped docs, but must NOT
+        # clobber a doc's existing format_version (the doc-FORMAT constant, e.g.
+        # "1.0") with the STATE schema version "4.0" — a tiger-panther upgrade
+        # bug that silently rewrote every real doc's format_version on /upgrade.
+        from architect_brain import __version__
+        from architect_brain.adr import parse_frontmatter
+
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "TECH_STACK.md").write_text(
+                '---\ntemplate_name: TECH_STACK\nformat_version: "1.0"\n---\n\n# Tech Stack\n',
+                encoding="utf-8",
+            )
+            touched = migration.restamp_docs(docs)
+            self.assertEqual(touched, 1)
+            fm = parse_frontmatter((docs / "TECH_STACK.md").read_text(encoding="utf-8"))
+            self.assertEqual(str(fm.get("format_version")), "1.0")
+            self.assertEqual(fm.get("plugin_version"), __version__)
+
+    def test_restamp_stamps_format_version_when_absent(self):
+        # The other branch of setdefault: a doc with frontmatter but no
+        # format_version gets it stamped (so the default isn't silently dropped).
+        from architect_brain.adr import parse_frontmatter
+
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            (docs / "TECH_STACK.md").write_text(
+                "---\ntemplate_name: TECH_STACK\n---\n\n# Tech Stack\n",
+                encoding="utf-8",
+            )
+            migration.restamp_docs(docs)
+            fm = parse_frontmatter((docs / "TECH_STACK.md").read_text(encoding="utf-8"))
+            self.assertEqual(str(fm.get("format_version")), "4.0")
+
+
 class TestDetectAndFloorCeiling(unittest.TestCase):
 
     def test_detect_legacy_finds_monolith(self):

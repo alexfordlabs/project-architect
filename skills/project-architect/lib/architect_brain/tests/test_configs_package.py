@@ -103,6 +103,22 @@ class TestGenPackageJson(unittest.TestCase):
         self.assertEqual(dev["typescript"], "^6.1.0")
         self.assertEqual(dev["@types/node"], "^26.0.0")
 
+    # ── tiger-panther: a human-readable project.name must yield a valid npm name ──
+    def test_human_readable_project_name_is_slugified(self):
+        # "Tiger Panther: The Game" shipped verbatim into package.json → an invalid
+        # npm name (npm publish / `npm pkg fix` reject uppercase, spaces, ':').
+        pkg = json.loads(gen_package_json(_fi({"project.name": "Tiger Panther: The Game"})))
+        self.assertEqual(pkg["name"], "tiger-panther-the-game")
+        self.assertRegex(pkg["name"], r"^[a-z0-9][a-z0-9._-]*$")
+
+    def test_unsluggable_name_falls_back_to_app(self):
+        pkg = json.loads(gen_package_json(_fi({"project.name": "!!!"})))
+        self.assertEqual(pkg["name"], "app")
+
+    def test_already_valid_name_is_unchanged(self):
+        pkg = json.loads(gen_package_json(_fi({"project.name": "my-thing"})))
+        self.assertEqual(pkg["name"], "my-thing")
+
     def test_types_node_derived_from_node_major_only(self):
         # A node pin with minor/patch (or a docker-ish tag) still yields a
         # major-line @types/node range.

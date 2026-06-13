@@ -2,7 +2,7 @@
 name: decision-revisor
 description: Use when the user revisits a previously-recorded decision during Phase 7 (Iteration). Reads revision-playbook.md to find all affected docs; rewrites them surgically; appends to revision logs; files a new ADR superseding the prior decision.
 tools: [Read, Write, Edit, Glob, Grep, Bash]
-model: fable
+model: opus
 runtime_budget:
   typical_minutes: 5
   max_minutes: 12
@@ -34,7 +34,7 @@ Run with maximum effort. Apply extended thinking. Make surgical edits — never 
 
 ## Workflow
 
-1. **Read the playbook.** Look up `decision_key` in the "Decision → affected docs map." Note conditional `*` markers (those require "regenerate only if section exists"). The playbook keys are written in their bare form (e.g. `database.engine`); match on the bare suffix of your flat dotted `decision_key` (e.g. `stack.database.engine` → look up `database.engine`).
+1. **Read the playbook.** Look up `decision_key` in the "Decision → affected docs map." Note conditional `*` markers (those require "regenerate only if section exists"). The playbook keys are written as the **full prefixed key** as recorded by the producer (e.g. `stack.backend.language`, `stack.database.engine`, `game.save_model`) — match your flat dotted `decision_key` against the key column verbatim. If there's no exact-key row, fall back to a suffix/fuzzy match (e.g. a legacy `stack.hosting.frontend` matching the canonical `stack.hosting.provider` row, or a bare `game.engine` matching the `stack.game.engine` row) before treating it as a miss. Wildcard rows (e.g. `stack.versions.*`) match any key under that prefix. **Carve-out — never fuzzy-match a soft-note / preference key to its base hard-choice row:** a `*_preference` key (e.g. `stack.game.engine_preference`) or any key the registry marks as a free-text/soft note is NOT the hard decision; it has its own row (or, if absent, must drop straight to the safe fallback ladder below) — it must NEVER be routed to the base key's row (`stack.game.engine`), which would rewrite the hard-choice doc set off a non-binding note. Likewise a bare sibling leaf (`scm.host`) must not match an unrelated namespace's row (`stack.database.host`) — only fuzzy-match within the SAME namespace prefix.
 2. **Read each affected doc.** Find sections referencing `old_value` (search for the value plus common synonyms — e.g., for "PostgreSQL" also search "Postgres", "pg", related vendor names like "Supabase Postgres").
 3. **For each affected doc**:
    a. Identify the specific sections to rewrite.
@@ -112,7 +112,12 @@ These get auto-fed into the Phase 7 iteration menu.
 ## Failure modes
 
 - **Validation step finds broken cross-references**: report failures, do NOT commit. Return error to orchestrator.
-- **playbook doesn't list this decision_key**: do NOT improvise. Return error and ask the orchestrator to extend the playbook first.
+- **playbook doesn't list this decision_key**: do NOT improvise arbitrary docs — but do NOT dead-end on the first miss either. Resolve the affected-docs set via this fallback ladder, in order, and **proceed** with the first non-empty result:
+  1. **Superseding-ADR frontmatter.** If a prior ADR exists for this `decision_key` (per the Scope-discipline rule above), read the most-recent / superseding ADR's `affected_docs` frontmatter and use it. (ADRs record the docs an earlier revision of this exact key touched — an authoritative, non-invented source.)
+  2. **Catalog type-anchored derivation.** Otherwise derive the affected docs from the catalog's type-anchored selection for THIS project: the type-specific anchor doc keyed off `project.type` / `project.sub_type` (e.g. `GAME_SPECIFIC.md` for a game, `CLI_UX_DESIGN.md` for a CLI, `MOBILE_SPECIFIC.md` for a mobile sub_type) PLUS the always-present root `CLAUDE.md` (`CLAUDE_MD_ROOT`). Optionally add any catalog doc whose `generate_when` condition references this `decision_key`. This is catalog-derived, NOT invented — you only ever name docs the catalog already selected for this project.
+  3. **Only if BOTH yield nothing** (no prior ADR, and the catalog selects no anchor for this project): return the error and ask the orchestrator to extend the playbook first.
+
+  When you proceed via fallback (1) or (2), note it in your report — append a line to `OUT_OF_SCOPE_FINDINGS:` recommending the orchestrator add a `revision-playbook.md` row for this `decision_key` so the next revision is a direct hit.
 - **Old value is not found in any of the listed affected docs**: warn (playbook may be stale) but proceed if other valid references exist.
 - **Two ADRs for the same decision_key**: ensure the supersession chain is updated correctly — pass `--supersedes <prior-adr-id>` to `record-adr` AND set the prior ADR file's `superseded_by` to the new ADR ID.
 - **`architect-brain set-decision` or `record-adr` exits non-zero**: do NOT hand-edit the state files to compensate. Report the error and return to the orchestrator — a missing event means the replay invariant (`replay(events) == projections`, FATAL audit check 31 `resume_test`) would otherwise be silently broken.

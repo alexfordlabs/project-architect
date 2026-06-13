@@ -126,6 +126,53 @@ class TestCheck36Fail(unittest.TestCase):
                 any("stack.versions.python" in f.message for f in result.findings)
             )
 
+    def test_int_version_pin_consistent_with_pin_emission(self):
+        # tiger-panther: check 36's "recorded" predicate (truthiness) disagreed
+        # with _pin's "usable" predicate (isinstance str) on a numeric pin — so an
+        # int 17 read as "recorded" by check 36 (no warning) while _pin floored it
+        # to postgres:18. A single shared `usable_pin` predicate keeps emission,
+        # obligation, and enforcement from ever diverging.
+        from architect_brain.configs import _pin, usable_pin
+
+        flat = {"decisions": {
+            "stack.database.engine": "postgresql", "stack.versions.postgres": 17,
+        }}
+        self.assertEqual(usable_pin(flat, "postgres"), "17")  # the shared predicate
+        self.assertEqual(_pin(flat, "postgres"), "17")        # honored, not floored to 18
+        # …and check 36 agrees the int pin is recorded (does not flag postgres):
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp, {
+                "stack.backend.language": "python",
+                "stack.versions.python": "3.14",
+                "stack.database.engine": "postgresql",
+                "stack.versions.postgres": 17,
+            })
+            _touch(state, "pyproject.toml", "[project]\n")
+            _touch(state, "docker-compose.yml", "services: {}\n")
+            result = run(state)
+            self.assertTrue(
+                all("postgres" not in f.message for f in result.findings),
+                [f.message for f in result.findings],
+            )
+
+    def test_float_pin_is_flagged_not_silently_floored(self):
+        # A float pin is refused by usable_pin (ambiguous), so _pin uses the floor
+        # — and check 36 must make that VISIBLE (a float is not a usable recorded
+        # pin), the opposite of the int case. Confirms emission and obligation
+        # still agree: _pin floors it, check 36 flags it.
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp, {
+                "stack.backend.language": "python",
+                "stack.versions.python": "3.14",
+                "stack.database.engine": "postgresql",
+                "stack.versions.postgres": 17.0,  # float — refused
+            })
+            _touch(state, "pyproject.toml", "[project]\n")
+            _touch(state, "docker-compose.yml", "services: {}\n")
+            result = run(state)
+            self.assertFalse(result.passed)
+            self.assertTrue(any("stack.versions.postgres" in f.message for f in result.findings))
+
     def test_finding_names_the_remedy(self):
         with tempfile.TemporaryDirectory() as tmp:
             state = _make_state(tmp, {"stack.frontend.framework": "next.js"})

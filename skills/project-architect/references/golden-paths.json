@@ -27,7 +27,7 @@
         "project.type": "web_app",
         "ai.enabled": true,
         "ai.provider": "anthropic",
-        "ai.model": "claude-fable-5",
+        "ai.model": "claude-opus-4-8",
         "ai.orchestration": "langgraph",
         "ai.rag.vector_store": "pgvector",
         "ai.rag.embeddings": "voyage-3",

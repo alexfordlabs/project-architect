@@ -40,6 +40,9 @@ downstream doc-selection / config-gen if the consumers read the SAME key.
 | `stack.observability` | `opentelemetry` |
 | `stack.containerization` | `docker` |
 | `stack.mobile.framework` / `stack.mobile.*` | `react-native` … |
+| `stack.game.engine` | `unreal_engine_5`, `unity`, `godot`, `bevy` |
+| `stack.game.engine_preference` | free-text soft-preference note (e.g. `unreal (soft preference — user said 'Maybe Unreal?'; not a hard mandate)`) |
+| `stack.game.language` | `cpp_plus_blueprints`, `csharp`, `gdscript`, `rust` |
 | `stack.license` | `MIT` |
 | `stack.versions.<package>` | research-resolved pins — `stack.versions.next`, `stack.versions.react`, `stack.versions.node`, `stack.versions.python`, `stack.versions.postgres`, `stack.versions.redis`, `stack.versions.biome`, `stack.versions.typescript` (live values as of the run — e.g. `stack.versions.next = "^16.2.6"` was newest-stable mid-2026; never copy an example verbatim) |
 
@@ -76,6 +79,7 @@ unread by the generators.
 | `architecture.*` | `architecture.style` (`monolith`/`modular_monolith`/`soa`/`microservices`/`serverless`/`event_driven`), `architecture.boundaries.count`, `architecture.data_flow` (`request_response`/`pipeline`/`streaming`/`mixed`), `architecture.scaling_axis`, `architecture.hexagonal`, `architecture.event_driven` | architecture-specialist (Phase 2) |
 | `ai.*` | `ai.enabled`, `ai.agent`, `ai.provider`, `ai.model`, `ai.framework`, `ai.orchestration`, `ai.rag.*`, `ai.long_running`, `ai.persistent_memory` | AI questioning |
 | `agent.*` | `agent.autonomy`, `agent.execution`, `agent.memory`, `agent.hitl`, `agent.tools.sandbox` | agentic_system type |
+| `game.*` | `game.genre`, `game.visual_dimension` (`2d`/`2_5d`/`3d_celshaded_comic_look`/…), `game.multiplayer` (`single_player`/`single_player_async_social`/`realtime_mp`), `game.monetization_model` (`premium`/`free_cosmetic_iap`/`ads`/`battlepass`), `game.save_model` (`local_only`/`platform_cloud_saves_v1`/`own_backend`), `game.player_identity` (`platform_services_v1`/`own_accounts`/`anonymous`), `game.platform_services_impl`, `game.connectivity` (`offline_first`/`online_required`), `game.web_v1_mode`, `game.lookdev_gate`, `game.content_lfs` (`ignored`/`git_lfs`/`external_store`), `game.d18_deviation`, `game.age_rating_target`, `game.anti_cheat`, `game.push_notifications`, `game.vignette_in_v1`, `game.v1_scope` (plus the `stack.game.*` engine/language keys above) | game type questioning (Phase 2 Vision + Phase 4 Stack drill-downs) |
 | `api.*` / `webhooks.*` | `api.enabled` (gate, pairs with `stack.api.protocol`), `api.public`, `api.idempotency_required`, `webhooks.outbound` | API questioning |
 | type-specific | `cli.*`, `mcp.*`, `pl.*`, `plugin.*` | the matching project type |
 | `constraints.*` | `constraints.regulated`, `constraints.supply_chain_security`, `constraints.gdpr`, `constraints.ccpa`, `constraints.hipaa` | constraints questioning |
@@ -108,7 +112,7 @@ lands incrementally; some are forward-looking. Listed here so the whole keyspace
 | `feature_flags.*` | `feature_flags.enabled` (gate) + `feature_flags.provider`, `feature_flags.sdk`, `feature_flags.flag_types`, `feature_flags.context_paradigm`, `feature_flags.experimentation`, `feature_flags.governance`, `feature_flags.local_dev` | feature-flag questioning |
 | `docs.*` | `docs.surface`, `docs.tooling`, `docs.host`, `docs.versioned` | documentation questioning |
 | `messaging.*` | `messaging.broker`, `messaging.async` | async/event questioning |
-| `testing.*` | `testing.framework` | testing questioning |
+| `testing.*` | `testing.framework`, `testing.strategy` | testing questioning |
 | `infra.*` | `infra.cdn`, `infra.queue` | infra questioning |
 | `quality.*` / `reliability.*` / `security.*` | `quality.priorities`, `reliability.sla`, `security.secrets_management` | quality/reliability/security questioning |
 | `api.*` (doc-input) | `api.contract`, `api.style` (alongside the canonical `api.enabled`/`api.public`/`api.idempotency_required`/`stack.api.protocol`) | API questioning |

@@ -82,7 +82,7 @@ Then make the run safe and put the state in sync with reality, reusing tested ma
 
 > Sub-ledger: `set-substep rearchitect recover --status in_progress` on entry; `… recover --status done` once `RECOVERED_DESIGN.md` is written.
 
-Dispatch the **`design-recovery`** subagent (`model: "fable"`, max effort). It reads `docs/*.md`, the reconciled ADR markdown under `docs/_architect_state/decisions/*.md` (authoritative), and `docs/research/*.md`, and emits a structured **`docs/RECOVERED_DESIGN.md`** from the `RECOVERED_DESIGN.md` template — pass it as the absolute `template_path` INPUT `${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/templates/RECOVERED_DESIGN.md` (the agent's cwd is the user's project, so a bare `references/…` path is unresolvable; expand `${CLAUDE_PLUGIN_ROOT}` when dispatching). Every recovered decision is one row, grouped by area (project/vision, architecture, tech-stack, security, ops, …), carrying:
+Dispatch the **`design-recovery`** subagent (`model: "opus"`, max effort). It reads `docs/*.md`, the reconciled ADR markdown under `docs/_architect_state/decisions/*.md` (authoritative), and `docs/research/*.md`, and emits a structured **`docs/RECOVERED_DESIGN.md`** from the `RECOVERED_DESIGN.md` template — pass it as the absolute `template_path` INPUT `${CLAUDE_PLUGIN_ROOT}/skills/project-architect/references/templates/RECOVERED_DESIGN.md` (the agent's cwd is the user's project, so a bare `references/…` path is unresolvable; expand `${CLAUDE_PLUGIN_ROOT}` when dispatching). Every recovered decision is one row, grouped by area (project/vision, architecture, tech-stack, security, ops, …), carrying:
 
 - `key` — the **canonical flat decision key** whenever the decision maps to one (`architecture.style`, `database.engine`, `backend.api_style`, `cicd.platform`, `platforms`, `crypto.ratchet`, `infra.runtime`, … per [`references/decision-keys.md`](decision-keys.md)), with the project's own naming recorded as an `alias` when it differs (so Step-6 `catalog` selection + each template's `required_decisions` slicing resolve); a purely project-specific decision with no canonical equivalent keeps a descriptive slug,
 - `current_value` — the choice as it stands,
@@ -121,7 +121,7 @@ Each `set-decision` appends a `DecisionMade` event; the projections (`99-flat-in
 
 > Sub-ledger: `set-substep rearchitect research --status in_progress` on entry; `… research --status done` once both the delta research and the (confirmed-scope) challenge pass have landed in `docs/research/`.
 
-For every `revise` and `add` decision, dispatch **`research-scout`** (reused, `model: "fable"`) with **current** sources (the universal research checklist + the `llms.txt` discipline already in the plugin), framed to (a) inform the new choice and (b) report where the landscape moved since the decision was last set.
+For every `revise` and `add` decision, dispatch **`research-scout`** (reused, `model: "opus"`) with **current** sources (the universal research checklist + the `llms.txt` discipline already in the plugin), framed to (a) inform the new choice and (b) report where the landscape moved since the decision was last set.
 
 THEN run the **challenge pass**. By default it **challenges every kept decision** — `research-scout` actively hunts credible newer/stronger alternatives so the user can promote a `keep` to a `revise`. Because that is research-heavy on a large design, **the flow asks every run** to confirm or narrow the challenge scope first:
 

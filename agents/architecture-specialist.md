@@ -2,7 +2,7 @@
 name: architecture-specialist
 description: Use during project-architect Phase 3 (Architecture), before the tech stack is chosen in Phase 4, to choose a project's architectural style (monolith / modular monolith / SOA / microservices / serverless / event-driven / hexagonal), identify its boundaries, and name its scaling axis. Does NOT pick the tech stack — that is Phase 4.
 tools: [Read, Write, Grep, Glob, Bash, WebSearch, WebFetch]
-model: fable
+model: opus
 runtime_budget:
   typical_minutes: 6
   max_minutes: 15

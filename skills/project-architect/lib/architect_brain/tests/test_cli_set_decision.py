@@ -101,6 +101,30 @@ class TestCLISetDecision(unittest.TestCase):
         ulid_out = buf.getvalue().strip()
         self.assertEqual(len(ulid_out), 26)
 
+    def test_set_decision_version_pin_kept_as_string(self):
+        # stack.versions.* is always a STRING pin: a bare `17` must NOT json-coerce
+        # to int 17 (which configs._pin would then discard to the floor) — the
+        # tiger-panther postgres:17→18 silent-floor regression starts right here.
+        main([
+            "set-decision",
+            "--docs-dir", str(self.docs),
+            "stack.versions.postgres", "17",
+        ])
+        stack = json.loads((self._state_dir() / "stack.json").read_text())
+        self.assertEqual(stack["decisions"]["stack.versions.postgres"], "17")
+        self.assertIsInstance(stack["decisions"]["stack.versions.postgres"], str)
+
+    def test_set_decision_version_pin_preserves_trailing_zero_minor(self):
+        # `1.10` json-parses to float 1.1 (the trailing-zero minor is lost);
+        # version pins must round-trip verbatim as strings.
+        main([
+            "set-decision",
+            "--docs-dir", str(self.docs),
+            "stack.versions.redis", "1.10",
+        ])
+        stack = json.loads((self._state_dir() / "stack.json").read_text())
+        self.assertEqual(stack["decisions"]["stack.versions.redis"], "1.10")
+
     def test_set_decision_object_value_parsed_correctly(self):
         """JSON object values are preserved as dicts in the projection."""
         main([

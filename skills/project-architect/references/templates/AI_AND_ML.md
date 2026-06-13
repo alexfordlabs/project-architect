@@ -42,7 +42,7 @@ License: Apache-2.0
 - [↻ Revision Log](#revision-log)
 
 ## LLM Provider & Models
-Primary provider (Anthropic, OpenAI, Google, Bedrock, self-hosted) and the specific model tiers used per feature (e.g., Sonnet 4.7 for chat, Haiku for classification). Document fallback providers and switchover criteria.
+Primary provider (Anthropic, OpenAI, Google, Bedrock, self-hosted) and the specific model tiers used per feature (e.g., a top-tier model for complex reasoning and chat, a fast/cheaper model for high-volume classification). Document fallback providers and switchover criteria.
 
 ## 🔧 SDK / Integration Layer
 SDK choice (Anthropic SDK, Vercel AI SDK, LangChain, LlamaIndex, native HTTP) and where the abstraction lives. Note streaming wire format and structured output (tool use / JSON mode) usage.

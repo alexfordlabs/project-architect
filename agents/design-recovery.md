@@ -2,7 +2,7 @@
 name: design-recovery
 description: Use during /re-architect — after the project has been migrated onto the v8 event-sourced state and its ADR ledger reconciled from disk — to reconstruct an existing project's design from its docs, ADRs, and research into a structured, reviewable RECOVERED_DESIGN.md. Reconstructs only; never decides, never invents; marks uncertain recoveries low-confidence.
 tools: [Read, Write, Grep, Glob, Bash]
-model: fable
+model: opus
 runtime_budget:
   typical_minutes: 6
   max_minutes: 15

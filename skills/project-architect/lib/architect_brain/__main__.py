@@ -19,7 +19,7 @@ emit events, so (unlike the event-emitting commands) they do not use the
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from architect_brain import __version__
@@ -200,14 +200,23 @@ def _cmd_replay(args: argparse.Namespace) -> int:
     return 0
 
 
-def _parse_decision_value(value_str: str):
+def _parse_decision_value(value_str: str, key: str | None = None):
     """Parse a CLI string into the right JSON-typed value.
 
     Tries JSON parsing first (handles true/false/null/int/float/dict/list);
     falls back to raw string. Empty string stays empty string.
+
+    EXCEPTION — the ``stack.versions.*`` namespace is always a STRING pin: a bare
+    ``17`` must stay ``"17"`` (not int ``17``, which the config generators would
+    discard to the plugin floor) and ``1.10`` must stay ``"1.10"`` (not float
+    ``1.1``, which loses the trailing-zero minor). Version keys skip JSON coercion
+    and keep the raw string — the source of the tiger-panther postgres:17→18
+    silent-floor regression.
     """
     if value_str == "":
         return ""
+    if key is not None and key.startswith("stack.versions."):
+        return value_str
     try:
         return json.loads(value_str)
     except (json.JSONDecodeError, ValueError):
@@ -222,7 +231,7 @@ def _cmd_set_decision(args: argparse.Namespace) -> int:
     docs_dir = Path(args.docs_dir).resolve()
     state_dir = docs_dir / "_architect_state"
 
-    parsed_value = _parse_decision_value(args.value)
+    parsed_value = _parse_decision_value(args.value, key=args.key)
     event = EventEnvelope(
         id=new_ulid(),
         ts=_iso_now(),
@@ -412,6 +421,20 @@ def _cmd_reconcile_adrs(args: argparse.Namespace) -> int:
     def _canon_id_list(value):
         return [_canon_id(v) for v in value] if isinstance(value, list) else value
 
+    def _canon_scalar(value):
+        # YAML (pyyaml) coerces UNQUOTED frontmatter scalars by YAML rules:
+        # `date: 2026-06-12` -> datetime.date, `date: 2026-06-12 09:30:00` ->
+        # datetime.datetime. json.dumps can serialize neither, so reconcile-adrs
+        # crashed on every real project ("Object of type date is not JSON
+        # serializable", tiger-panther — same YAML-coercion class as the v9.2
+        # unquoted-`id` fix, which only covered ints). The plugin's own ADR
+        # emitter writes unquoted dates; the test fixtures had quoted them and
+        # masked the bug. Normalize date/datetime to ISO text (the index's
+        # existing `date` convention); leave every other scalar untouched.
+        if isinstance(value, (datetime, date)):
+            return value.isoformat()
+        return value
+
     adrs: list[dict] = []
     for md_path in sorted(decisions_dir.glob("*.md")):
         fm = parse_frontmatter(md_path.read_text(encoding="utf-8"))
@@ -421,7 +444,7 @@ def _cmd_reconcile_adrs(args: argparse.Namespace) -> int:
             "id": _canon_id(fm["id"]),
             "title": fm.get("title", ""),
             "status": fm.get("status", "Proposed"),
-            "date": fm.get("date", ""),
+            "date": _canon_scalar(fm.get("date", "")),
             "phase": fm.get("phase"),
             "supersedes": _canon_id_list(fm.get("supersedes", [])),
             "superseded_by": _canon_id_list(fm.get("superseded_by", [])),
@@ -434,7 +457,13 @@ def _cmd_reconcile_adrs(args: argparse.Namespace) -> int:
         "adrs": adrs,
     }
     (decisions_dir / "index.json").write_text(
-        json.dumps(index, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        # default=str is a class-level safety net: reconcile re-parses untrusted,
+        # human-edited ADR markdown, so any other pyyaml-coerced scalar (date,
+        # datetime, …) degrades to its ISO/text form instead of crashing this
+        # recovery path. Explicit _canon_scalar above keeps the common fields
+        # deterministic; this guarantees the call can never raise on the rest.
+        json.dumps(index, indent=2, sort_keys=True, default=str) + "\n",
+        encoding="utf-8",
     )
     print(
         f"architect-brain: reconciled {len(adrs)} ADRs into decisions/index.json",
@@ -625,7 +654,13 @@ def _cmd_generate_configs(args: argparse.Namespace) -> int:
         # Only for runtimes we have an honest base image for — a rust/go stack
         # no longer receives a silent node Dockerfile.
         emit("Dockerfile", gen_dockerfile(flat_index))
-    if dec.get("stack.database.engine") or dec.get("stack.cache.engine"):
+    if (dec.get("stack.database.engine") or dec.get("stack.cache.engine")) and \
+            dockerfile_language(flat_index) is not None:
+        # Emit a self-hosted compose only when we also emit a Dockerfile for the
+        # app service — otherwise the compose's `build: .` references a Dockerfile
+        # that (correctly) does not exist. None covers BOTH a serverless/edge
+        # backend (tiger-panther: Supabase edge fns) AND a stack we have no
+        # Dockerfile template for (rust/go + db) — neither gets an orphan compose.
         emit("docker-compose.yml", gen_docker_compose(flat_index))
     if dec.get("tooling.monorepo"):
         emit("turbo.json", gen_turbo_json(flat_index))

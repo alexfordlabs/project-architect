@@ -58,7 +58,7 @@ for tok in postgres redis biome typescript; do
 done
 
 # ── stale model id swept (legacy/ and fixtures are exempt by design;
-# the CURRENT id contract lives in test_v92_model_fable.sh) ──
+# the CURRENT id contract lives in test_v93_model_opus.sh) ──
 assert_not_contains "$CTA" 'claude-opus-4-7' "claude-tooling-author quality bar must not regress to a stale Opus id"
 
 # ── document-author worked example doesn't anchor a stale major ──

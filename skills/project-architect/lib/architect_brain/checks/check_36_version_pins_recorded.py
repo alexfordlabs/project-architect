@@ -24,7 +24,7 @@ newest-stable, which research-scout § 1a was supposed to resolve.
 from __future__ import annotations
 
 from architect_brain.checks import _state
-from architect_brain.configs import applicable_pin_tokens
+from architect_brain.configs import applicable_pin_tokens, usable_pin
 from architect_brain.severity import CheckResult, Finding
 
 CHECK_ID = "36"
@@ -36,17 +36,14 @@ def run(state_dir) -> CheckResult:
     """Flag generated artifacts whose version pin was never recorded in state."""
     proj = _state.project_root(state_dir)
     flat_index = _state.load_flat_index(state_dir)
-    decisions = flat_index.get("decisions", {})
-    if not isinstance(decisions, dict):
-        decisions = {}
 
     findings: list[Finding] = []
     for token, artifact in sorted(applicable_pin_tokens(flat_index).items()):
         artifact_path = proj / artifact
         if not artifact_path.is_file():
             continue  # not generated yet — nothing shipped on a floor
-        if decisions.get(f"stack.versions.{token}"):
-            continue
+        if usable_pin(flat_index, token) is not None:
+            continue  # shared predicate with _pin — recorded ⇒ emitted, no divergence
         findings.append(
             Finding(
                 message=(

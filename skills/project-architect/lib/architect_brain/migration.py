@@ -483,7 +483,11 @@ def restamp_docs(docs_dir) -> int:
         if "plugin_version" in fm:
             continue  # already stamped
         fm["plugin_version"] = __version__
-        fm["format_version"] = "4.0"
+        # PRESERVE an existing format_version — it is the doc-FORMAT constant
+        # (e.g. "1.0"), NOT the state schema version. Clobbering it to "4.0"
+        # silently rewrote every real doc's format_version on /upgrade-project
+        # (tiger-panther). Only stamp it when absent.
+        fm.setdefault("format_version", "4.0")
         # Replace the existing frontmatter block with the re-emitted one.
         new_fm = emit_frontmatter(fm)
         body = _body_after_frontmatter(text)

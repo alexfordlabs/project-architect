@@ -375,7 +375,7 @@ The agent writes these to `<generated-project>/.claude/agents/<name>.md`. Each a
 name: test-runner
 description: Run the project's test suite and report failures. Use when the user asks to "run tests", or proactively before declaring a task complete.
 tools: [Bash, Read, Grep]
-model: fable
+model: opus
 ---
 
 # Test Runner
@@ -398,7 +398,7 @@ If tests fail, do NOT attempt fixes. Return a structured report:
 name: migration-checker
 description: Validate that database migrations are forward and backward compatible. Use before applying any migration in production.
 tools: [Bash, Read, Grep, Glob]
-model: fable
+model: opus
 ---
 
 # Migration Checker
@@ -419,7 +419,7 @@ Return a structured report with PASS/FAIL per check.
 name: deploy-verifier
 description: Smoke-test a deployment after it lands. Use after `wrangler deploy` / `vercel --prod` / equivalent.
 tools: [Bash, Read]
-model: fable
+model: opus
 ---
 
 # Deploy Verifier

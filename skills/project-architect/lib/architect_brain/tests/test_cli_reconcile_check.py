@@ -106,6 +106,56 @@ Chosen.
         )
         self.assertEqual([a["id"] for a in index["adrs"]], ["0001", "0002"])
 
+    def test_reconcile_unquoted_date_does_not_crash(self):
+        # tiger-panther bug (post-v9.2): the v9.2 fix handled the unquoted-`id`
+        # (int) half of the YAML-coercion class, but pyyaml also parses an
+        # UNQUOTED `date: 2026-06-12` into a datetime.date — which json.dumps
+        # cannot serialize ("Object of type date is not JSON serializable"),
+        # crashing reconcile-adrs on every real project. The plugin's own ADR
+        # emitter writes unquoted dates; the test fixtures had masked the bug by
+        # quoting every date. Normalize date/datetime to the index's ISO string.
+        d = self._decisions_dir()
+        (d / "0001-first.md").write_text(
+            "---\n"
+            "type: adr\n"
+            'schema_version: "4.0"\n'
+            "id: 0001\n"                 # unquoted -> yaml int (already handled)
+            'title: "First"\n'
+            'status: "Accepted"\n'
+            "date: 2026-06-12\n"          # unquoted -> yaml datetime.date (THE bug)
+            "---\n\n# First\n",
+            encoding="utf-8",
+        )
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            code = main(["reconcile-adrs", "--docs-dir", str(self.docs)])
+        self.assertEqual(code, 0)
+        index = json.loads((d / "index.json").read_text(encoding="utf-8"))
+        adr = next(a for a in index["adrs"] if a["id"] == "0001")
+        self.assertEqual(adr["date"], "2026-06-12")  # normalized to ISO string
+
+    def test_reconcile_unquoted_datetime_normalizes_to_isoformat(self):
+        # Defense for the wider class: an unquoted full timestamp parses to a
+        # datetime; it must also round-trip to an ISO string rather than crash.
+        d = self._decisions_dir()
+        (d / "0001-first.md").write_text(
+            "---\n"
+            "type: adr\n"
+            'schema_version: "4.0"\n'
+            'id: "0001"\n'
+            'title: "First"\n'
+            'status: "Accepted"\n'
+            "date: 2026-06-12 09:30:00\n"   # unquoted -> yaml datetime.datetime
+            "---\n\n# First\n",
+            encoding="utf-8",
+        )
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            code = main(["reconcile-adrs", "--docs-dir", str(self.docs)])
+        self.assertEqual(code, 0)
+        index = json.loads((d / "index.json").read_text(encoding="utf-8"))
+        adr = next(a for a in index["adrs"] if a["id"] == "0001")
+        self.assertTrue(adr["date"].startswith("2026-06-12"))
+        self.assertIsInstance(adr["date"], str)
+
     def test_reconcile_normalizes_numeric_supersedes(self):
         d = self._decisions_dir()
         (d / "0003-third.md").write_text(

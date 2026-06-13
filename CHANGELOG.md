@@ -10,6 +10,59 @@ All notable changes to the `project-architect` plugin.
 
 This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v9.3.0 — 2026-06-13
+
+**Opus model pin + a second round of tiger-panther run-bug fixes.**
+
+### Changed
+
+- **Every subagent is now pinned to the latest Opus Claude model** — `model: opus`
+  in all 7 agent frontmatters and every SKILL.md dispatch directive, the
+  re-architect and generated-project surfaces, and `claude-opus-4-8` wherever an
+  exact id is needed. This supersedes the v9.2.0 `fable` pin: a hardcoded model
+  the account lacks hard-fails with no fallback, so the reliable,
+  always-available top tier (the latest Opus 4.8, 1M context) is the dependable
+  choice. The Preflight model gate now targets a current Opus with 1M context
+  (a newer Fable/Mythos model also qualifies). `tests/test_v93_model_opus.sh`
+  pins every surface.
+
+### Fixed
+
+- **`reconcile-adrs` and `migrate` no longer crash on an unquoted date.** YAML
+  parses an unquoted `date: 2026-06-12` into a `datetime.date`, which `json.dumps`
+  cannot serialize — `reconcile-adrs` crashed on every real project, and the same
+  class in `emit_frontmatter` aborted `migrate` *after* its atomic state flip,
+  leaving a half-migrated project. Both paths now normalize date/datetime to ISO
+  text.
+- **A recorded numeric version pin is honored, not silently dropped to the floor.**
+  `set-decision stack.versions.postgres 17` records the JSON int `17`; the config
+  generators' string-only guard discarded it and shipped the plugin floor
+  (`postgres:18`) while audit check 36 still reported it "recorded" — the two
+  disagreed on the same value. A single shared `usable_pin` predicate now drives
+  both emission and the audit: an int is honored losslessly; a float
+  (irrecoverably ambiguous — `3.10` parses to `3.1`) is refused so the floor is
+  used *and* check 36 flags it. `set-decision` also keeps `stack.versions.*`
+  values as strings.
+- **No spurious container artifacts for a serverless/edge or no-template stack.**
+  A Supabase-edge-functions (Deno) backend no longer gets a node Dockerfile, and
+  a stack whose database has no Dockerfile template (e.g. rust + postgres) no
+  longer gets a `docker-compose.yml` with an orphan `build: .`. Serverless-backend
+  matching is value-normalized, so display-name / hyphen variants are recognized.
+- **`package.json` carries a valid npm name.** A human-readable `project.name`
+  ("Tiger Panther: The Game") is slugified ("tiger-panther-the-game") instead of
+  an unpublishable manifest.
+- **`/upgrade-project` no longer overwrites a doc's `format_version`** (the
+  doc-format constant) with the state schema version.
+- **`/iterate-design`, `/re-architect`, and `/upgrade-project` no longer dead-end
+  on a recorded decision key the revision playbook didn't list.** The revision
+  playbook was reconciled to the canonical decision-key namespace
+  (`observability.*`, `testing.framework` / `testing.strategy`, `analytics.provider`,
+  `security.secrets_management`, plus `architecture.*`, `game.*`, `platforms.*`,
+  and feature-gate rows), and the `decision-revisor` now degrades gracefully
+  (superseding-ADR `affected_docs` → catalog type-anchored docs) instead of
+  hard-erroring on an uncovered key. A namespace-coherence test locks the
+  playbook against the registry.
+
 ## v9.2.0 — 2026-06-13
 
 **Latest-Fable everywhere + the three remaining tiger-panther run bugs.**

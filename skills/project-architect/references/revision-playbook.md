@@ -56,10 +56,35 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 |---|---|
 | project.name | PROJECT_OVERVIEW, CLAUDE_MD_ROOT, all per-folder CLAUDE.md, README* |
 | project.type | PROJECT_OVERVIEW, CLAUDE_MD_ROOT, *(type change may invalidate other docs — flag user)* |
-| project.subtype | PROJECT_OVERVIEW, type-anchored doc |
+| project.sub_type | PROJECT_OVERVIEW, type-anchored doc *(formerly `project.subtype`)* |
 | project.scale | PROJECT_OVERVIEW, COST_MODEL, MONITORING_AND_OBSERVABILITY, SLO_AND_ERROR_BUDGETS, BACKUP_AND_DR |
 | project.constraints | SECURITY_AND_COMPLIANCE, THREAT_MODEL, DEPLOYMENT*, ALL docs* (revisor flags scope) |
 | project.target_users | PROJECT_OVERVIEW, PROJECT_REQUIREMENTS, ANALYTICS_AND_TELEMETRY*, ACCESSIBILITY* |
+
+### Scope / scale
+
+These are the canonical bare top-level scope keys (per `decision-keys.md`). `project.scale` above is the legacy spelling; producers record the bare `scale`.
+
+| decision_key | affected docs |
+|---|---|
+| scale | PROJECT_OVERVIEW, COST_MODEL, MONITORING_AND_OBSERVABILITY, SLO_AND_ERROR_BUDGETS, BACKUP_AND_DR |
+| team_size | PROJECT_OVERVIEW, COST_MODEL, DEVELOPMENT_WORKFLOW* |
+| production_bound | PROJECT_OVERVIEW, COST_MODEL, DEPLOYMENT*, MONITORING_AND_OBSERVABILITY* |
+| platforms.ios | PROJECT_OVERVIEW, PLATFORMS, MOBILE_SPECIFIC* |
+| platforms.android | PROJECT_OVERVIEW, PLATFORMS, MOBILE_SPECIFIC* |
+| platforms.web | PROJECT_OVERVIEW, PLATFORMS, UI_UX_DESIGN* |
+
+### Architecture
+
+The `architecture.*` keys are set by the architecture-specialist in Phase 2 (per `decision-keys.md`).
+
+| decision_key | affected docs |
+|---|---|
+| architecture.style | ARCHITECTURE_DIAGRAMS, PROJECT_OVERVIEW, SCAFFOLD_PLAN, TECH_STACK* |
+| architecture.data_flow | ARCHITECTURE_DIAGRAMS, PROJECT_OVERVIEW* |
+| architecture.scaling_axis | ARCHITECTURE_DIAGRAMS, PROJECT_OVERVIEW, COST_MODEL* |
+| architecture.hexagonal | ARCHITECTURE_DIAGRAMS, SCAFFOLD_PLAN |
+| architecture.boundaries.count | ARCHITECTURE_DIAGRAMS, SCAFFOLD_PLAN, PROJECT_OVERVIEW* |
 
 ### Language / runtime
 
@@ -121,9 +146,9 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| stack.hosting.frontend | DEPLOYMENT, CI_CD, COST_MODEL |
-| stack.hosting.backend | DEPLOYMENT, CI_CD, COST_MODEL, MONITORING_AND_OBSERVABILITY |
-| stack.hosting.cdn | DEPLOYMENT, PERFORMANCE_BUDGETS, EDGE_AND_CACHING* |
+| stack.hosting.provider | DEPLOYMENT, CI_CD, COST_MODEL, MONITORING_AND_OBSERVABILITY *(canonical; supersedes the legacy `stack.hosting.frontend`/`stack.hosting.backend` split)* |
+| stack.hosting.cdn | DEPLOYMENT, PERFORMANCE_BUDGETS, EDGE_COMPUTE_DESIGN* |
+| deployment.style | DEPLOYMENT, CI_CD*, COST_MODEL* |
 | deployment.environments | DEPLOYMENT, CI_CD |
 | deployment.iac | DEPLOYMENT, CI_CD |
 
@@ -133,7 +158,7 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 |---|---|
 | security.encryption_at_rest | SECURITY_AND_COMPLIANCE, DATABASE_DESIGN, BACKUP_AND_DR |
 | security.encryption_in_transit | SECURITY_AND_COMPLIANCE, API_GATEWAY |
-| security.secret_management | SECURITY_AND_COMPLIANCE, DEPLOYMENT, CI_CD |
+| security.secrets_management | SECURITY_AND_COMPLIANCE, DEPLOYMENT, CI_CD *(formerly `security.secret_management`)* |
 | security.input_validation | SECURITY_AND_COMPLIANCE, API_GATEWAY |
 | security.cors | API_GATEWAY, SECURITY_AND_COMPLIANCE |
 | security.csp | UI_UX_DESIGN, SECURITY_AND_COMPLIANCE |
@@ -143,19 +168,19 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 
 | decision_key | affected docs |
 |---|---|
-| testing.unit_framework | TESTING_STRATEGY, CI_CD, CLAUDE_MD_ROOT |
-| testing.e2e_framework | TESTING_STRATEGY, CI_CD |
-| testing.coverage_target | TESTING_STRATEGY, CI_CD |
+| testing.framework | TESTING_STRATEGY, CI_CD, CLAUDE_MD_ROOT *(canonical; supersedes the legacy `testing.unit_framework`/`testing.e2e_framework` split)* |
+| testing.strategy | TESTING_STRATEGY, CI_CD |
 
-### Monitoring
+### Observability / monitoring
+
+Canonical `observability.*` keys (per `decision-keys.md`). These supersede the legacy `monitoring.error_tracking`/`monitoring.apm`/`monitoring.logging`/`monitoring.uptime`/`monitoring.analytics` spellings.
 
 | decision_key | affected docs |
 |---|---|
-| monitoring.error_tracking | MONITORING_AND_OBSERVABILITY, INCIDENT_RESPONSE |
-| monitoring.apm | MONITORING_AND_OBSERVABILITY, PERFORMANCE_BUDGETS |
-| monitoring.logging | MONITORING_AND_OBSERVABILITY, DEPLOYMENT |
-| monitoring.uptime | MONITORING_AND_OBSERVABILITY, INCIDENT_RESPONSE |
-| monitoring.analytics | ANALYTICS_AND_TELEMETRY |
+| observability.platform | MONITORING_AND_OBSERVABILITY, INCIDENT_RESPONSE *(error/crash-tracking + uptime vendor — formerly `monitoring.error_tracking`/`monitoring.uptime`)* |
+| observability.stack | MONITORING_AND_OBSERVABILITY, DEPLOYMENT *(logging/telemetry stack — formerly `monitoring.logging`)* |
+| observability.metrics | MONITORING_AND_OBSERVABILITY, PERFORMANCE_BUDGETS *(APM/metrics — formerly `monitoring.apm`)* |
+| observability.tracing | MONITORING_AND_OBSERVABILITY, PERFORMANCE_BUDGETS |
 
 ### Payments / billing
 
@@ -177,7 +202,7 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 | decision_key | affected docs |
 |---|---|
 | file_storage.provider | FILE_STORAGE, COST_MODEL, SECURITY_AND_COMPLIANCE* |
-| file_storage.cdn | FILE_STORAGE, PERFORMANCE_BUDGETS, EDGE_AND_CACHING* |
+| file_storage.cdn | FILE_STORAGE, PERFORMANCE_BUDGETS, EDGE_COMPUTE_DESIGN* |
 
 ### AI / ML
 
@@ -194,6 +219,28 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 |---|---|
 | realtime.protocol | REAL_TIME, API_GATEWAY |
 | realtime.broker | REAL_TIME, COST_MODEL |
+
+### Game
+
+For `project.type == game`. The producer records `game.*` (and `stack.game.*` for engine/language) per `decision-keys.md`; the canonical anchor doc is `GAME_SPECIFIC` with cross-doc propagation as noted.
+
+| decision_key | affected docs |
+|---|---|
+| stack.game.engine | GAME_SPECIFIC, TECH_STACK, ARCHITECTURE_DIAGRAMS, SCAFFOLD_PLAN |
+| game.engine | GAME_SPECIFIC, TECH_STACK, ARCHITECTURE_DIAGRAMS, SCAFFOLD_PLAN *(alias of `stack.game.engine`)* |
+| stack.game.engine_preference | GAME_SPECIFIC, TECH_STACK *(a SOFT, non-binding preference note — revising it touches only the engine-preference discussion, NOT the hard-choice doc set of `stack.game.engine`)* |
+| stack.game.language | GAME_SPECIFIC, TECH_STACK, CLAUDE_MD_ROOT |
+| game.genre | GAME_SPECIFIC, PROJECT_OVERVIEW* |
+| game.visual_dimension | GAME_SPECIFIC, TECH_STACK, ARCHITECTURE_DIAGRAMS* |
+| game.monetization_model | GAME_SPECIFIC, BILLING_AND_PAYMENTS, COST_MODEL* |
+| game.multiplayer | GAME_SPECIFIC, ARCHITECTURE_DIAGRAMS, REAL_TIME* |
+| game.save_model | GAME_SPECIFIC, AUTHENTICATION_SYSTEM, DATABASE_DESIGN |
+| game.player_identity | GAME_SPECIFIC, AUTHENTICATION_SYSTEM, DATABASE_DESIGN |
+| game.platform_services_impl | GAME_SPECIFIC, AUTHENTICATION_SYSTEM, DATABASE_DESIGN |
+| game.web_v1_mode | GAME_SPECIFIC, DEPLOYMENT*, UI_UX_DESIGN* |
+| game.lookdev_gate | GAME_SPECIFIC, SCAFFOLD_PLAN |
+| game.d18_deviation | GAME_SPECIFIC, SCAFFOLD_PLAN |
+| game.content_lfs | GAME_SPECIFIC, SCAFFOLD_PLAN, GIT_BRANCHING* |
 
 ### Data pipeline
 
@@ -216,8 +263,20 @@ A `*` annotation means "regenerate only if the doc contains a section referencin
 | i18n.languages | INTERNATIONALIZATION, UI_UX_DESIGN |
 | feature_flags.provider | EXPERIMENTS, ANALYTICS_AND_TELEMETRY |
 | ab_testing.provider | EXPERIMENTS, ANALYTICS_AND_TELEMETRY |
-| analytics.product | ANALYTICS_AND_TELEMETRY, MONITORING_AND_OBSERVABILITY |
+| analytics.provider | ANALYTICS_AND_TELEMETRY, MONITORING_AND_OBSERVABILITY *(formerly `analytics.product`)* |
 | open_source | CONTRIBUTING, README, LICENSE |
+
+### Feature gates
+
+A `<feature>.enabled` toggle flips whether a feature doc generates at all; revising it propagates to the matching feature doc(s) (per the catalog's `generate_when` conditions in `decision-keys.md`).
+
+| decision_key | affected docs |
+|---|---|
+| analytics.enabled | ANALYTICS_AND_TELEMETRY, EVENT_TRACKING_PLAN* |
+| auth.enabled | AUTHENTICATION_SYSTEM, SECURITY_AND_COMPLIANCE* |
+| monetization.enabled | BILLING_AND_PAYMENTS, COST_MODEL* |
+| notifications.enabled | EMAIL_AND_NOTIFICATIONS |
+| realtime.enabled | REAL_TIME, API_GATEWAY* |
 
 ---
 

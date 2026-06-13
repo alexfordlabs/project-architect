@@ -2,7 +2,7 @@
 name: claude-tooling-author
 description: Use during project-architect Phase 6 (Document Generation) to author the CLAUDE_TOOLING_PLAN, and during Phase 9 (Tooling Execution) to materialize the generated project's .claude/ directory — settings.json, hooks/, agents/, commands/, recommended-plugins.md — from that plan. Stack-aware. Dispatched in parallel with claude-md-author.
 tools: [Read, Write, Edit, Glob, Grep, Bash, Skill]
-model: fable
+model: opus
 runtime_budget:
   typical_minutes: 10
   max_minutes: 20
@@ -150,7 +150,7 @@ You may commit:
 
 ## Quality bar
 
-- `settings.json` is valid JSON; `model` is the latest Fable-class Claude model (`claude-fable-5` as of this plugin release — prefer a newer Fable id when research findings name one); the permissions allowlist is tight (no `Bash(:*)`); deny globs are parser-valid (no mid-pattern `:*` that fails open — see "Deny-glob correctness").
+- `settings.json` is valid JSON; `model` is the latest Opus Claude model (`claude-opus-4-8` as of this plugin release — prefer a newer Opus/Fable/Mythos id when research findings name one); the permissions allowlist is tight (no `Bash(:*)`); deny globs are parser-valid (no mid-pattern `:*` that fails open — see "Deny-glob correctness").
 - Hook scripts have shebangs and are executable (`chmod +x`).
 - Every recommendation in `recommended-plugins.md` cites a specific reason tied to a flat `stack.*`/`architecture.*`/`tooling.*` decision.
 - No dead recommendations (don't recommend Cloudflare plugins if the decisions don't show Cloudflare in the stack).

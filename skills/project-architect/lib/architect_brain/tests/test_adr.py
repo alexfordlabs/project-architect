@@ -286,6 +286,20 @@ class TestEmitFrontmatter(unittest.TestCase):
         b = emit_frontmatter(metadata)
         self.assertEqual(a, b)
 
+    def test_emit_nested_dict_with_date_does_not_crash(self):
+        """tiger-panther class: pyyaml coerces an unquoted nested date scalar
+        (`required_review_at: 2026-12-01`) to a datetime.date, which the nested-
+        dict branch's json.dumps could not serialize → emit_frontmatter raised
+        "Object of type date is not JSON serializable", aborting `migrate` /
+        restamp_docs mid-flip and leaving a half-migrated project."""
+        from datetime import date
+
+        result = emit_frontmatter(
+            {"audit": {"required_review_at": date(2026, 12, 1), "reviewed": False}}
+        )
+        self.assertIn("audit:", result)
+        self.assertIn("2026-12-01", result)
+
     def test_emit_escapes_embedded_quotes(self):
         """Strings with embedded double-quotes must emit valid, parseable YAML."""
         result = emit_frontmatter({"title": 'He said "hi" loudly'})

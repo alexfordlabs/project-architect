@@ -2,7 +2,7 @@
 name: claude-md-author
 description: Use during project-architect Phase 6 (Document Generation) to author the CLAUDE_MD_PLAN, and during Phase 9 (Tooling Execution) to materialize the root /CLAUDE.md and any per-folder CLAUDE.md files from that plan. Runs the claude-md-improver audit on each. Dispatched in parallel with claude-tooling-author.
 tools: [Read, Write, Edit, Glob, Grep, Bash, Skill]
-model: fable
+model: opus
 runtime_budget:
   typical_minutes: 3
   max_minutes: 8

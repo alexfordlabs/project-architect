@@ -78,6 +78,36 @@ class TestGenerateConfigsCLI(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertFalse((out_dir / "Dockerfile").exists())
 
+    def test_rust_with_db_emits_no_orphan_compose(self):
+        # A rust+postgres stack has a db engine but no Dockerfile template (rust);
+        # a docker-compose with `build: .` would reference a Dockerfile we don't
+        # generate. Gate compose on a Dockerfile existing → no orphan compose.
+        with tempfile.TemporaryDirectory() as tmp:
+            docs_dir, out_dir = _setup(tmp, {
+                "stack.backend.language": "rust", "stack.database.engine": "postgres",
+            })
+            with redirect_stdout(io.StringIO()):
+                main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
+            self.assertFalse((out_dir / "Dockerfile").exists())
+            self.assertFalse((out_dir / "docker-compose.yml").exists())
+
+    def test_serverless_edge_backend_no_container_artifacts(self):
+        # The tiger-panther shape: a Supabase-edge (Deno) backend + postgres + a TS
+        # surface → JS/TS toolchain yes, but NO node Dockerfile and NO self-hosted
+        # postgres compose (the provider runs both).
+        with tempfile.TemporaryDirectory() as tmp:
+            docs_dir, out_dir = _setup(tmp, {
+                "stack.frontend.language": "typescript",
+                "stack.backend.language": "typescript",
+                "stack.backend.framework": "supabase_edge_functions",
+                "stack.database.engine": "postgresql",
+            })
+            with redirect_stdout(io.StringIO()):
+                main(["generate-configs", "--docs-dir", str(docs_dir), "--out", str(out_dir)])
+            self.assertTrue((out_dir / "package.json").exists())
+            self.assertFalse((out_dir / "Dockerfile").exists())
+            self.assertFalse((out_dir / "docker-compose.yml").exists())
+
     def test_js_stack_always_gets_tsconfig(self):
         # package.json's build script runs `tsc -p tsconfig.json`; the two must
         # ship together (same predicate, no divergence).

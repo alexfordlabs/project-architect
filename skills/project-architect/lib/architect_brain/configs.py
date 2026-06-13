@@ -52,22 +52,66 @@ def _dec(flat_index: dict[str, Any], key: str, default: Any = None) -> Any:
     return flat_index.get("decisions", {}).get(key, default)
 
 
+def usable_pin(flat_index: dict[str, Any], package: str) -> str | None:
+    """The recorded ``stack.versions.<package>`` pin as a non-empty string, or None.
+
+    The SINGLE predicate shared by ``_pin`` (what the generators emit) and audit
+    check 36 (what pins are owed) — so a recorded pin is honored and flagged
+    consistently, and the two can never disagree. ``set-decision`` json-parses a
+    bare ``17`` to int ``17``, and ``_pin``'s old ``isinstance(str)`` guard
+    silently dropped exactly that to the floor (``postgres:17`` shipped as
+    ``postgres:18`` on tiger-panther) while check 36's truthiness test still
+    counted it recorded — the two predicates diverged on the same value.
+
+    Type policy: an **int** is repaired losslessly (``str(17) == "17"``) — this
+    rescues a pin recorded as an int in the wild. A **float** is REFUSED (returns
+    None → ``_pin`` uses the FLOOR and check 36 FLAGS it): a float pin is
+    irrecoverably ambiguous — json parses ``3.10`` to ``3.1`` (the trailing-zero
+    minor is already gone before this code runs) and ``20.0`` to a non-existent
+    ``node:20.0`` tag — so refusing it surfaces the bad record instead of
+    shipping a corrupted version silently. ``set-decision`` now keeps
+    ``stack.versions.*`` as strings, so floats only appear in legacy/hand-edited
+    state.
+    """
+    val = _dec(flat_index, f"stack.versions.{package}")
+    if isinstance(val, bool):
+        return None  # a stray bool is never a version pin
+    if isinstance(val, int):  # NOT float — see the type policy above
+        return str(val)
+    if isinstance(val, str) and val.strip():
+        return val
+    return None
+
+
 def _pin(flat_index: dict[str, Any], package: str) -> str:
     """Resolve a dependency/runtime version: a researched state pin, else FLOORS.
 
-    Prefers a ``stack.versions.<package>`` decision recorded in state (what
+    Prefers a ``stack.versions.<package>`` pin recorded in state (what
     research-scout § 1a resolves as newest-stable and the orchestrator records),
-    so generated manifests track current versions WITHOUT a plugin release. The
-    ``FLOORS`` constant is only a fallback; check 36 flags artifacts generated
-    from it. Still deterministic: same state in, same text out.
+    via the shared ``usable_pin`` predicate, so generated manifests track current
+    versions WITHOUT a plugin release. ``FLOORS`` is only the fallback; check 36
+    flags artifacts generated from it. Deterministic: same state in, same text out.
     """
-    val = _dec(flat_index, f"stack.versions.{package}")
-    return val if isinstance(val, str) and val else FLOORS[package]
+    return usable_pin(flat_index, package) or FLOORS[package]
 
 
 def _bare_version(pin: str) -> str:
     """Strip a range operator prefix (``^``/``~``/``>=``/…) off a pin."""
     return pin.lstrip("^~><=v ")
+
+
+def _slug(value: Any) -> str:
+    """Slugify a display name into a valid npm package name (or "" if empty).
+
+    npm names forbid uppercase, spaces, and most punctuation, and cannot lead
+    with ``.``/``_`` — so the human-readable ``project.name`` (e.g.
+    "Tiger Panther: The Game", a Vision-phase answer) shipped verbatim into
+    package.json yielded an INVALID, unpublishable manifest (``npm publish`` /
+    ``npm pkg fix`` reject it). Lowercase, collapse every run of chars outside
+    ``[a-z0-9._-]`` to a single ``-``, and trim leading/trailing separators.
+    """
+    s = re.sub(r"[^a-z0-9._-]+", "-", str(value or "").lower())
+    return re.sub(r"-{2,}", "-", s).strip("-._")[:214]  # npm caps names at 214 chars
 
 
 def _major(pin: str) -> str | None:
@@ -97,14 +141,63 @@ def js_stack(flat_index: dict[str, Any]) -> bool:
     )
 
 
+# Backend frameworks that run on a managed serverless / edge runtime — there is
+# NO app container to build (and the data plane is provider-managed), so neither
+# a Dockerfile nor a self-hosted docker-compose service applies. tiger-panther:
+# Supabase edge functions run on the Deno edge runtime, yet a node:24 Dockerfile
+# + a self-hosted postgres service were wrongly generated. NOTE: this keys off
+# the serverless *backend runtime*, NOT merely managed app hosting — a node app
+# on Vercel (backend.runtime=node) is still containerizable and still wants a
+# local-dev compose, so managed hosting alone does not suppress these artifacts.
+SERVERLESS_BACKENDS: frozenset[str] = frozenset({
+    "supabase_edge_functions", "cloudflare_workers", "deno_deploy",
+    "vercel_functions", "vercel_edge_functions", "netlify_functions",
+    "aws_lambda", "lambda",
+})
+
+
+def _norm_value(val: Any) -> str:
+    """Normalize a decision value for tolerant matching: lowercase + collapse runs
+    of whitespace/hyphens to a single underscore — so the display-name and
+    separator variants of the same framework ('Supabase Edge Functions',
+    'supabase-edge-functions') all match the canonical 'supabase_edge_functions'
+    slug. Guards against a future run recording a non-underscore form and silently
+    regressing to the tiger-panther node-Dockerfile-for-a-Deno-backend bug."""
+    return re.sub(r"[\s\-]+", "_", str(val or "").strip().lower())
+
+
+def _serverless_backend(flat_index: dict[str, Any]) -> bool:
+    return _norm_value(_dec(flat_index, "stack.backend.framework")) in SERVERLESS_BACKENDS
+
+
+def self_hosted_runtime(flat_index: dict[str, Any]) -> bool:
+    """Whether this stack produces an app container WE build (Dockerfile + a
+    self-hosted docker-compose db/cache).
+
+    False for a serverless/edge backend (Supabase edge functions / Deno /
+    Cloudflare Workers / Lambda): there is no app container to build and the
+    database is provider-managed, so no Dockerfile and no self-hosted
+    docker-compose db/cache services are emitted (tiger-panther). A real
+    containerizable backend — even one deployed to a managed PaaS like Vercel —
+    returns True. The ONE predicate shared by Dockerfile/compose emission and
+    the pin obligation (``applicable_pin_tokens`` / check 36) so what is emitted
+    and what pins are owed cannot diverge.
+    """
+    return not _serverless_backend(flat_index)
+
+
 def dockerfile_language(flat_index: dict[str, Any]) -> str | None:
     """Which runtime the generated Dockerfile is based on, or None for none.
 
     The backend language wins (it is the deploy artifact); a JS/TS front end
-    implies node. Languages we have no honest template for (rust, go, …) and
-    stacks with no language decided yield None — the v9.1 fix for the old
-    behaviour of silently defaulting every project to a node Dockerfile.
+    implies node. Returns None when: the language has no honest template
+    (rust, go, …) or none is decided (the v9.1 fix for silently defaulting every
+    project to a node Dockerfile), OR the backend runs on a serverless/edge
+    runtime — there is no app container to build (the tiger-panther Deno/Supabase
+    edge-functions fix).
     """
+    if not self_hosted_runtime(flat_index):
+        return None
     backend = _dec(flat_index, "stack.backend.language")
     if backend == "python":
         return "python"
@@ -137,10 +230,17 @@ def applicable_pin_tokens(flat_index: dict[str, Any]) -> dict[str, str]:
         tokens["node"] = "Dockerfile"
     if "python" in _stack_languages(flat_index):
         tokens.setdefault("python", "pyproject.toml")
-    if _dec(flat_index, "stack.database.engine") in ("postgres", "postgresql"):
-        tokens["postgres"] = "docker-compose.yml"
-    if _dec(flat_index, "stack.cache.engine") == "redis":
-        tokens["redis"] = "docker-compose.yml"
+    # db/cache pins are owed only when a self-hosted docker-compose is actually
+    # emitted — which the CLI gates on a Dockerfile existing for the app service
+    # (`dockerfile_language is not None`). A serverless/edge backend OR a stack we
+    # have no Dockerfile template for (rust/go) emits no compose, so no service
+    # and no pin is owed — keeping emission and obligation aligned (no orphan
+    # `build: .` compose, no phantom pin).
+    if dockerfile_language(flat_index) is not None:
+        if _dec(flat_index, "stack.database.engine") in ("postgres", "postgresql"):
+            tokens["postgres"] = "docker-compose.yml"
+        if _dec(flat_index, "stack.cache.engine") == "redis":
+            tokens["redis"] = "docker-compose.yml"
     return tokens
 
 
@@ -156,7 +256,7 @@ def gen_package_json(flat_index: dict[str, Any]) -> str:
     devDependency — never assumed global (the v9.1 fix for scripts that
     referenced an undeclared toolchain).
     """
-    name = _dec(flat_index, "project.name") or "app"
+    name = _slug(_dec(flat_index, "project.name")) or "app"
     framework = _dec(flat_index, "stack.frontend.framework")
     pkg: dict[str, Any] = {
         "name": name,
@@ -339,8 +439,12 @@ def gen_docker_compose(flat_index: dict[str, Any]) -> str:
     Always an ``app`` service; adds ``db`` (postgres) and ``cache`` (redis)
     services + ``depends_on`` when those engines are selected.
     """
-    db = _dec(flat_index, "stack.database.engine")
-    cache = _dec(flat_index, "stack.cache.engine")
+    # A managed-PaaS / serverless-edge stack hosts its database itself — emit no
+    # self-hosted db/cache service for it (the tiger-panther Deno/managed-Supabase
+    # fix; mirrors applicable_pin_tokens so pin obligation stays aligned).
+    self_hosted = self_hosted_runtime(flat_index)
+    db = _dec(flat_index, "stack.database.engine") if self_hosted else None
+    cache = _dec(flat_index, "stack.cache.engine") if self_hosted else None
     app = ["services:", "  app:", "    build: .", "    ports:", '      - "3000:3000"']
     depends: list[str] = []
     extra: list[str] = []

@@ -46,6 +46,43 @@ class TestDockerfileLanguage(unittest.TestCase):
     def test_no_language_no_dockerfile(self):
         self.assertIsNone(dockerfile_language(_fi()))
 
+    def test_no_dockerfile_for_serverless_edge_backend(self):
+        # tiger-panther: Supabase edge functions run on the Deno edge runtime —
+        # not a self-built node container. No honest node Dockerfile applies.
+        self.assertIsNone(dockerfile_language(_fi({
+            "stack.backend.language": "typescript",
+            "stack.backend.framework": "supabase_edge_functions",
+        })))
+
+    def test_serverless_backend_recognized_despite_display_name_or_separators(self):
+        # The serverless check normalizes the value (lowercase + spaces/hyphens →
+        # underscore), so a display-name or hyphenated variant of the same
+        # framework is still recognized and still suppresses the Dockerfile —
+        # not just the exact 'supabase_edge_functions' slug.
+        for variant in ("Supabase Edge Functions", "supabase-edge-functions",
+                        "Cloudflare Workers", "AWS Lambda"):
+            self.assertIsNone(
+                dockerfile_language(_fi({
+                    "stack.backend.language": "typescript",
+                    "stack.backend.framework": variant,
+                })),
+                f"{variant!r} should be recognized as serverless",
+            )
+
+    def test_dockerfile_still_emitted_for_node_backend_on_managed_host(self):
+        # A node app on a managed PaaS (e.g. Vercel) is still containerizable —
+        # managed HOSTING alone must NOT suppress the Dockerfile; only a
+        # serverless/edge *backend runtime* does (guards the modern_saas_2026
+        # golden path, which is node-on-Vercel + postgres).
+        self.assertEqual(
+            dockerfile_language(_fi({
+                "stack.backend.language": "typescript",
+                "stack.backend.runtime": "node",
+                "stack.hosting.provider": "vercel",
+            })),
+            "node",
+        )
+
     def test_backend_language_wins_over_frontend_framework(self):
         # e.g. the ai_rag_app golden path: next.js frontend + python backend →
         # the deploy artifact is the python service.
