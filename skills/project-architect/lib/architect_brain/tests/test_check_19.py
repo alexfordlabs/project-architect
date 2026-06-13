@@ -158,8 +158,11 @@ class TestCheck19Fail(unittest.TestCase):
             self.assertEqual(result.severity, "BLOCKING")
             self.assertEqual(len(result.findings), 1)
 
-    def test_post_lock_audit_fails_blocking(self):
-        # The v8-adapted post-lock case: newest audit.ts AFTER locked_at.
+    def test_post_lock_clean_reaudit_passes(self):
+        # v9.2 fix (tiger-panther bug #2): SKILL Phase 9 (Tooling Execution)
+        # runs AFTER lock and prescribes re-audits — a clean post-lock audit is
+        # verification, not a defect. The lock is still vetted by the newest
+        # at-or-before-lock audit.
         with tempfile.TemporaryDirectory() as tmp:
             state = _make_state(tmp)
             _write_workflow(
@@ -168,22 +171,36 @@ class TestCheck19Fail(unittest.TestCase):
                     "locked": True,
                     "locked_at": "2026-05-29T12:00:00Z",
                     "audits": [
-                        {"ts": "2026-05-29T11:00:00Z", "result": "pass"},
-                        {"ts": "2026-05-29T12:30:00Z", "result": "pass"},
+                        {"ts": "2026-05-29T11:00:00Z", "result": "clean"},
+                        {"ts": "2026-05-29T12:30:00Z", "result": "clean"},
+                    ],
+                },
+            )
+            result = run(state)
+            self.assertTrue(result.passed, result.findings)
+
+    def test_post_lock_blocked_audit_fails(self):
+        # A BLOCKED audit after lock = the state degraded post-lock; surface it.
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            _write_workflow(
+                state,
+                {
+                    "locked": True,
+                    "locked_at": "2026-05-29T12:00:00Z",
+                    "audits": [
+                        {"ts": "2026-05-29T11:00:00Z", "result": "clean"},
+                        {"ts": "2026-05-29T12:30:00Z", "result": "blocked"},
                     ],
                 },
             )
             result = run(state)
             self.assertFalse(result.passed)
             self.assertEqual(result.severity, "BLOCKING")
-            self.assertEqual(result.check_id, "19")
-            self.assertEqual(len(result.findings), 1)
-            # The newest ts and the lock ts both appear in the message.
             self.assertIn("2026-05-29T12:30:00Z", result.findings[0].message)
-            self.assertIn("2026-05-29T12:00:00Z", result.findings[0].message)
 
-    def test_post_lock_uses_newest_audit(self):
-        # Even if an earlier audit is pre-lock, the NEWEST audit being post-lock fails.
+    def test_all_audits_post_lock_fails(self):
+        # No audit at-or-before lock => the lock was never vetted.
         with tempfile.TemporaryDirectory() as tmp:
             state = _make_state(tmp)
             _write_workflow(
@@ -192,15 +209,33 @@ class TestCheck19Fail(unittest.TestCase):
                     "locked": True,
                     "locked_at": "2026-05-29T10:00:00Z",
                     "audits": [
-                        {"ts": "2026-05-29T09:00:00Z"},
-                        {"ts": "2026-05-29T09:30:00Z"},
-                        {"ts": "2026-05-29T10:00:01Z"},
+                        {"ts": "2026-05-29T10:00:01Z", "result": "clean"},
                     ],
                 },
             )
             result = run(state)
             self.assertFalse(result.passed)
-            self.assertIn("2026-05-29T10:00:01Z", result.findings[0].message)
+            self.assertIn("2026-05-29T10:00:00Z", result.findings[0].message)
+
+    def test_blocked_vetting_audit_fails_even_with_clean_post_lock(self):
+        # The lock was PLACED on a blocked audit — a later clean audit doesn't
+        # retroactively vet the lock event (re-run clean + re-lock).
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            _write_workflow(
+                state,
+                {
+                    "locked": True,
+                    "locked_at": "2026-05-29T12:00:00Z",
+                    "audits": [
+                        {"ts": "2026-05-29T11:00:00Z", "result": "blocked"},
+                        {"ts": "2026-05-29T12:30:00Z", "result": "clean"},
+                    ],
+                },
+            )
+            result = run(state)
+            self.assertFalse(result.passed)
+            self.assertIn("2026-05-29T11:00:00Z", result.findings[0].message)
 
 
 class TestCheck19BlockedVettingAudit(unittest.TestCase):

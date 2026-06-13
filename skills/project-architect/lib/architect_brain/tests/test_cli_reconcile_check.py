@@ -80,6 +80,53 @@ Chosen.
         index = json.loads((self._decisions_dir() / "index.json").read_text())
         self.assertEqual([a["id"] for a in index["adrs"]], ["0001", "0002", "0003"])
 
+    def test_reconcile_unquoted_numeric_id_does_not_crash(self):
+        # v9.2 fix (tiger-panther bug: TypeError '<' between str and int).
+        # YAML parses an UNQUOTED `id: 0001` as int 1; mixed with quoted-string
+        # ids in sibling files, the sort crashed. Ids normalize to the
+        # canonical zero-padded string form instead.
+        self._write_adr("0001", "First")          # quoted -> str
+        d = self._decisions_dir()
+        (d / "0002-second.md").write_text(
+            "---\n"
+            "type: adr\n"
+            'schema_version: "4.0"\n'
+            "id: 0002\n"                # unquoted -> yaml int
+            'title: "Second"\n'
+            'status: "Accepted"\n'
+            'date: "2026-06-13"\n'
+            "---\n\n# Second\n",
+            encoding="utf-8",
+        )
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            code = main(["reconcile-adrs", "--docs-dir", str(self.docs)])
+        self.assertEqual(code, 0)
+        index = json.loads(
+            (d / "index.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual([a["id"] for a in index["adrs"]], ["0001", "0002"])
+
+    def test_reconcile_normalizes_numeric_supersedes(self):
+        d = self._decisions_dir()
+        (d / "0003-third.md").write_text(
+            "---\n"
+            "type: adr\n"
+            'schema_version: "4.0"\n'
+            "id: 0003\n"
+            'title: "Third"\n'
+            'status: "Accepted"\n'
+            'date: "2026-06-13"\n'
+            "supersedes: [1]\n"          # yaml int in the chain
+            "---\n\n# Third\n",
+            encoding="utf-8",
+        )
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            code = main(["reconcile-adrs", "--docs-dir", str(self.docs)])
+        self.assertEqual(code, 0)
+        index = json.loads((d / "index.json").read_text(encoding="utf-8"))
+        third = next(a for a in index["adrs"] if a["id"] == "0003")
+        self.assertEqual(third["supersedes"], ["0001"])
+
     def test_reconcile_empty_decisions_dir_writes_empty_index(self):
         exit_code = main(["reconcile-adrs", "--docs-dir", str(self.docs)])
         self.assertEqual(exit_code, 0)

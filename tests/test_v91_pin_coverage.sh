@@ -44,7 +44,7 @@ assert_contains "$RP" 'newest-stable' "research-prompts.md universal checklist d
 # ── golden paths: no superseded keys, no stale version literals as 'default' ──
 assert_not_contains "$GP" 'stack.frontend.version' "golden-paths.json must not seed the superseded stack.frontend.version key"
 assert_not_contains "$GP" 'Next.js 15' "golden-paths.json must not present a hardcoded Next major as the default stack"
-assert_not_contains "$GP" 'claude-opus-4-7' "golden-paths.json ai.model must track the current Opus id"
+assert_not_contains "$GP" 'claude-opus-4-7' "golden-paths.json ai.model must not regress to a stale Opus id"
 
 # ── revision-playbook keys live in the canonical stack.* namespace ──
 assert_contains "$PLAYBOOK" 'stack.database.engine' "revision-playbook uses canonical stack.database.engine"
@@ -57,9 +57,9 @@ for tok in postgres redis biome typescript; do
   assert_contains "$TSD" "stack.versions.$tok" "TECH_STACK.md template surfaces the '$tok' pin"
 done
 
-# ── stale model id swept (legacy/ and fixtures are exempt by design) ──
-assert_not_contains "$CTA" 'claude-opus-4-7' "claude-tooling-author quality bar tracks the current Opus id"
-assert_contains "$CTA" 'claude-opus-4-8' "claude-tooling-author names claude-opus-4-8"
+# ── stale model id swept (legacy/ and fixtures are exempt by design;
+# the CURRENT id contract lives in test_v92_model_fable.sh) ──
+assert_not_contains "$CTA" 'claude-opus-4-7' "claude-tooling-author quality bar must not regress to a stale Opus id"
 
 # ── document-author worked example doesn't anchor a stale major ──
 assert_not_contains "$DA" 'Next.js 15.x' "document-author version-family example is not a stale major"

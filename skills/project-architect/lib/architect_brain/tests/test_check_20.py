@@ -129,6 +129,24 @@ class TestCheck20Degraded(unittest.TestCase):
 
 
 class TestCheck20Pass(unittest.TestCase):
+    def test_preflight_opener_tolerated(self):
+        # v9.2 fix (tiger-panther bug #1): pre-v9.2 SKILL.md instructed
+        # `set-phase preflight` at run open, so real projects carry a
+        # PhaseAdvanced to=preflight in their append-only log forever. The
+        # banner-only opener is benign — never out-of-order, never unknown.
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            _write_phase_sequence(state, ["preflight", "kickoff", "vision"])
+            result = run(state)
+            self.assertTrue(result.passed, result.findings)
+
+    def test_preflight_mid_run_still_tolerated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state = _make_state(tmp)
+            _write_phase_sequence(state, ["kickoff", "preflight", "vision"])
+            result = run(state)
+            self.assertTrue(result.passed, result.findings)
+
     def test_full_canonical_ladder_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
             state = _make_state(tmp)

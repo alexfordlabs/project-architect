@@ -403,19 +403,28 @@ def _cmd_reconcile_adrs(args: argparse.Namespace) -> int:
     decisions_dir = docs_dir / "_architect_state" / "decisions"
     decisions_dir.mkdir(parents=True, exist_ok=True)
 
+    def _canon_id(value):
+        # YAML parses an UNQUOTED `id: 0001` as int 1; mixed with quoted-string
+        # ids from sibling files this crashed the sort (str < int TypeError —
+        # tiger-panther, v9.2). Normalize to the zero-padded string convention.
+        return f"{value:04d}" if isinstance(value, int) else str(value)
+
+    def _canon_id_list(value):
+        return [_canon_id(v) for v in value] if isinstance(value, list) else value
+
     adrs: list[dict] = []
     for md_path in sorted(decisions_dir.glob("*.md")):
         fm = parse_frontmatter(md_path.read_text(encoding="utf-8"))
         if not fm or "id" not in fm:
             continue  # skip files without valid ADR frontmatter
         adrs.append({
-            "id": fm["id"],
+            "id": _canon_id(fm["id"]),
             "title": fm.get("title", ""),
             "status": fm.get("status", "Proposed"),
             "date": fm.get("date", ""),
             "phase": fm.get("phase"),
-            "supersedes": fm.get("supersedes", []),
-            "superseded_by": fm.get("superseded_by", []),
+            "supersedes": _canon_id_list(fm.get("supersedes", [])),
+            "superseded_by": _canon_id_list(fm.get("superseded_by", [])),
         })
     adrs.sort(key=lambda a: a["id"])
 

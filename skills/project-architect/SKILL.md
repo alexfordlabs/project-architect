@@ -229,20 +229,21 @@ The `|| true` ensures failure never blocks Preflight — the architect doesn't d
 
 ### Model/effort verification
 
-Verify the harness is running a current-generation Opus (Opus 4.x) with 1M context at max effort.
+Verify the harness is running the **latest Fable-class model** (`claude-fable-5` as of this plugin release — any newer Fable/Mythos id also qualifies; 1M context is the Fable default) at max effort. A current-generation Opus (Opus 4.x) with the `[1m]` 1M-context variant is the accepted floor.
 
 1. Read the model identifier from the system env metadata. Look for the line `The exact model ID is claude-<...>` in your context.
-2. **If model is a current Opus with the `[1m]` 1M-context variant** (e.g. `claude-opus-4-8[1m]`): silently proceed.
-3. **If model is a current Opus WITHOUT the `[1m]` variant**: invoke `Skill: update-config` to set the latest Opus model + `env.ANTHROPIC_CONTEXT_VARIANT: "1m"` in global settings; then prompt the user:
-   > This skill requires a current-generation Opus with 1M context at maximum effort.
-   > Settings file updated for future sessions. For *this* session, please run:
-   >   /model       → select the latest Opus (1M context)
+2. **If model is Fable-class** (`claude-fable-5`, or any `claude-fable-*` / `claude-mythos-*` newer than it): silently proceed — this is the target.
+3. **If model is a current Opus with the `[1m]` 1M-context variant** (e.g. `claude-opus-4-8[1m]`): proceed, but note once to the user:
+   > Heads up: project-architect targets the latest Fable model (`/model` → select Fable). Continuing on Opus 1M — the accepted floor.
+4. **If model is a current Opus WITHOUT the `[1m]` variant, or anything else** (sonnet, haiku, an older generation): prompt the user:
+   > This skill targets the latest Fable-class model (1M context, max effort); a current Opus with 1M context is the minimum floor.
+   > Please run:
+   >   /model       → select the latest Fable (or, at minimum, the latest Opus with 1M context)
    >   /effort max
    > Reply "continue" when done.
 
    Wait for "continue."
-4. **If model is anything else** (sonnet, haiku, or an older generation): same prompt as step 3 but without the autofix (since the user's current session won't have inherited the desired model yet).
-5. **If the user declines to switch**: refuse to start. Output a clear message: "project-architect requires a current-generation Opus (1M context) for the quality of reasoning needed across phases. Please restart with the correct model."
+5. **If the user declines to switch**: refuse to start. Output a clear message: "project-architect requires the latest Fable-class model (or, at minimum, a current-generation Opus with 1M context) for the quality of reasoning needed across phases. Please restart with the correct model."
 
 Effort verification: not directly detectable from env. Trust the user's `/effort max` confirmation. As a fallback, include the directive `"Run with maximum effort. Apply extended thinking. Be thorough."` in every subagent prompt header and every `Skill` invocation context.
 
@@ -359,12 +360,9 @@ Run `architect-brain detect` (see Resumability). If it reports `greenfield`, the
 ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain init   # creates docs/_architect_state/ (events.jsonl + empty projections + schema_version "4.0")
 ```
 
-`init` writes `docs/_architect_state/` with an empty `events.jsonl`, the empty per-concern projections, `99-flat-index.json`, `decisions/index.json`, and the `schema_version` probe file at the literal `"4.0"`. Then record the run's opening facts as events — never by hand-writing JSON:
+`init` writes `docs/_architect_state/` with an empty `events.jsonl`, the empty per-concern projections, `99-flat-index.json`, `decisions/index.json`, and the `schema_version` probe file at the literal `"4.0"`.
 
-```bash
-# the orchestrator's first events: who/when/what (the binary stamps real timestamps + ULIDs)
-${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-phase preflight
-```
+Do NOT `set-phase` here: **preflight is the banner-only opener and is not on the phase ladder** — `check_20` (no_oob_phase_advance) validates `PhaseAdvanced` events against a ladder that starts at `kickoff`, and `ui phase-bar preflight` is intentionally a no-op. The run's first phase event is the `set-phase kickoff` in the Phase 0a → Kickoff transition below. (All state changes are still events via the binary — never hand-written JSON.)
 
 CRITICAL: the `schema_version` file is the literal string `"4.0"` (`init` writes it) — never the plugin version. Plugin provenance is carried in events' `by`/`payload`, not in `schema_version`.
 
@@ -443,7 +441,7 @@ After Batch 3:
 2. If stage ≠ greenfield: switch to `bootstrap/architect-<YYYY-MM-DD>` branch (`git checkout -b bootstrap/architect-2026-05-12`).
 3. Commit via `commit-commands:commit`: `architect(kickoff): record kickoff decisions`.
 4. Dispatch `research-scout` for domain research:
-   Dispatch `project-architect:research-scout` (model `opus`, description "Kickoff domain research") with the **Shared dispatch header** + the **Kickoff — research-scout (domain)** body from `references/dispatch-prompts.md`, substituting the `{{...}}` context from the flat decisions.
+   Dispatch `project-architect:research-scout` (model `fable`, description "Kickoff domain research") with the **Shared dispatch header** + the **Kickoff — research-scout (domain)** body from `references/dispatch-prompts.md`, substituting the `{{...}}` context from the flat decisions.
 5. Record the resulting research file as a `ResearchRefAdded` event (`architect-brain append-event --type ResearchRefAdded --payload '{...}'`).
 6. Commit via `commit-commands:commit`: `architect(kickoff-research): domain research`.
 7. Transition per the **Phase transition contract**: run `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain set-phase vision && ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain ui phase-bar vision`, then run the gate (`architect-brain audit --only 20` + `--only 18`).
@@ -538,7 +536,7 @@ In v8 the architecture is decided **before** the tech stack: the system's shape,
 Load `references/questioning-flow.md` Section: "Architecture Deep Dive (Architecture phase)".
 
 1. **Dispatch `architecture-specialist`** to drive the architectural-style decision:
-   Dispatch `project-architect:architecture-specialist` (model `opus`, description "Architecture style + boundaries") with the **Shared dispatch header** + the **Architecture — architecture-specialist** body from `references/dispatch-prompts.md`, substituting the `{{...}}` context (the vision + kickoff decisions). It questions architectural STYLE (monolith / modular monolith / SOA / microservices / serverless / event-driven / hexagonal), boundaries, data-flow, scaling axis — and recommends WITH rationale (**never microservices-by-default**). It records the `architecture.*` decisions: `architecture.style`, `architecture.boundaries.count`, `architecture.data_flow`, `architecture.scaling_axis`, `architecture.hexagonal`, `architecture.event_driven` (each via `architect-brain set-decision … --by user` once the user confirms the recommendation — the agent proposes, the orchestrator records the confirmed choice; per `references/decision-keys.md`).
+   Dispatch `project-architect:architecture-specialist` (model `fable`, description "Architecture style + boundaries") with the **Shared dispatch header** + the **Architecture — architecture-specialist** body from `references/dispatch-prompts.md`, substituting the `{{...}}` context (the vision + kickoff decisions). It questions architectural STYLE (monolith / modular monolith / SOA / microservices / serverless / event-driven / hexagonal), boundaries, data-flow, scaling axis — and recommends WITH rationale (**never microservices-by-default**). It records the `architecture.*` decisions: `architecture.style`, `architecture.boundaries.count`, `architecture.data_flow`, `architecture.scaling_axis`, `architecture.hexagonal`, `architecture.event_driven` (each via `architect-brain set-decision … --by user` once the user confirms the recommendation — the agent proposes, the orchestrator records the confirmed choice; per `references/decision-keys.md`).
 2. For each major architectural decision, file an ADR via the ADR workflow (see "Filing an ADR" below).
 3. Drill into the per-area concerns that the style implies (auth shape, data boundaries, API surface, security stance, integration topology). Ask 1–3 batches; record decisions as events.
 4. Detect red flags; dispatch ad-hoc `research-scout`.
@@ -663,7 +661,7 @@ ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain catalog list --phase docs   # filtered
    ```
    For each batch in chunks(catalog_ordered_docs, 8):
      For each doc in batch:
-       Dispatch project-architect:document-author (model opus, description "Write {{doc_name}}")
+       Dispatch project-architect:document-author (model fable, description "Write {{doc_name}}")
        with the **Shared dispatch header** + the **Doc-gen — document-author** body
        from references/dispatch-prompts.md, substituting the {{...}} INPUTS for this doc.
      wait_for_all(batch)
@@ -686,10 +684,10 @@ ${CLAUDE_PLUGIN_ROOT}/bin/architect-brain catalog list --phase docs   # filtered
 6. **In parallel with the last doc batch**, dispatch the two plan-authoring agents — they author *plans*, not the final files (the actual root `/CLAUDE.md` + `.claude/*` tree are materialized later in Phase 9 Tooling Execution, or deferred — see the Phase-10 handoff banner):
 
    - `claude-md-author` → authors `docs/CLAUDE_MD_PLAN.md` (the fully-resolved plan for the root `/CLAUDE.md` + any per-folder CLAUDE.md).
-     Dispatch `project-architect:claude-md-author` (model `opus`, description "Author CLAUDE_MD_PLAN") with the **Shared dispatch header** + the **Doc-gen — claude-md-author** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS.
+     Dispatch `project-architect:claude-md-author` (model `fable`, description "Author CLAUDE_MD_PLAN") with the **Shared dispatch header** + the **Doc-gen — claude-md-author** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS.
 
    - `claude-tooling-author` → authors `docs/CLAUDE_TOOLING_PLAN.md` (the plan for `.claude/settings.json`, hooks/, agents/, commands/, recommended-plugins.md — see `references/claude-code-integration.md` for stack→skill recipes).
-     Dispatch `project-architect:claude-tooling-author` (model `opus`, description "Author CLAUDE_TOOLING_PLAN") with the **Shared dispatch header** + the **Doc-gen — claude-tooling-author** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS.
+     Dispatch `project-architect:claude-tooling-author` (model `fable`, description "Author CLAUDE_TOOLING_PLAN") with the **Shared dispatch header** + the **Doc-gen — claude-tooling-author** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS.
 
 7. After both return, record + commit each plan:
    - `${CLAUDE_PLUGIN_ROOT}/bin/architect-brain record-doc --phase docs CLAUDE_MD_PLAN docs/CLAUDE_MD_PLAN.md` → commit `architect(docs): author CLAUDE_MD_PLAN`.
@@ -776,7 +774,7 @@ Use `AskUserQuestion` for the menu.
   2. Ask: why (free-form — goes into ADR)
   3. Re-ask the question that produced this decision (with current value as default).
   4. Dispatch `decision-revisor`:
-     Dispatch `project-architect:decision-revisor` (model `opus`, description "Revise {{decision_key}}") with the **Shared dispatch header** + the **Iteration — decision-revisor** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS (`decision_key`, `old_value`, `new_value`, `reason`, `next_adr_id`).
+     Dispatch `project-architect:decision-revisor` (model `fable`, description "Revise {{decision_key}}") with the **Shared dispatch header** + the **Iteration — decision-revisor** body from `references/dispatch-prompts.md`, substituting the `{{...}}` INPUTS (`decision_key`, `old_value`, `new_value`, `reason`, `next_adr_id`).
 
   5. After revisor returns, run inline validation (revisor should have done this already but double-check); the new value is recorded via `architect-brain set-decision` and any ADR via `record-adr`.
   6. Commit via `commit-commands:commit`: `architect(revise): {{key}} → {{new}} (ADR {{id}})`.
@@ -871,10 +869,10 @@ Which plans to execute now?
 For each chosen execution:
 
 - **(a) CLAUDE_MD_PLAN**: dispatch `claude-md-author` with `plan_path: docs/CLAUDE_MD_PLAN.md` as input. Agent reads plan, substitutes placeholders from the flat decisions, writes CLAUDE.md. Commit: `architect(tooling): execute CLAUDE_MD_PLAN`.
-  Dispatch `project-architect:claude-md-author` (model `opus`, description "Execute CLAUDE_MD_PLAN") with the **Shared dispatch header** + the **Tooling — claude-md-author (execute CLAUDE_MD_PLAN)** body from `references/dispatch-prompts.md`.
+  Dispatch `project-architect:claude-md-author` (model `fable`, description "Execute CLAUDE_MD_PLAN") with the **Shared dispatch header** + the **Tooling — claude-md-author (execute CLAUDE_MD_PLAN)** body from `references/dispatch-prompts.md`.
 
 - **(b) CLAUDE_TOOLING_PLAN**: dispatch `claude-tooling-author` with `plan_path: docs/CLAUDE_TOOLING_PLAN.md`. Agent reads plan, generates `.claude/*` tree including the 3 router slash commands (`/scaffold`, `/implement`, `/iterate-design`). Commit: `architect(tooling): execute CLAUDE_TOOLING_PLAN`.
-  Dispatch `project-architect:claude-tooling-author` (model `opus`, description "Execute CLAUDE_TOOLING_PLAN") with the **Shared dispatch header** + the **Tooling — claude-tooling-author (execute CLAUDE_TOOLING_PLAN)** body from `references/dispatch-prompts.md`.
+  Dispatch `project-architect:claude-tooling-author` (model `fable`, description "Execute CLAUDE_TOOLING_PLAN") with the **Shared dispatch header** + the **Tooling — claude-tooling-author (execute CLAUDE_TOOLING_PLAN)** body from `references/dispatch-prompts.md`.
 
 - **(c) SCAFFOLD_PLAN**: run the soft-dependency probe for superpowers (see Doc-gen step 2). **If present**, invoke `Skill: superpowers:writing-plans` with `spec_path: docs/SCAFFOLD_PLAN.md` and execution mode `subagent-driven-development`; control transfers to superpowers and the architect's responsibility ends here for code emission. **If absent (template fallback)**, surface that scaffolding can't be auto-executed without superpowers and offer to record a `DecisionMade` for `scaffold.deferred = true` (so the Handoff gate passes) for the user to scaffold manually from `docs/SCAFFOLD_PLAN.md`.
 

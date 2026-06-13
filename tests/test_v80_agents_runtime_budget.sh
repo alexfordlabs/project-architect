@@ -5,7 +5,8 @@
 #
 # v8 agent-roster invariant (robust presence check; supersedes the v7
 # hardcoded-value runtime-budget tests): the v8 roster is EXACTLY 7 agents,
-# each declaring model: opus + a runtime_budget (typical_minutes + max_minutes).
+# each declaring model: fable (latest Fable-class — operator standing rule 2026-06-13)
+# + a runtime_budget (typical_minutes + max_minutes).
 # quality-gate-auditor is NOT an agent in v8 — the audit is the architect-brain CLI.
 
 set -euo pipefail
@@ -18,7 +19,7 @@ AGENTS="research-scout architecture-specialist document-author claude-md-author 
 for a in $AGENTS; do
   f="$PLUGIN_ROOT/agents/$a.md"
   [ -f "$f" ] || fail "v8 agent $a.md missing"
-  grep -qE '^model: *opus' "$f"        || fail "$a missing 'model: opus'"
+  grep -qE '^model: *fable' "$f"       || fail "$a missing 'model: fable'"
   grep -q 'runtime_budget:' "$f"        || fail "$a missing runtime_budget frontmatter"
   grep -q 'typical_minutes:' "$f"       || fail "$a missing typical_minutes"
   grep -q 'max_minutes:' "$f"           || fail "$a missing max_minutes"
@@ -32,4 +33,4 @@ done
 n=$(ls "$PLUGIN_ROOT"/agents/*.md | wc -l | tr -d ' ')
 [ "$n" -eq 7 ] || fail "expected exactly 7 v8 agents, found $n"
 
-echo "PASS: 7 v8 agents declare model:opus + runtime_budget; quality-gate-auditor removed"
+echo "PASS: 7 v8 agents declare model:fable + runtime_budget; quality-gate-auditor removed"

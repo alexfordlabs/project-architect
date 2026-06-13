@@ -65,6 +65,12 @@ def run(state_dir) -> CheckResult:
     max_entered_idx = -1
 
     for phase in entered:
+        if phase == "preflight":
+            # Banner-only opener — never on the ladder, never out-of-order.
+            # Pre-v9.2 SKILL.md instructed `set-phase preflight` at run open,
+            # so real projects carry it in their append-only log forever;
+            # treating it as unknown permanently blocked their audits (v9.2).
+            continue
         if phase not in _INDEX:
             findings.append(Finding(message=f"unknown phase '{phase}' entered"))
             continue
